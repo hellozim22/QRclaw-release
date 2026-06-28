@@ -1,111 +1,156 @@
 <p align="center">
-  <img src="./docs/assets/qrclaw-logo-icon.svg" width="80" alt="QRClaw logo">
+  <img src="./docs/assets/qrclaw-logo.jpg" width="80" alt="QRClaw logo">
 </p>
 
 <h1 align="center">QRClaw</h1>
 
-<h4 align="center">A local-first multi-agent collaboration platform — manage your AI agents like chatting.</h4>
-
 <p align="center">
-  <a href="README.zh.md">🇨🇳 中文</a>
+  A unified desktop workspace for managing multiple AI agents, conversations, and tasks in one place.
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-  <a href="https://github.com/hellozim22/QRclaw-release"><img src="https://img.shields.io/badge/platform-macOS%2014%2B-silver" alt="macOS"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-green" alt="Node.js"></a>
-  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.22-00ADD8?logo=go" alt="Go"></a>
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+  <img alt="macOS" src="https://img.shields.io/badge/platform-macOS-black.svg">
+  <img alt="Node.js" src="https://img.shields.io/badge/node-%3E%3D20-green.svg">
+  <img alt="Go" src="https://img.shields.io/badge/Go-%3E%3D1.22-00ADD8.svg">
+</p>
+
+<p align="center">
+  <a href="./README.zh.md">🇨🇳 中文</a>
 </p>
 
 ---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+  - [Smart Conversation](#1-smart-conversation)
+  - [Task Board](#2-task-board)
+  - [Agent Management](#3-agent-management)
+  - [Conversation-Task Linkage](#4-conversation-task-linkage)
+  - [History Replay](#5-history-replay)
+  - [Model Selection](#6-model-selection)
+  - [Profile Center](#7-profile-center)
+- [Download & Install](#download--install)
+- [Development](#development)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Overview
+
+QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi, and more — into a single desktop application. Switch between agents like switching contacts, run multi-turn conversations, automatically track tasks, and keep full context history across sessions.
 
 ## Features
 
-### Chat — Independent Conversations
+### 1. Smart Conversation
 
-Each agent gets its own conversation window with isolated context and history. Run multiple agent conversations in parallel, just like messaging different people in a chat app — no cross-talk, no interference.
+- **Agent-organized sidebar:** Conversations are grouped by agent in the left sidebar; the right panel shows the active multi-turn private chat.
+- **Switch agents like contacts:** Switch between agents and carry out multi-turn private chats, centralizing different tasks in one place.
+- **Streaming output with execution timeline:** Responses stream in real time, with an execution-process timeline displayed alongside.
+- **New conversation:** Click "New Conversation" to clear context and start a fresh session.
+- **History search:** Enter keywords in the search box to match and locate across conversations and messages.
+- **Exception handling:** Prompts when a runtime goes offline; replays missed messages after network reconnection; marks failed steps on the execution timeline.
 
-![Chat interface](./docs/assets/screenshots/01-chat-openclaw.png)
+### 2. Task Board
+
+- Tasks generated in conversations are organized into columns on the board.
+- Drag-and-drop reordering and status changes.
+- Task cards display title, associated agent, update time, and a quick-jump link to the source conversation.
+- Filter by agent and search by keyword.
+- Task status flow: To Do → In Progress → To Verify → Done.
+- Mark a task as "Blocked" with a reason when obstacles arise.
+
+### 3. Agent Management
+
+- View locally installed agent runtimes (Codex, Cursor, Claude Code, OpenClaw, Pi, etc.).
+- Manage display names and roles for each agent to clarify responsibilities.
+- View real-time online status of each runtime.
+
+### 4. Conversation-Task Linkage
+
+- Create task cards directly from a conversation onto the board.
+- Jump into the associated conversation from a task detail page to continue with full context.
+- Automatically create tasks from conversations and write back progress before resuming, so goals are never lost.
+
+### 5. History Replay
+
+- After refreshing or re-logging in, all historical messages are visible.
+- Includes associated conversations and task statuses.
+- Messages are persisted and never lost.
+
+### 6. Model Selection
+
+- Specify a model for a single conversation, trading off speed and quality as needed.
+
+### 7. Profile Center
+
+- Manage personal profile such as avatar and display name.
+- macOS desktop supports automatic update detection.
 
 ---
 
-### Agents — Runtime Management
+## Download & Install
 
-View all agent runtimes installed on your machine (Codex, Cursor, Claude Code, OpenClaw, Pi, etc.). Configure connections with a single click and manage the agent lifecycle entirely through the UI — no command line required.
+### macOS
 
-![Agent management](./docs/assets/screenshots/04-agents.png)
-
----
-
-### Progress — Task Board
-
-Turn action items from long conversations into structured tasks. Track progress on a kanban board with task creation, status transitions, and detail views — making AI-driven work traceable and measurable.
-
-![Progress task board](./docs/assets/screenshots/02-progress-board.png)
+1. Download the installer: [`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)
+2. Open the `.dmg` file and drag **QRClaw** into the **Applications** folder.
+3. On first launch, if macOS blocks the app because it is from an unidentified developer:
+   - Open **System Settings → Privacy & Security**.
+   - Scroll down and click **Open Anyway** next to the "QRClaw was blocked" message.
+   - Confirm and launch QRClaw.
 
 ---
 
-### Progress — Task Detail
+## Development
 
-Every task carries full context: linked conversations, execution status, participating agents, timelines, and more — ensuring a transparent and auditable collaboration process.
+### Prerequisites
 
-![Progress task detail](./docs/assets/screenshots/03-progress-task-detail.png)
+- **Node.js** >= 20
+- **pnpm** >= 9
+- **Go** >= 1.22
+- **Redis**
+- **Supabase** (local or cloud)
 
----
-
-### Profile
-
-Manage your avatar, display name, and other personal settings. The macOS desktop app supports automatic update detection.
-
----
-
-## Quick Start
-
-### For Users — macOS Desktop Installation
-
-1. Download the DMG installer: [`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg) (~150 MB)
-2. Open the DMG and drag `QRClaw.app` into the `Applications` folder
-3. On first launch, go to **System Settings > Privacy & Security** and click **"Open Anyway"** to trust the developer
-4. Follow the onboarding guide to configure your agent runtimes and start using QRClaw
-
-> Requirements: macOS 14 (Sonoma) or later
-
-### For Developers — Run from Source
+### Getting Started
 
 ```bash
 # Clone the repository
 git clone https://github.com/hellozim22/QRclaw-release.git
 cd QRclaw-release
 
-# Install frontend dependencies and start
-cd web
+# Install dependencies
 pnpm install
-pnpm dev
 
-# Start the Gateway (new terminal)
-cd gateway
-pnpm install
-pnpm dev
+# Start the frontend (Next.js)
+pnpm dev:web
 
-# Start the Agent Host (new terminal)
-cd qrclaw-agent-host
-go run ./cmd/host
+# Start the gateway (Express + WebSocket)
+pnpm dev:gateway
+
+# Start the agent host (Go)
+cd qrclaw-agent-host && go run .
 ```
-
-For detailed development setup, refer to the [`docs/`](./docs/) directory.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript |
-| Backend | Express 5 · WebSocket · Redis |
-| Agent Host | Go 1.22 |
-| Database | Supabase (PostgreSQL) |
-| Desktop | SwiftUI (macOS 14+) |
-| Testing | Vitest · Playwright |
+| Layer            | Technology                          |
+|------------------|-------------------------------------|
+| Frontend         | Next.js 16, React 19, Tailwind CSS  |
+| Gateway          | Express 5, WebSocket                |
+| Agent Runtime    | Go                                  |
+| Backend / Auth   | Supabase                            |
+| Cache / Pub-Sub  | Redis                               |
+| Desktop          | SwiftUI (macOS)                     |
+| Shared Types     | shared/contracts                    |
+| Testing          | Vitest, Playwright                  |
 
 ---
 
@@ -120,26 +165,29 @@ QRclaw-release/
 ├── supabase/               # Database schema & Edge Functions
 ├── shared/contracts/       # Shared type contracts
 ├── tests/                  # Vitest / Playwright / E2E tests
-├── docs/                   # Product, deployment & desktop update docs
+├── docs/                   # Product, deployment, desktop update docs
 ├── design/                 # Design assets
 ├── scripts/                # Build & release scripts
 ├── download/               # macOS desktop installer
 ├── plugins/openclaw/       # OpenClaw channel plugin
-└── .claude/                # Claude Code agent config
+└── .claude/                # Claude Code Agent config
 ```
 
 ---
 
 ## Contributing
 
-Issues and pull requests are welcome.
+Contributions are welcome. Please follow these steps:
 
-1. Fork this repository and create a feature branch `feat/your-feature`
-2. Ensure your code passes lint checks and existing tests
-3. Submit a pull request and link it to the corresponding issue
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feat/your-feature`.
+3. Commit your changes with clear messages.
+4. Push to your fork and open a Pull Request.
+
+Please ensure tests pass before submitting a PR.
 
 ---
 
 ## License
 
-[Apache 2.0](./LICENSE) © QRClaw Contributors
+This project is licensed under the [Apache License 2.0](./LICENSE).

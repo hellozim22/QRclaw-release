@@ -1,111 +1,156 @@
 <p align="center">
-  <img src="./docs/assets/qrclaw-logo-icon.svg" width="80" alt="QRClaw logo">
+  <img src="./docs/assets/qrclaw-logo.jpg" width="80" alt="QRClaw logo">
 </p>
 
 <h1 align="center">QRClaw</h1>
 
-<h4 align="center">本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent</h4>
-
 <p align="center">
-  <a href="README.md">English</a>
+  统一管理多个 AI 智能体、对话与任务的桌面工作台。
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-  <a href="https://github.com/hellozim22/QRclaw-release"><img src="https://img.shields.io/badge/platform-macOS%2014%2B-silver" alt="macOS"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-green" alt="Node.js"></a>
-  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.22-00ADD8?logo=go" alt="Go"></a>
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+  <img alt="macOS" src="https://img.shields.io/badge/platform-macOS-black.svg">
+  <img alt="Node.js" src="https://img.shields.io/badge/node-%3E%3D20-green.svg">
+  <img alt="Go" src="https://img.shields.io/badge/Go-%3E%3D1.22-00ADD8.svg">
+</p>
+
+<p align="center">
+  <a href="./README.md">English</a>
 </p>
 
 ---
+
+## 目录
+
+- [产品简介](#产品简介)
+- [功能特性](#功能特性)
+  - [智能对话](#1-智能对话)
+  - [任务看板](#2-任务看板)
+  - [智能体管理](#3-智能体管理)
+  - [对话与任务联动](#4-对话与任务联动)
+  - [历史回放](#5-历史回放)
+  - [模型选择](#6-模型选择)
+  - [个人中心](#7-个人中心)
+- [下载与安装](#下载与安装)
+- [开发指南](#开发指南)
+- [技术栈](#技术栈)
+- [项目结构](#项目结构)
+- [贡献指南](#贡献指南)
+- [许可证](#许可证)
+
+---
+
+## 产品简介
+
+QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code、OpenClaw、Pi 等——汇聚到一个桌面应用中。像切换联系人一样切换智能体，进行多轮私聊，自动跟踪任务，并在会话之间保留完整上下文。
 
 ## 功能特性
 
-### Chat — 独立对话
+### 1. 智能对话
 
-按 Agent 划分独立会话窗口，支持多 Agent 并行对话，就像用聊天软件分别与不同的人聊天。每个 Agent 拥有独立的上下文和历史记录，互不干扰。
+- **按智能体组织的侧边栏：** 左侧列表按智能体组织会话，右侧为多轮私聊面板。
+- **像切换联系人一样切换智能体：** 在不同智能体之间切换并多轮私聊，集中处理不同任务。
+- **流式输出与执行时间线：** 回复流式输出，同时展示执行过程时间线。
+- **新建会话：** 点击「新对话」，清空上下文，开启新会话。
+- **历史搜索：** 在搜索框输入关键词，按会话与消息匹配并定位。
+- **异常处理：** 运行时离线时提示；网络中断重连后回放断线消息；执行失败标记时间线。
 
-![Chat 对话界面](./docs/assets/screenshots/01-chat-openclaw.png)
+### 2. 任务看板
+
+- 将对话中产生的任务按列整理在看板上。
+- 支持拖拽排序与状态变更。
+- 任务卡片展示标题、关联智能体、更新时间、所属会话快速跳转。
+- 支持按智能体过滤和关键词搜索。
+- 任务状态流转：待处理 → 进行中 → 待验证 → 已完成。
+- 遇到阻塞可以标记「阻塞」并填写原因。
+
+### 3. 智能体管理
+
+- 查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等）。
+- 在界面上管理其展示名称与角色，明确分工。
+- 查看运行时在线状态。
+
+### 4. 对话与任务联动
+
+- 在对话中直接创建任务卡片进入看板。
+- 在任务详情页快速进入关联会话续聊，保持上下文。
+- 让对话自动建任务并在续聊前回写进度，目标不丢失。
+
+### 5. 历史回放
+
+- 刷新或重新登录后，能看见所有历史消息。
+- 包括关联会话、关联任务状态等。
+- 消息持久化不丢失。
+
+### 6. 模型选择
+
+- 为单次对话指定模型，按需取舍速度与质量。
+
+### 7. 个人中心
+
+- 管理头像、名称等个人资料。
+- macOS 桌面端支持自动更新检测。
 
 ---
 
-### Agents — 运行时管理
+## 下载与安装
 
-查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等），一键配置连接，统一管理 Agent 生命周期。无需命令行操作，图形界面完成全部配置。
+### macOS
 
-![Agent 管理](./docs/assets/screenshots/04-agents.png)
-
----
-
-### Progress — 任务看板
-
-将长对话中的待办事项沉淀为结构化任务，在看板中跟踪进度。支持任务创建、状态流转、详情查看，让 AI 对话产出可追溯、可度量。
-
-![Progress 任务看板](./docs/assets/screenshots/02-progress-board.png)
+1. 下载安装包：[`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)
+2. 打开 `.dmg` 文件，将 **QRClaw** 拖入「应用程序」文件夹。
+3. 首次启动时，如果 macOS 提示来自未知开发者而阻止运行：
+   - 打开「系统设置 → 隐私与安全性」。
+   - 向下滚动，在「QRClaw 已被阻止」提示旁点击「仍要打开」。
+   - 确认并启动 QRClaw。
 
 ---
 
-### Progress — 任务详情
+## 开发指南
 
-每个任务承载完整的上下文信息：关联对话、执行状态、参与 Agent、时间线等，确保协作过程透明可审计。
+### 环境要求
 
-![Progress 任务详情](./docs/assets/screenshots/03-progress-task-detail.png)
+- **Node.js** >= 20
+- **pnpm** >= 9
+- **Go** >= 1.22
+- **Redis**
+- **Supabase**（本地或云端）
 
----
-
-### 个人中心
-
-管理头像、名称等个人资料，macOS 桌面端支持自动更新检测。
-
----
-
-## 快速上手
-
-### 普通用户 — macOS 桌面端安装
-
-1. 下载 DMG 安装包：[`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)（约 150 MB）
-2. 双击打开 DMG，将 `QRClaw.app` 拖入 `Applications` 文件夹
-3. 首次打开时，在「系统设置 > 隐私与安全性」中点击「仍要打开」以信任开发者
-4. 启动后按引导完成 Agent 运行时配置，即可开始使用
-
-> 系统要求：macOS 14 (Sonoma) 或更高版本
-
-### 开发者 — 源码启动
+### 快速启动
 
 ```bash
 # 克隆仓库
 git clone https://github.com/hellozim22/QRclaw-release.git
 cd QRclaw-release
 
-# 安装前端依赖并启动
-cd web
+# 安装依赖
 pnpm install
-pnpm dev
 
-# 启动 Gateway（新终端）
-cd gateway
-pnpm install
-pnpm dev
+# 启动前端（Next.js）
+pnpm dev:web
 
-# 启动 Agent Host（新终端）
-cd qrclaw-agent-host
-go run ./cmd/host
+# 启动网关（Express + WebSocket）
+pnpm dev:gateway
+
+# 启动 Agent 运行时（Go）
+cd qrclaw-agent-host && go run .
 ```
-
-详细的开发环境配置请参阅 [`docs/`](./docs/) 目录。
 
 ---
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 前端 | Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript |
-| 后端 | Express 5 · WebSocket · Redis |
-| Agent Host | Go 1.22 |
-| 数据库 | Supabase (PostgreSQL) |
-| 桌面端 | SwiftUI (macOS 14+) |
-| 测试 | Vitest · Playwright |
+| 层级        | 技术栈                              |
+|-------------|-------------------------------------|
+| 前端        | Next.js 16, React 19, Tailwind CSS  |
+| 网关        | Express 5, WebSocket                |
+| Agent 运行时 | Go                                  |
+| 后端 / 认证 | Supabase                            |
+| 缓存 / 消息  | Redis                               |
+| 桌面端      | SwiftUI (macOS)                     |
+| 共享类型    | shared/contracts                    |
+| 测试        | Vitest, Playwright                  |
 
 ---
 
@@ -132,14 +177,17 @@ QRclaw-release/
 
 ## 贡献指南
 
-欢迎提交 Issue 和 Pull Request。
+欢迎贡献，请遵循以下步骤：
 
-1. Fork 本仓库，创建特性分支 `feat/your-feature`
-2. 确保代码通过 lint 检查和现有测试
-3. 提交 Pull Request 并关联对应 Issue
+1. Fork 本仓库。
+2. 创建功能分支：`git checkout -b feat/your-feature`。
+3. 提交更改，撰写清晰的提交信息。
+4. 推送到你的 Fork 并发起 Pull Request。
+
+提交 PR 前请确保测试通过。
 
 ---
 
 ## 许可证
 
-[Apache 2.0](./LICENSE) © QRClaw Contributors
+本项目基于 [Apache License 2.0](./LICENSE) 开源。
