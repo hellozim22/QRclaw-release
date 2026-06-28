@@ -1,4 +1,4 @@
-# <img src="./docs/assets/qrclaw-logo-icon.svg" width="40" height="40" alt="QRClaw logo" align="center"> QRClaw
+# <img src="./docs/assets/qrclaw-logo.jpg" width="40" height="40" alt="QRClaw logo" align="center"> QRClaw
 
 本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent
 
@@ -13,27 +13,39 @@
 
 ### Chat — 独立对话
 
-按 Agent 划分独立会话窗口，支持多 Agent 并行对话，就像用聊天软件分别与不同的人聊天。
+按 Agent 划分独立会话窗口，支持多 Agent 并行对话，就像用聊天软件分别与不同的人聊天。每个 Agent 拥有独立的上下文和历史记录，互不干扰。
+
+![Chat 对话界面](./docs/assets/screenshots/01-chat-openclaw.png)
+
+---
 
 ### Agents — 运行时管理
 
-查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等），一键配置连接，统一管理 Agent 生命周期。
+查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等），一键配置连接，统一管理 Agent 生命周期。无需命令行操作，图形界面完成全部配置。
+
+![Agent 管理](./docs/assets/screenshots/04-agents.png)
+
+---
 
 ### Progress — 任务看板
 
 将长对话中的待办事项沉淀为结构化任务，在看板中跟踪进度。支持任务创建、状态流转、详情查看，让 AI 对话产出可追溯、可度量。
 
-### 个人中心
-
-管理头像、名称等个人资料，macOS 桌面端支持自动更新检测。
-
-![Chat 对话界面](./docs/assets/screenshots/01-chat-openclaw.png)
-
 ![Progress 任务看板](./docs/assets/screenshots/02-progress-board.png)
+
+---
+
+### Progress — 任务详情
+
+每个任务承载完整的上下文信息：关联对话、执行状态、参与 Agent、时间线等，确保协作过程透明可审计。
 
 ![Progress 任务详情](./docs/assets/screenshots/03-progress-task-detail.png)
 
-![Agent 管理](./docs/assets/screenshots/04-agents.png)
+---
+
+### 个人中心
+
+管理头像、名称等个人资料，macOS 桌面端支持自动更新检测。
 
 ---
 
