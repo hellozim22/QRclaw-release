@@ -1,0 +1,42 @@
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+# -----------------------------------------------------------------------------
+# Edge Function configuration
+#
+# `verify_jwt = false` tells the Supabase gateway to pass the request through
+# without rejecting calls that lack a Supabase user JWT. The function itself
+# authenticates the caller:
+#   - decrypted-messages handles three actors (owner / agent / visitor). Owner
+#     and agent bring their own Bearer tokens; visitor authenticates via
+#     session_token in the body.
+#
+# Production deploy command (mirrors the intent of this config):
+#   supabase functions deploy decrypted-messages --no-verify-jwt --project-ref zyxqadubhwrnsoujiyir
+# -----------------------------------------------------------------------------
+[functions.decrypted-messages]
+verify_jwt = false
+
+# Legacy equivalents — keep in sync with deploy scripts.
+[functions.visitor-ws-ticket]
+verify_jwt = false
+
+[functions.agent-ws-ticket]
+verify_jwt = false
+
+[functions.claim-agent]
+verify_jwt = false

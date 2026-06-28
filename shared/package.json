@@ -1,0 +1,9 @@
+{
+  "name": "@qrclaw/shared-contracts",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}

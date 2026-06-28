@@ -1,0 +1,14 @@
+{
+  "name": "qrclaw-repo-root",
+  "private": true,
+  "description": "Shim for Vercel/monorepo when project root is the repo (not web/). Prefer linking the Vercel project to web/ as root directory.",
+  "scripts": {
+    "build": "cd web && npm install && npm run build",
+    "vercel-build": "cd web && npm install && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

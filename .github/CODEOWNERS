@@ -1,0 +1,45 @@
+# CODEOWNERS — GitHub will auto-request review from the owners listed
+# here whenever a PR touches a matched path. For the rule to actually
+# *block* merging, enable branch protection:
+#   Settings → Branches → main → Require review from Code Owners.
+#
+# Syntax: <path-pattern> <owner...>
+# Last match wins. Paths relative to repo root.
+# Docs: https://docs.github.com/en/repositories/managing-your-repositories-settings-and-customizations/customizing-your-repository/about-code-owners
+
+# ─── Default ────────────────────────────────────────────────────────
+# Catch-all so no path is ever un-owned.
+*                                      @hellozim22
+
+# ─── Contracts SSoT ─────────────────────────────────────────────────
+# Editing these files changes the wire protocol — extra review required.
+/shared/contracts/**                   @hellozim22
+/scripts/sync-contracts.mjs            @hellozim22
+/supabase/functions/_shared/contracts/ @hellozim22
+
+# ─── Database schema & policies ─────────────────────────────────────
+# A bad migration can corrupt the production database; RLS changes
+# can silently grant/revoke access.
+/supabase/migrations/**                @hellozim22
+/supabase/config.toml                  @hellozim22
+
+# ─── CI/CD and deploy paths ─────────────────────────────────────────
+# Changing these changes how the project is built, tested, and
+# shipped to production. Demand eyes.
+/.github/**                            @hellozim22
+/gateway/Dockerfile                    @hellozim22
+/gateway/docker-compose.yml            @hellozim22
+/gateway/ecosystem.config.cjs          @hellozim22
+/.dockerignore                         @hellozim22
+
+# ─── Agent navigation & onboarding ──────────────────────────────────
+# Stale instructions cause hours of wasted agent time.
+/.claude/skills/qrclaw-map/**          @hellozim22
+/CLAUDE.md                             @hellozim22
+/AGENTS.md                             @hellozim22
+
+# ─── Formatting rules themselves ────────────────────────────────────
+# A careless edit here can trigger a repo-wide reformat.
+/.prettierrc.json                      @hellozim22
+/.prettierignore                       @hellozim22
+/.git-blame-ignore-revs                @hellozim22

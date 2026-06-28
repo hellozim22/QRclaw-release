@@ -1,0 +1,66 @@
+# Dependencies — never format
+**/node_modules/
+**/.pnpm-store/
+
+# Build output
+**/.next/
+**/dist/
+**/build/
+**/out/
+**/coverage/
+**/playwright-report/
+**/test-results/
+**/.turbo/
+**/.vercel/
+
+# Lockfiles
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+**/*.lock
+
+# Generated / mirrored artefacts — edit the source, never the mirror
+supabase/functions/_shared/contracts/
+
+# Env
+.env
+.env.*
+
+# Binary / opaque
+*.pen
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+supabase/**/*.sql
+
+# Documentation tree — Prettier's markdown reformat is opinionated enough
+# to change list nesting and hard-wrapping semantics that authors rely on.
+# Re-enable later if we adopt a markdown style guide.
+docs/
+dev-log/
+dev-guide/
+design/
+requirements/
+openspec/
+CHANGELOG.md
+CLAUDE.md
+AGENTS.md
+README.md
+REVIEW.md
+**/*.md
+**/*.mdx
+
+# Editor / agent config directories are symlinked (see adapter-architecture.mdc)
+.claude/
+.claude-internal/
+.codebuddy/
+.trae/
+.cursor/
+.playwright-mcp/
+
+# Files with no extension / custom syntax not understood by Prettier.
+.github/CODEOWNERS
+.git-blame-ignore-revs

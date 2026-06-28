@@ -1,0 +1,13 @@
+.PHONY: build test vet fmt
+
+build:
+	go build ./...
+
+test:
+	go test ./...
+
+vet:
+	go vet ./...
+
+fmt:
+	go fmt ./...

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "zod": ["./node_modules/zod"],
+    },
+    "types": ["vitest/globals"],
+  },
+  "include": [
+    "unit/shared/contracts-ws-protocol.test.ts",
+    "unit/shared/contracts-ws-outbound.test.ts",
+    "unit/shared/contracts-http-tickets.test.ts",
+    "unit/shared/contracts-http-qrcodes.test.ts",
+    "../shared/contracts/ws/**/*.ts",
+    "../shared/contracts/http/**/*.ts",
+  ],
+}

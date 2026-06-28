@@ -1,0 +1,150 @@
+name: Deploy Supabase (db push)
+
+# Pushes new migrations + (optionally) Edge Functions to the production
+# Supabase project. Deliberately MANUAL — Wave 0 plan §1 decision 4:
+# auto-push-to-production-db on every main commit is too aggressive for
+# the current maturity level; this workflow demands a human in the loop.
+#
+# Intended flow:
+#   1. PR opens → .github/workflows/supabase-migration-check.yml replays
+#      migrations on an ephemeral Postgres and fails on SQL errors.
+#   2. PR merges into main → nothing happens automatically.
+#   3. Operator opens Actions → "Deploy Supabase (db push)" → Run workflow.
+#      First invocation MUST use dry_run=true so the operator can read the
+#      diff in the run summary before shipping.
+#   4. After the diff is reviewed, run again with dry_run=false to actually
+#      apply changes to the production database.
+#
+# Prerequisites (one-time repo configuration):
+#   - GitHub Environment `production` with `hellozim22` as required reviewer.
+#   - Repository secrets:
+#       * SUPABASE_ACCESS_TOKEN    (personal access token, `sbp_…`)
+#       * SUPABASE_PROJECT_ID      (project ref, the 20-char slug in URLs)
+#       * SUPABASE_DB_PASSWORD     (database user password for `db push`)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type I-UNDERSTAND-PROD to proceed"
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run (db diff only, no push)"
+        required: true
+        type: boolean
+        default: true
+      include_functions:
+        description: "Also deploy Edge Functions"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-supabase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Apply migrations to production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://supabase.com/dashboard/project/${{ secrets.SUPABASE_PROJECT_ID }}
+
+    # Workflow hard-stops if the confirm string doesn't match the required
+    # token. No secrets are consumed before this gate evaluates.
+    if: ${{ inputs.confirm == 'I-UNDERSTAND-PROD' }}
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record intent in summary
+        run: |
+          {
+            echo "## Supabase deploy"
+            echo ""
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Actor: @${{ github.actor }}"
+            echo "- Dry run: \`${{ inputs.dry_run }}\`"
+            echo "- Include functions: \`${{ inputs.include_functions }}\`"
+            echo "- Project ref: (from \`SUPABASE_PROJECT_ID\` secret, not echoed)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to production project
+        run: |
+          supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_ID }}"
+
+      - name: Diff local migrations vs remote (always runs)
+        run: |
+          set -o pipefail
+          {
+            echo ""
+            echo "### Schema diff (local repo → production)"
+            echo ""
+            echo '```sql'
+            supabase db diff --linked --schema public 2>&1 || echo "(no diff or diff command failed)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply migrations (db push)
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          supabase db push --linked
+          {
+            echo ""
+            echo "### ✅ Migrations applied"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy Edge Functions
+        if: ${{ inputs.dry_run == false && inputs.include_functions == true }}
+        run: |
+          # Deploy every function directory under supabase/functions/ except
+          # the _shared convention folder (not a real function).
+          for fn_dir in supabase/functions/*/; do
+            fn_name=$(basename "$fn_dir")
+            if [ "$fn_name" = "_shared" ]; then continue; fi
+            echo "── deploying function: $fn_name ──"
+            supabase functions deploy "$fn_name" --project-ref "${{ secrets.SUPABASE_PROJECT_ID }}"
+          done
+          {
+            echo ""
+            echo "### ✅ Edge Functions deployed"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry run summary
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          {
+            echo ""
+            echo "### 🧪 Dry run complete"
+            echo ""
+            echo "No changes were applied. Re-run with \`dry_run=false\` to push the diff above."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Soft-fail job: if confirm token was wrong, surface a friendly message.
+  reject:
+    name: Reject (bad confirm token)
+    runs-on: ubuntu-latest
+    if: ${{ inputs.confirm != 'I-UNDERSTAND-PROD' }}
+    steps:
+      - name: Explain rejection
+        run: |
+          {
+            echo "## ❌ Workflow rejected"
+            echo ""
+            echo "The \`confirm\` input must be exactly \`I-UNDERSTAND-PROD\`."
+            echo ""
+            echo "No secrets were consumed. No calls were made to Supabase."
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1

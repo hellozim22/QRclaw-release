@@ -1,0 +1,10 @@
+# Revisions listed here are skipped by `git blame` when this file is wired up:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub honors this file automatically in the blame UI.
+#
+# Only add commits that are *purely mechanical* (formatters, linters, codemods)
+# so authorship of real changes is preserved.
+
+# chore(format): repo-wide prettier bootstrap
+afd1a62a91dc179a5e1f94046ebfd95def7ad09a

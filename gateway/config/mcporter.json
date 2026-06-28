@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "baseUrl": "http://localhost:9090/mcp",
+      "description": "Playwright 浏览器自动化（HTTP 模式），支持导航、快照、点击、填写、截图等操作"
+    }
+  }
+}

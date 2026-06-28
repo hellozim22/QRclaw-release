@@ -1,0 +1,245 @@
+name: Plugin (OpenClaw)
+
+# Path-filtered: only runs when the plugin, the shared contracts it consumes,
+# or this workflow itself changes. Mirrors ci.yml style (NODE_VERSION env,
+# concurrency, actions/setup-node cache-dependency-path per job).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/openclaw/**"
+      - "shared/contracts/**"
+      - ".github/workflows/plugin-openclaw.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "plugins/openclaw/**"
+      - "shared/contracts/**"
+      - ".github/workflows/plugin-openclaw.yml"
+
+concurrency:
+  group: plugin-openclaw-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  # Upstream OpenClaw repo — cloned as a sibling of the qrclaw checkout so that
+  # the `file:../../openclaw-main` dev-link in plugins/openclaw/package.json
+  # resolves in CI. See "openclaw dev-link resolution" note in each install
+  # step below for why we chose option (a) from the plan over changing the
+  # package.json entry to a github:/npm spec.
+  OPENCLAW_REPO: https://github.com/openclaw/openclaw.git
+
+jobs:
+  # ─── Typecheck ──────────────────────────────────────────────────────
+  typecheck:
+    name: Plugin (Typecheck)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/openclaw
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: plugins/openclaw/package-lock.json
+
+      # openclaw dev-link resolution (option a from the plan):
+      # clone the public openclaw repo one level above the qrclaw checkout so
+      # that plugins/openclaw/../../openclaw-main → $GITHUB_WORKSPACE/../openclaw-main.
+      # Keeps package.json unchanged so local dev workflow (sibling checkout)
+      # keeps working unchanged.
+      - name: Clone upstream openclaw (resolves `file:` dev-link)
+        working-directory: ${{ github.workspace }}/..
+        run: git clone --depth=1 ${{ env.OPENCLAW_REPO }} openclaw-main
+
+      - run: npm ci
+
+      - name: Typecheck (tsc --noEmit)
+        run: npx tsc --noEmit
+
+  # ─── Lint ───────────────────────────────────────────────────────────
+  lint:
+    name: Plugin (Lint + forbidden-pattern grep)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Root install gives us prettier. The plugin inherits the root .prettierrc.
+      - name: Install root deps (prettier)
+        run: npm ci --no-audit --no-fund
+
+      - name: Prettier check (plugins/openclaw)
+        run: npx prettier --check 'plugins/openclaw/**/*.{ts,json,md}'
+
+      # Plan §9 R13: forbid legacy wire names inside the plugin source.
+      - name: Forbidden wire-name grep
+        run: |
+          if grep -rnE 'button_pressed|agent_reaction' plugins/openclaw/src/; then
+            echo "::error::Forbidden wire-level names detected (plan §9 R13)."
+            exit 1
+          fi
+
+  # ─── Unit + e2e (plugin vitest) ─────────────────────────────────────
+  unit-e2e:
+    name: Plugin (Vitest unit + e2e)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/openclaw
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: plugins/openclaw/package-lock.json
+
+      - name: Clone upstream openclaw (resolves `file:` dev-link)
+        working-directory: ${{ github.workspace }}/..
+        run: git clone --depth=1 ${{ env.OPENCLAW_REPO }} openclaw-main
+
+      - run: npm ci
+
+      - name: Run vitest (unit + e2e)
+        run: npx vitest run
+
+  # ─── Indistinguishable acceptance spec ──────────────────────────────
+  # Runs the tests/ package spec that proves the plugin produces frames
+  # identical to the legacy scripts/agent-sdk code path.
+  indistinguishable:
+    name: Plugin (Indistinguishable acceptance)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            tests/package-lock.json
+            plugins/openclaw/package-lock.json
+
+      - name: Clone upstream openclaw (resolves `file:` dev-link)
+        working-directory: ${{ github.workspace }}/..
+        run: git clone --depth=1 ${{ env.OPENCLAW_REPO }} openclaw-main
+
+      - name: Install plugin deps (resolves dev-link)
+        working-directory: plugins/openclaw
+        run: npm ci
+
+      - name: Install tests deps
+        working-directory: tests
+        run: npm ci
+
+      - name: Run plugin-indistinguishable spec
+        working-directory: tests
+        run: npx vitest run acceptance/plugin-indistinguishable.spec.ts
+
+  # ─── Publish dry-run (main only) ────────────────────────────────────
+  # Catches packaging issues (bad `files` whitelist, missing dist/, etc.) on
+  # every push to main without requiring an NPM_TOKEN. `npm publish --dry-run`
+  # ignores `private: true` for validation purposes, so we get real packaging
+  # output while the package stays un-publishable until we flip the flag.
+  publish-dry-run:
+    name: Plugin (npm publish --dry-run)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [typecheck, lint, unit-e2e, indistinguishable]
+    defaults:
+      run:
+        working-directory: plugins/openclaw
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: plugins/openclaw/package-lock.json
+
+      - name: Clone upstream openclaw (resolves `file:` dev-link)
+        working-directory: ${{ github.workspace }}/..
+        run: git clone --depth=1 ${{ env.OPENCLAW_REPO }} openclaw-main
+
+      - run: npm ci
+
+      # prepublishOnly (tsc -p tsconfig.build.json) runs automatically inside
+      # `npm publish --dry-run`, so dist/ is built fresh.
+      - name: npm publish --dry-run
+        run: npm publish --dry-run 2>&1 | tee publish-dry-run.log
+
+      - name: Assert packaged files match `files` whitelist
+        run: |
+          log=publish-dry-run.log
+          echo "── Dry-run output ──"
+          cat "$log"
+          echo "────────────────────"
+
+          # Extract the tarball-entry lines only: they look like
+          #   "npm notice <size>B <path>"   (size may be 123B, 1.2kB, etc.)
+          # This strips away the prepublish script log, tarball-details block,
+          # final "+ @qrclaw/openclaw-plugin@..." line, etc.
+          entries=$(grep -E '^npm notice [0-9.]+[kKmM]?B ' "$log" | awk '{print $NF}')
+          echo "── Tarball entries ──"
+          echo "$entries"
+          echo "─────────────────────"
+
+          # Required entries — the compiled layout puts the plugin under
+          # dist/plugins/openclaw/** because tsc widens rootDir to pull in
+          # shared/contracts/ws/types. Both `dist` and `src` are whitelisted
+          # in `files`.
+          required=(
+            "package.json"
+            "index.ts"
+            "setup-entry.ts"
+            "openclaw.plugin.json"
+            "README.md"
+            "dist/plugins/openclaw/index.js"
+            "dist/plugins/openclaw/src/channel.js"
+            "src/channel.ts"
+          )
+          for path in "${required[@]}"; do
+            if ! grep -qxF "$path" <<<"$entries"; then
+              echo "::error::Expected packaged file missing from dry-run: $path"
+              exit 1
+            fi
+          done
+
+          # Forbidden entries — tests/e2e harness, changeset markdown,
+          # tsconfig files, and module-install noise must not ship.
+          forbidden_patterns=(
+            '^tests/'
+            '^\.changeset/'
+            '^node_modules/'
+            '^tsconfig\.json$'
+            '^tsconfig\.build\.json$'
+            '^\.gitignore$'
+          )
+          for pat in "${forbidden_patterns[@]}"; do
+            if grep -qE "$pat" <<<"$entries"; then
+              echo "::error::Forbidden entry matching $pat included in dry-run tarball."
+              exit 1
+            fi
+          done
+
+          echo "✓ Dry-run file list matches the expected whitelist."
+
+      - name: Upload dry-run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-openclaw-publish-dry-run
+          path: plugins/openclaw/publish-dry-run.log
+          retention-days: 14

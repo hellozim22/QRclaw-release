@@ -1,0 +1,51 @@
+{
+  "id": "qrclaw",
+  "kind": "channel",
+  "channels": ["qrclaw"],
+  "name": "QRClaw",
+  "description": "QRClaw QR-code chat channel plugin for OpenClaw",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "accounts": {
+        "type": "object",
+        "description": "Map of account labels to their configuration",
+        "additionalProperties": {
+          "type": "object",
+          "required": ["agentToken"],
+          "properties": {
+            "agentToken": {
+              "type": "string",
+              "description": "QRClaw agent API key"
+            },
+            "gatewayWsUrl": {
+              "type": "string",
+              "description": "Gateway WebSocket URL (e.g. wss://gateway.qrclaw.ai/ws)"
+            },
+            "supabaseUrl": {
+              "type": "string",
+              "description": "Supabase project URL"
+            },
+            "ticketUrl": {
+              "type": "string",
+              "description": "Custom ticket endpoint URL (overrides default)"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "defaultAccount": {
+        "type": "string",
+        "description": "Label of the default account to use"
+      }
+    }
+  },
+  "uiHints": {
+    "accounts": {
+      "label": "QRClaw Accounts",
+      "help": "Map of account labels to QRClaw agent tokens and connection settings"
+    }
+  }
+}

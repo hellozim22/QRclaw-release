@@ -1,0 +1,3 @@
+.auth/
+playwright-report/
+.audit-env.sh

@@ -1,0 +1,16 @@
+node_modules
+dist
+logs
+.env
+.env.*
+!.env.example
+!.env.production.example
+.git
+.gitignore
+*.md
+nginx
+.claude
+tests
+coverage
+.vscode
+.idea

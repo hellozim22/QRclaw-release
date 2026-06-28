@@ -1,0 +1,23 @@
+{
+  "name": "@qrclaw/agent-sdk",
+  "version": "0.1.0",
+  "description": "QRClaw Agent Connection SDK — connect your AI Agent to QRClaw Gateway",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "echo-agent": "tsx example-echo-agent.ts",
+    "openclaw-agent": "tsx example-openclaw-agent.ts",
+    "setup-agent": "tsx setup-agent.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.14",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,77 @@
+name: Supabase Migration Check
+
+# Purpose: catch broken SQL / RLS / schema changes before they merge to main.
+#   On every PR touching supabase/ we spin up a local Postgres via the Supabase
+#   CLI (`supabase db start`) — this applies all migrations in order and fails
+#   the job on any SQL error.
+#
+# Scope: migrations + config only. Edge Function changes go through their own
+#   deploy path (Task W0-T5 follow-up).
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/config.toml"
+      - "supabase/seed.sql"
+      - ".github/workflows/supabase-migration-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/config.toml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: supabase-migrations-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration-check:
+    name: Apply migrations to ephemeral Postgres
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # `supabase db start` boots the Postgres container (without the full
+      # stack) and applies every migration in supabase/migrations/*.sql in
+      # filename order. Failing SQL or RLS policy errors are surfaced here.
+      - name: Start local Postgres and apply migrations
+        run: supabase db start
+
+      - name: Print applied migrations (evidence in logs)
+        run: |
+          echo "── Applied migrations ──"
+          ls -1 supabase/migrations/
+          echo ""
+          echo "── Migration state in DB ──"
+          # supabase_migrations.schema_migrations tracks what the CLI ran.
+          # psql comes from the Supabase CLI install.
+          supabase db dump --local --schema supabase_migrations 2>&1 \
+            | head -80 \
+            || echo "(migration state dump failed, non-fatal)"
+
+      - name: Diff applied schema vs repo (drift detector)
+        # `supabase db diff` compares the DB state to the migrations it thinks
+        # it applied. An empty diff means migrations are faithfully replayable;
+        # a non-empty diff signals a migration doesn't match the resulting
+        # schema (e.g. a later migration modified objects a prior one created).
+        run: |
+          supabase db diff --local --schema public > /tmp/schema-diff.sql 2>&1 || true
+          if [ -s /tmp/schema-diff.sql ]; then
+            echo "── ⚠ schema diff detected ──"
+            cat /tmp/schema-diff.sql
+          else
+            echo "── ✓ no schema drift ──"
+          fi
+        continue-on-error: true
+
+      - name: Stop Supabase stack
+        if: always()
+        run: supabase stop --no-backup || true

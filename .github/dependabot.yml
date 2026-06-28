@@ -1,0 +1,151 @@
+# Dependabot configuration for qrclaw
+# Scans npm ecosystems in each package + GitHub Actions workflows.
+# Docker base images are intentionally NOT scanned — bumping node:20-alpine
+# is a conscious ops decision, not a routine dependency update.
+#
+# Schedule: weekly on Monday 09:00 Asia/Shanghai.
+# Grouping: @types/* and eslint-* bumped together to reduce PR noise.
+
+version: 2
+updates:
+  # ─── Root (shim package.json) ──────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - automated
+      - "scope:root"
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+
+  # ─── Web (Next.js app) ──────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - automated
+      - "scope:web"
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    groups:
+      types:
+        patterns:
+          - "@types/*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+
+  # ─── Gateway (Node + Express + WS) ──────────────────────────────────
+  - package-ecosystem: npm
+    directory: /gateway
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - automated
+      - "scope:gateway"
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    groups:
+      types:
+        patterns:
+          - "@types/*"
+
+  # ─── Shared contracts (zod) ─────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /shared
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - automated
+      - "scope:shared"
+      - "risk:contracts"
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+
+  # ─── Tests (Vitest + Playwright) ───────────────────────────────────
+  - package-ecosystem: npm
+    directory: /tests
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - automated
+      - "scope:tests"
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    groups:
+      types:
+        patterns:
+          - "@types/*"
+      playwright:
+        patterns:
+          - "@playwright/*"
+          - "playwright"
+      testing-library:
+        patterns:
+          - "@testing-library/*"
+
+  # ─── GitHub Actions workflows ──────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - automated
+      - "scope:ci"
+    commit-message:
+      prefix: ci
+      include: scope

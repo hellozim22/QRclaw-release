@@ -1,0 +1,85 @@
+-- =============================================================================
+-- QRClaw Backup & Restore Scripts
+-- Usage: Run with psql connected to the Supabase database
+-- =============================================================================
+
+-- =============================================================================
+-- BACKUP: Export critical data to CSV (run BEFORE migration)
+-- =============================================================================
+-- Note: For full backup, use pg_dump instead:
+--   pg_dump "$DATABASE_URL" --format=custom --file=qrclaw_backup_$(date +%Y%m%d).dump
+
+-- Logical backup of each table (for selective restore)
+-- Run from psql:
+--   \copy owners TO '/tmp/backup_owners.csv' WITH CSV HEADER
+--   \copy agents TO '/tmp/backup_agents.csv' WITH CSV HEADER
+--   \copy qrcodes TO '/tmp/backup_qrcodes.csv' WITH CSV HEADER
+--   \copy sessions TO '/tmp/backup_sessions.csv' WITH CSV HEADER
+--   \copy conversations TO '/tmp/backup_conversations.csv' WITH CSV HEADER
+--   \copy encryption_keys TO '/tmp/backup_encryption_keys.csv' WITH CSV HEADER
+--   \copy messages TO '/tmp/backup_messages.csv' WITH CSV HEADER
+--   \copy message_deliveries TO '/tmp/backup_message_deliveries.csv' WITH CSV HEADER
+--   \copy usage_logs TO '/tmp/backup_usage_logs.csv' WITH CSV HEADER
+
+-- =============================================================================
+-- FULL BACKUP (recommended)
+-- =============================================================================
+-- Run from shell:
+--
+--   # Full database dump (custom format, compressed)
+--   pg_dump "$DATABASE_URL" \
+--     --format=custom \
+--     --no-owner \
+--     --no-acl \
+--     --file="qrclaw_backup_$(date +%Y%m%d_%H%M%S).dump"
+--
+--   # Schema-only dump (for reference)
+--   pg_dump "$DATABASE_URL" \
+--     --schema-only \
+--     --no-owner \
+--     --file="qrclaw_schema_$(date +%Y%m%d).sql"
+
+-- =============================================================================
+-- RESTORE from pg_dump (custom format)
+-- =============================================================================
+-- WARNING: This drops and recreates all objects!
+--
+--   pg_restore \
+--     --dbname="$DATABASE_URL" \
+--     --clean \
+--     --if-exists \
+--     --no-owner \
+--     --no-acl \
+--     qrclaw_backup_YYYYMMDD_HHMMSS.dump
+
+-- =============================================================================
+-- RESTORE from CSV (selective, append-only)
+-- =============================================================================
+-- Use this for restoring specific tables without full rebuild.
+-- Run from psql:
+--
+--   -- Disable triggers temporarily for clean import
+--   SET session_replication_role = replica;
+--
+--   \copy owners FROM '/tmp/backup_owners.csv' WITH CSV HEADER
+--   \copy agents FROM '/tmp/backup_agents.csv' WITH CSV HEADER
+--   \copy qrcodes FROM '/tmp/backup_qrcodes.csv' WITH CSV HEADER
+--   \copy sessions FROM '/tmp/backup_sessions.csv' WITH CSV HEADER
+--   \copy conversations FROM '/tmp/backup_conversations.csv' WITH CSV HEADER
+--   \copy encryption_keys FROM '/tmp/backup_encryption_keys.csv' WITH CSV HEADER
+--   \copy messages FROM '/tmp/backup_messages.csv' WITH CSV HEADER
+--   \copy message_deliveries FROM '/tmp/backup_message_deliveries.csv' WITH CSV HEADER
+--   \copy usage_logs FROM '/tmp/backup_usage_logs.csv' WITH CSV HEADER
+--
+--   -- Re-enable triggers
+--   SET session_replication_role = DEFAULT;
+
+-- =============================================================================
+-- POINT-IN-TIME RECOVERY (Supabase Pro plan)
+-- =============================================================================
+-- Supabase Pro/Enterprise plans include PITR.
+-- To restore to a specific point:
+--   1. Go to Dashboard → Database → Backups → Point in Time Recovery
+--   2. Select the target timestamp
+--   3. Restore creates a new project with the restored data
+--   4. Verify data, then swap project references

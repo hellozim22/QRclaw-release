@@ -1,0 +1,14 @@
+# Example: Caddy auto-HTTPS for gateway-test.qrclaw.ai
+# Install: sudo apt install -y caddy
+# Install this file: sudo cp caddy-gateway-test.Caddyfile /etc/caddy/Caddyfile
+#   (or include from main Caddyfile: import /path/to/this/file)
+# Reload: sudo systemctl reload caddy
+#
+# Prerequisites:
+# - DNS A record: gateway-test.qrclaw.ai -> server public IP
+# - Ports 80 and 443 open to the internet (Let's Encrypt HTTP-01)
+# - Gateway listening on 127.0.0.1:3001
+
+gateway-test.qrclaw.ai {
+	reverse_proxy 127.0.0.1:3001
+}

@@ -1,0 +1,80 @@
+# QRClaw Gateway — Docker Compose for production deployment
+#
+# Usage:
+#   docker compose up -d
+#   docker compose logs -f gateway
+#   docker compose down
+
+services:
+  gateway:
+    build:
+      # Context MUST be repo root so gateway/Dockerfile can COPY shared/
+      # (the gateway tsconfig includes ../shared/contracts/**/*.ts).
+      context: ..
+      dockerfile: gateway/Dockerfile
+    container_name: qrclaw-gateway
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - qrclaw-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  redis:
+    image: redis:7-alpine
+    container_name: qrclaw-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+    networks:
+      - qrclaw-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+networks:
+  qrclaw-net:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

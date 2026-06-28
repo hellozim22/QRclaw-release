@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "outDir": "dist",
+  },
+  "include": ["src/**/*", "index.ts", "setup-entry.ts", "tests/**/*"],
+}

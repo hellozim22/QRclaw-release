@@ -1,0 +1,34 @@
+[
+  {
+    "provider": "openclaw",
+    "detected": true,
+    "version": "2026.4.5-t.22",
+    "run_ok": true,
+    "bytes": 102,
+    "notes": "ok; [openclaw-wecom-bot] Loaded bot state from file: {\"status\":\"running\",\"lastChatId…"
+  },
+  {
+    "provider": "claude-code",
+    "detected": true,
+    "version": "2.1.31",
+    "run_ok": true,
+    "bytes": 6,
+    "notes": "ok; Hello!"
+  },
+  {
+    "provider": "cursor-agent",
+    "detected": true,
+    "version": "2026.04.17-787b533",
+    "run_ok": true,
+    "bytes": 67,
+    "notes": "ok; 我在。你可以直接发要我处理的任务或文件路径。"
+  },
+  {
+    "provider": "codex",
+    "detected": true,
+    "version": "0.120.0",
+    "run_ok": true,
+    "bytes": 6,
+    "notes": "ok; hello"
+  }
+]

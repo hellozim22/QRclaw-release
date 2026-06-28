@@ -1,0 +1,148 @@
+/* ============================================
+   QRClaw Design Tokens
+   从 Pencil 设计稿 (pencil-new.pen) 提取
+   ============================================ */
+
+:root {
+  /* === Brand Colors === */
+  --color-red: #E24A3F;
+  --color-red-dark: #C03A32;
+  --color-red-light: #F5706A;
+  --color-red-bg: #FEF5F4;
+  --color-delete-red: #FF3B30;
+  --color-visitor-bubble: #FDECEA;
+
+  /* === Neutral Colors === */
+  --color-black: #1A1A1A;
+  --color-charcoal: #2D2D2D;
+  --color-gray-800: #333333;
+  --color-gray-700: #666666;
+  --color-gray-600: #868E96;
+  --color-gray-500: #999999;
+  --color-gray-300: #DEE2E6;
+  --color-gray-200: #F0F0F0;
+  --color-gray-100: #F5F5F5;
+  --color-gray-border: #E8E8E8;
+  /* Web Dashboard 竖向分隔（frontend-dev-guide §3.3 / §四） */
+  --color-dashboard-divider: #E5E5E5;
+  --color-off-white: #F8F9FA;
+  --color-white: #FFFFFF;
+  --color-muted: #BBBBBB;
+  --color-placeholder: #aaaaaa;
+  --color-input-placeholder: var(--color-gray-500);
+  --color-input-border: #e0e0e0;
+
+  /* === Semantic Colors === */
+  --color-green: #34C759;
+  --color-green-bg: #DCFCE7;
+  --color-green-text: #16A34A;
+  --color-green-dark: #2E7D32;
+  --color-green-light-bg: #E8F5E9;
+  --color-warning: #F59E0B;
+  /* 浅琥珀底（连接中横幅等；与 web/globals.css 一致） */
+  --color-amber-bg: #fffbeb;
+  --color-amber-text: #D97706;
+  --color-success: #22C55E;
+  --color-indigo: #6366F1;
+  --color-indigo-bg: #EEF2FF;
+  --color-disabled: #D1D5DB;
+  --color-user-avatar-bg: #CCCCCC;
+
+  /* === Typography === */
+  /* 运行时以 web/globals.css 为准：首项为 next/font 变量 */
+  --font-primary: var(--font-inter, 'Inter'), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono, 'JetBrains Mono'), 'JetBrains Mono', 'Fira Code', 'Consolas',
+    monospace;
+
+  /* Font Sizes */
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 15px;
+  --text-xl: 16px;
+  --text-2xl: 20px;
+  --text-3xl: 24px;
+  --text-4xl: 28px;
+  --text-5xl: 32px;
+  --text-6xl: 36px;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* === Spacing === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* === Shadows === */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.06);
+
+  --gradient-verify-page: linear-gradient(
+    180deg,
+    var(--color-white) 0%,
+    #fef2f2 40%,
+    #fdf2f8 70%,
+    #f0f9ff 100%
+  );
+
+  /* Web SignUp 左侧品牌渐变（frontend-dev-guide §3.5） */
+  --gradient-signup-brand: linear-gradient(135deg, #f87171 0%, #fb7185 50%, #fda4af 100%);
+  --color-signup-brand-muted: rgba(255, 255, 255, 0.6);
+  --gradient-primary: linear-gradient(180deg, #f56565 0%, #e24a3f 55%, #d63d32 100%);
+  --gradient-verify-mobile: linear-gradient(180deg, #f0eaff 0%, #ffffff 40%);
+  --phone-preview-radius: 28px;
+  --phone-preview-aspect: 9 / 19.5;
+  --shadow-phone-preview: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Mobile Scan QR 深色底上的前景（避免组件内硬编码 #fff） */
+  --color-scan-hint: rgba(255, 255, 255, 0.6);
+  --color-scan-caption: rgba(255, 255, 255, 0.5);
+  --color-scan-control-bg: rgba(255, 255, 255, 0.1);
+  --color-scan-control-border: rgba(255, 255, 255, 0.2);
+  --color-scan-viewfinder-border: rgba(255, 255, 255, 0.2);
+  --color-scan-background: #000000;
+
+  /* === Layout === */
+  --mobile-width: 390px;
+  --mobile-height: 844px;
+  --web-width: 1440px;
+  --web-height: 900px;
+  --web-sidebar-width: 80px;
+  --web-middle-col-width: 320px;
+
+  /* === Component Sizes === */
+  --btn-height-primary: 50px;
+  --btn-height-outline: 44px;
+  --input-height: 48px;
+  --input-height-auth-mobile: 52px;
+  --topbar-height: 50px;
+  --tabbar-height: 50px;
+  --avatar-lg: 160px;
+  --avatar-sm: 36px;
+}

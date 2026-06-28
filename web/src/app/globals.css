@@ -1,0 +1,289 @@
+@import 'tailwindcss';
+@import '@assistant-ui/react-ui/styles/index.css';
+@import '@assistant-ui/react-ui/styles/themes/default.css';
+
+/* ============================================
+   QRClaw Design Tokens
+   ============================================
+   Canonical reference: ../../design/design-tokens.css — add or change tokens there first, then mirror here.
+   ============================================ */
+
+:root {
+  /* === Brand Colors === */
+  --color-red: #e24a3f;
+  --color-red-dark: #c03a32;
+  --color-red-light: #f5706a;
+  --color-red-bg: #fef5f4;
+  --color-delete-red: #ff3b30;
+  --color-visitor-bubble: #fdecea;
+
+  /* === Neutral Colors === */
+  --color-black: #1a1a1a;
+  --color-charcoal: #2d2d2d;
+  --color-gray-800: #333333;
+  --color-gray-700: #666666;
+  --color-gray-600: #868e96;
+  --color-gray-500: #999999;
+  --color-gray-300: #dee2e6;
+  --color-gray-200: #f0f0f0;
+  --color-gray-100: #f5f5f5;
+  --color-gray-border: #e8e8e8;
+  /* Web Dashboard vertical divider (frontend-dev-guide) */
+  --color-dashboard-divider: #e5e5e5;
+  --color-off-white: #f8f9fa;
+  --color-white: #ffffff;
+  --color-muted: #bbbbbb;
+  /* Secondary gray for non-input areas (e.g. landing mock) */
+  --color-placeholder: #aaaaaa;
+  /* Input placeholder (frontend-dev-guide §2.6 = gray-500 / #999) */
+  --color-input-placeholder: var(--color-gray-500);
+  /* Default input border (frontend-dev-guide §2.6 = #E0E0E0; distinct from --color-gray-border) */
+  --color-input-border: #e0e0e0;
+
+  /* === Semantic Colors === */
+  --color-green: #34c759;
+  --color-green-bg: #dcfce7;
+  --color-green-text: #16a34a;
+  --color-green-dark: #2e7d32;
+  --color-green-light-bg: #e8f5e9;
+  --color-warning: #f59e0b;
+  /* Connecting banner tint (design ref #FFFBEB) */
+  --color-amber-bg: #fffbeb;
+  --color-amber-text: #d97706;
+  --color-success: #22c55e;
+  --color-indigo: #6366f1;
+  --color-indigo-bg: #eef2ff;
+  --color-disabled: #d1d5db;
+  --color-user-avatar-bg: #cccccc;
+
+  /* === Typography === */
+  /* Prefer next/font subsets (layout.tsx sets --font-inter / --font-jetbrains-mono on <html>) */
+  --font-primary:
+    var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Font Sizes */
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 15px;
+  --text-xl: 16px;
+  --text-2xl: 20px;
+  --text-3xl: 24px;
+  --text-4xl: 28px;
+  --text-5xl: 32px;
+  --text-6xl: 36px;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* === Spacing === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* === Shadows === */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.06);
+
+  /* Email verify — desktop gradient (JMDpZ / frontend-dev-guide §3.4) */
+  --gradient-verify-page: linear-gradient(
+    180deg,
+    var(--color-white) 0%,
+    #fef2f2 40%,
+    #fdf2f8 70%,
+    #f0f9ff 100%
+  );
+
+  /* Web SignUp left brand gradient (aligned with design/design-tokens.css) */
+  --gradient-signup-brand: linear-gradient(135deg, #f87171 0%, #fb7185 50%, #fda4af 100%);
+  --color-signup-brand-muted: rgba(255, 255, 255, 0.6);
+  /* Primary CTA gradient (mobile login / signup send / sign in) */
+  --gradient-primary: linear-gradient(180deg, #f56565 0%, #e24a3f 55%, #d63d32 100%);
+  /* Mobile verify page background */
+  --gradient-verify-mobile: linear-gradient(180deg, #f0eaff 0%, #ffffff 40%);
+  /* Dashboard phone preview chrome */
+  --phone-preview-radius: 28px;
+  --phone-preview-aspect: 9 / 19.5;
+  --shadow-phone-preview: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Mobile Scan QR — dark UI foreground (aligned with design/design-tokens.css) */
+  --color-scan-hint: rgba(255, 255, 255, 0.6);
+  --color-scan-caption: rgba(255, 255, 255, 0.5);
+  --color-scan-control-bg: rgba(255, 255, 255, 0.1);
+  --color-scan-control-border: rgba(255, 255, 255, 0.2);
+  --color-scan-viewfinder-border: rgba(255, 255, 255, 0.2);
+  --color-scan-background: #000000;
+
+  /* === Layout === */
+  --mobile-width: 390px;
+  --mobile-height: 844px;
+  --web-width: 1440px;
+  --web-height: 900px;
+  --web-sidebar-width: 80px;
+  --web-middle-col-width: 320px;
+
+  /* === Component Sizes === */
+  --btn-height-primary: 50px;
+  --btn-height-outline: 44px;
+  --input-height: 48px;
+  /* Mobile auth inputs (visual audit Mobile!Login / SignUp) */
+  --input-height-auth-mobile: 52px;
+  --topbar-height: 50px;
+  --tabbar-height: 50px;
+  --avatar-lg: 160px;
+  --avatar-sm: 36px;
+  --web-nav-height: 64px;
+
+  /* === Code Syntax Theme (dark) === */
+  --code-comment: #888888;
+  --code-keyword: #c792ea;
+  --code-function: #82aaff;
+  --code-string: #c3e88d;
+}
+
+@keyframes qrclaw-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes qrclaw-dot-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  color: var(--color-gray-800);
+  background: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-input-placeholder);
+  opacity: 1;
+}
+
+/* Match design surfaces when Chrome autofill recolors inputs (visual audit / UX) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-white) inset;
+  box-shadow: 0 0 0 1000px var(--color-white) inset;
+  -webkit-text-fill-color: var(--color-gray-800);
+  caret-color: var(--color-gray-800);
+  transition: background-color 99999s ease-out 0s;
+}
+
+.qrclaw-thinking-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.qrclaw-thinking-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  animation: qrclaw-dot-bounce 1.2s ease-in-out infinite;
+}
+
+.qrclaw-thinking-dots span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.qrclaw-thinking-dots span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.qrclaw-assistant-thread {
+  flex: 1;
+  min-height: 0;
+  background: var(--color-white);
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+  --aui-thread-max-width: 780px;
+}
+
+.qrclaw-assistant-thread .aui-thread-root,
+.qrclaw-assistant-thread .aui-thread-viewport {
+  background: var(--color-white);
+}
+
+.qrclaw-assistant-thread .aui-thread-viewport {
+  padding: var(--space-6);
+  padding-bottom: var(--space-3);
+}
+
+.qrclaw-assistant-thread .aui-thread-viewport-footer {
+  background: var(--color-white);
+  padding-bottom: var(--space-4);
+}
+
+.qrclaw-assistant-thread .aui-composer-root {
+  border-color: var(--color-input-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.qrclaw-assistant-thread .aui-composer-input {
+  color: var(--color-gray-800);
+  font-family: var(--font-primary);
+  font-size: var(--text-md);
+}
+
+.qrclaw-assistant-thread .aui-user-message-content {
+  background: var(--color-visitor-bubble);
+  color: var(--color-gray-800);
+}
+
+.qrclaw-assistant-thread .aui-assistant-message-content {
+  background: var(--color-white);
+  color: var(--color-gray-800);
+  border-color: var(--color-gray-border);
+}

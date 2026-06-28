@@ -1,0 +1,36 @@
+# Root .dockerignore — used when docker build context is the repo root
+# (see gateway/Dockerfile header). Keep shared/ INCLUDED so the gateway
+# builder stage can copy shared/contracts/ into the image.
+
+# Source-control and IDE
+.git
+.gitignore
+.cursor
+.claude
+.claude-internal
+.trae
+.codebuddy
+.vscode
+.idea
+
+# Dep caches and build output
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.vercel
+
+# Env & secrets
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.production.example
+
+# Test, coverage & scratch artifacts
+**/coverage
+**/test-results
+tests
+
+# Docs (not needed inside image)
+**/*.md
+docs

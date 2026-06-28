@@ -1,0 +1,219 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ─── Format Check (Prettier) ────────────────────────────────────────
+  format-check:
+    name: Format (Prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install (root) — only pulls in prettier
+        run: npm ci --no-audit --no-fund
+
+      - name: Prettier check
+        run: npm run format:check
+
+  # ─── Contracts Sync Check ───────────────────────────────────────────
+  contracts-sync-check:
+    name: Contracts sync check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify supabase/_shared WS types are in sync
+        run: node scripts/sync-contracts.mjs --check
+
+  # ─── Tests Package ──────────────────────────────────────────────────
+  tests:
+    name: Tests (Vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests
+    env:
+      # Phase 2 Wave 2 T5: run the full vitest suite under strict outbound
+      # validation so any drift in emit-site frame shapes fails CI instead
+      # of surfacing as a log-only warning. vitest.config.ts pins the same
+      # value for local runs; this env block mirrors it for CI transparency
+      # (and survives if the default in feature-flags.ts ever changes).
+      QRCLAW_OUTBOUND_VALIDATION: strict
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            tests/package-lock.json
+            web/package-lock.json
+
+      - run: npm ci
+
+      - name: Install web dependencies (Vitest imports web/src; dynamic import qrcode resolves from web/node_modules)
+        working-directory: web
+        run: npm ci
+
+      - name: Install gateway dependencies (Vitest imports gateway/src)
+        working-directory: gateway
+        run: npm ci
+
+      - name: Run unit + integration tests
+        run: npx vitest run
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+        continue-on-error: true
+
+  # ─── Web Package ────────────────────────────────────────────────────
+  web-lint:
+    name: Web (Lint + Typecheck + Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          # Placeholders so `next build` can prerender routes that instantiate Supabase (no secrets in CI)
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.placeholder
+          NEXT_PUBLIC_GATEWAY_URL: http://localhost:3001
+          NEXT_PUBLIC_GATEWAY_WS_URL: ws://localhost:3001/ws
+
+  # ─── Gateway Package ────────────────────────────────────────────────
+  gateway-lint:
+    name: Gateway (Typecheck + Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gateway
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: gateway/package-lock.json
+
+      - name: Install shared contracts deps
+        working-directory: shared
+        run: npm ci
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+  # ─── E2E Smoke (Playwright) ─────────────────────────────────────────
+  # Current coverage is intentionally thin (tests/e2e/sample.spec.ts only;
+  # vitest-based mock specs under e2e/web|mobile|flows run in the `tests`
+  # job above). Value: real browser smoke against a production-built web
+  # server — catches "build passes but app crashes on first render" bugs
+  # that web-lint's build-only step cannot see.
+  #
+  # This is the CI scaffolding. Adding new Playwright specs == drop a file
+  # in tests/e2e/ matching the testIgnore patterns in playwright.config.ts,
+  # no workflow changes required.
+  tests-e2e:
+    name: E2E Smoke (Playwright chromium)
+    runs-on: ubuntu-latest
+    needs: [web-lint, tests]
+    # Prebuilt Playwright image: chromium + all system deps baked in,
+    # avoids the ~200MB per-run browser download. Version must track
+    # tests/package.json @playwright/test.
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-jammy
+      options: --user 1001
+    env:
+      CI: "1"
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Same placeholders as web-lint so `next start` can render routes
+      # that touch Supabase without leaking real credentials.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.placeholder
+      NEXT_PUBLIC_GATEWAY_URL: http://localhost:3001
+      NEXT_PUBLIC_GATEWAY_WS_URL: ws://localhost:3001/ws
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            tests/package-lock.json
+            web/package-lock.json
+
+      - name: Install web deps
+        working-directory: web
+        run: npm ci
+
+      - name: Install tests deps
+        working-directory: tests
+        run: npm ci
+
+      - name: Build web (production bundle, reused by playwright webServer)
+        working-directory: web
+        run: npm run build
+
+      - name: Run Playwright smoke (chromium)
+        working-directory: tests
+        run: npx playwright test --project=chromium
+
+      - name: Upload Playwright report
+        if: ${{ failure() || cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/playwright-report
+          retention-days: 7
+
+      - name: Upload Playwright traces + screenshots
+        if: ${{ failure() || cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: tests/test-results
+          retention-days: 7

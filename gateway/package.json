@@ -1,0 +1,50 @@
+{
+  "name": "gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/gateway/src/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/gateway/src/server.js",
+    "typecheck": "tsc --noEmit",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop qrclaw-gateway",
+    "pm2:restart": "pm2 restart qrclaw-gateway",
+    "pm2:logs": "pm2 logs qrclaw-gateway",
+    "docker:build": "docker build -t qrclaw-gateway .",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "keywords": [
+    "qrclaw",
+    "gateway",
+    "websocket"
+  ],
+  "author": "QRClaw",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.10.0",
+    "jsonwebtoken": "^9.0.3",
+    "uuid": "^13.0.0",
+    "ws": "^8.19.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.5.0",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "pm2": "^6.0.14",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "env": {
+    "ANTHROPIC_MODEL": "claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
+    "CLAUDE_PLUGIN_ROOT": "/Users/zeze/qrclaw/everything-claude-code",
+    "ECC_HOOK_PROFILE": "strict",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "WebFetch",
+      "Task",
+      "NotebookEdit",
+      "mcp__*"
+    ]
+  },
+  "mcpServers": {
+    "pencil": {
+      "name": "pencil",
+      "transport": "stdio",
+      "command": "/Users/zeze/.codebuddycn/extensions/highagency.pencildev-0.6.32/out/mcp-server-darwin-arm64",
+      "args": ["--app", "codebuddy_cn"],
+      "env": {}
+    }
+  }
+}

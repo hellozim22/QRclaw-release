@@ -1,0 +1,54 @@
+{
+  "name": "@qrclaw/openclaw-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenClaw channel plugin that bridges OpenClaw agents to the QRClaw SaaS gateway.",
+  "main": "dist/plugins/openclaw/index.js",
+  "types": "dist/plugins/openclaw/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/plugins/openclaw/index.d.ts",
+      "import": "./dist/plugins/openclaw/index.js"
+    },
+    "./setup-entry": {
+      "types": "./dist/plugins/openclaw/setup-entry.d.ts",
+      "import": "./dist/plugins/openclaw/setup-entry.js"
+    },
+    "./openclaw.plugin.json": "./openclaw.plugin.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "index.ts",
+    "setup-entry.ts",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "prettier --check .",
+    "prepublishOnly": "tsc -p tsconfig.build.json",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
+    "openclaw": "file:../../openclaw-main",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.1.0"
+  },
+  "peerDependencies": {
+    "openclaw": "^2026.0.0"
+  }
+}

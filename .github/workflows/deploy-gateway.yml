@@ -1,0 +1,136 @@
+name: Deploy Gateway
+
+# Deploys the gateway (WebSocket + HTTP) to the production VPS over SSH.
+#
+# Trigger model:
+#   - push to main when gateway/**, shared/**, or this workflow change
+#     → auto-deploys AFTER required reviewer approves (via `production`
+#       environment protection rule in repo Settings → Environments).
+#   - workflow_dispatch → manual fallback (e.g. force-redeploy after ops
+#     fixes on the VPS) with the same approval gate.
+#
+# Prerequisites (one-time repo configuration, see Wave 0 plan §1 constraint 2):
+#   - GitHub Environment `production` exists with `hellozim22` as required
+#     reviewer so first-time deploys go through human approval.
+#   - Repository secrets:
+#       * DEPLOY_SERVER_IP       (tencent cloud VPS IP / hostname)
+#       * DEPLOY_SSH_USER        (SSH login user, e.g. ubuntu or root)
+#       * DEPLOY_SSH_KEY         (private key PEM for the deploy user)
+#   - VPS prerequisites (maintained by ops, not this workflow):
+#       * /opt/qrclaw is a git checkout of this repository on `main`
+#       * /opt/qrclaw/gateway/.env.production exists (populated via scp by
+#         ops, never by this workflow — secrets stay out of git)
+#       * docker + docker compose plugin installed
+#       * the deploy user has permission to run docker without sudo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "gateway/**"
+      - "shared/**"
+      - ".github/workflows/deploy-gateway.yml"
+  workflow_dispatch:
+    inputs:
+      skip_health_check:
+        description: "Skip post-deploy /health probe (emergency only)"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  # Serialize deploys: a newer push-to-main deploy will queue, not race.
+  group: deploy-gateway-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: SSH deploy to production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      # GitHub surfaces this URL in the deployment timeline once prod is reachable.
+      url: https://api.qrclaw.com
+    steps:
+      - name: Checkout (for workflow summary + commit sha)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Record deploy target in summary
+        run: |
+          {
+            echo "## Gateway deploy"
+            echo ""
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Actor: @${{ github.actor }}"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Ref: \`${{ github.ref }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: SSH deploy (git pull + docker compose up)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SERVER_IP }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          # Tight timeouts so a hung session fails fast.
+          timeout: 60s
+          command_timeout: 12m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            echo "── deploy-gateway @ ${{ github.sha }} ──"
+            cd /opt/qrclaw
+            git fetch --all --prune
+            git checkout main
+            git reset --hard origin/main
+            echo "── HEAD: $(git rev-parse --short HEAD) ──"
+            cd gateway
+            docker compose pull redis || true
+            docker compose build gateway
+            docker compose up -d
+            docker compose ps
+
+      - name: Post-deploy health check
+        if: ${{ inputs.skip_health_check != true }}
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SERVER_IP }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          timeout: 30s
+          command_timeout: 2m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            echo "── health probe ──"
+            # Retry /health for up to 30s (10 tries × 3s) before giving up.
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              if curl -fsS --max-time 5 http://localhost:3001/health > /tmp/health.json; then
+                echo "✓ /health ok on try $i"
+                cat /tmp/health.json
+                exit 0
+              fi
+              echo "… try $i/10 failed, retrying in 3s"
+              sleep 3
+            done
+            echo "✗ /health never became healthy"
+            docker compose -f /opt/qrclaw/gateway/docker-compose.yml logs --tail=50 gateway
+            exit 1
+
+      - name: Mark deployment summary
+        if: always()
+        run: |
+          {
+            if [ "${{ job.status }}" = "success" ]; then
+              echo ""
+              echo "### ✅ Deploy succeeded"
+            else
+              echo ""
+              echo "### ❌ Deploy failed"
+              echo ""
+              echo "Recovery: SSH in and run \`cd /opt/qrclaw && git checkout <last-good-sha> && cd gateway && docker compose up -d --build\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

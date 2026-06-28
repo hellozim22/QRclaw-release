@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Supabase local
+supabase/.temp/
+
+# Large binary files (keep design PNGs tracked)
+*.pen
+
+# ECC plugin source (reference only)
+everything-claude-code/
+
+# Claude Code local permissions (machine-specific, auto-generated)
+.claude/settings.local.json
+.playwright-mcp/
+tests/playwright-report/
+tests/coverage/
+
+# Acceptance test credentials
+.env.test
+.local-dev-owner.json
+gateway/dump.rdb
+.vercel
+
+# Playwright / Pixel audit artifacts
+test-results/pixel-audit/
+
+# IDE session artifacts (machine-specific)
+.cursor/plans/
+.cursor/todos/
+.trae/user_rules/
+
+# Release binaries
+*.dmg
+download/

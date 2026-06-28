@@ -1,0 +1,50 @@
+---
+paths: ["src/**/*.tsx", "src/**/*.jsx", "src/**/*.css", "src/**/*.scss", "src/components/**", "src/app/**", "src/pages/**", "design/**", "**/*.pen"]
+---
+
+# Pencil Design Fidelity Rule
+
+**MANDATORY**: All frontend UI development MUST follow设计资源文件作为 single source of truth.
+
+## Design Files Location
+
+```
+design/
+├── design-tokens.css                # ★ CSS 变量（颜色/字体/间距/圆角/阴影）
+├── frontend-dev-guide.md            # ★ 完整前端上下文（组件规格+页面布局+样式映射）
+├── qrclaw-interaction-design.md     # 交互设计文档（页面流程+交互细节）
+├── pencil-new.pen                   # Pencil 设计稿（需 MCP 读取，可选）
+└── layer/                           # 所有页面/组件的 PNG 截图
+    ├── INDEX.md                     # 截图文件 → nodeId 映射索引
+    ├── Mobile-*.png                 # 移动端页面截图 (20 screens)
+    ├── Web-*.png                    # Web 端页面截图 (18 screens)
+    ├── Component-*.png              # 8 个可复用组件截图
+    └── _annotation-*.png            # 8 个交互注释截图
+```
+
+## Before Writing Any UI Code
+
+1. **Read `design/frontend-dev-guide.md`** — 获取组件规格、页面布局、样式映射
+2. **Read `design/design-tokens.css`** — 获取所有 CSS 变量定义
+3. **Read `design/layer/<PageName>.png`** — 读取目标页面截图作为像素级视觉基准
+4. 如有对应的 `_annotation-*.png` 交互注释，**必须阅读**
+5. **Read `design/qrclaw-interaction-design.md`** — 获取交互细节
+6. Follow `.claude/skills/pencil-to-code/SKILL.md` workflow
+
+## Non-Negotiable Constraints
+
+- **NEVER** implement UI without先读取 `frontend-dev-guide.md` 和对应页面截图
+- **NEVER** hardcode colors — use `design-tokens.css` 中的 CSS 变量
+- **NEVER** approximate spacing — use `frontend-dev-guide.md` 中的精确 px 值
+- **NEVER** skip visual validation — 实现后对比 `design/layer/*.png` 截图
+- **ALWAYS** 先实现 8 个可复用组件，再实现页面
+- **ALWAYS** 组件结构严格按 `frontend-dev-guide.md` 第二章的规格
+
+## Validation Requirement
+
+Every component or page implementation must include:
+1. Design screenshot (from `design/layer/*.png`)
+2. Browser screenshot (from running implementation)
+3. Explicit confirmation that both match
+
+For detailed workflow: `.claude/skills/pencil-to-code/SKILL.md`

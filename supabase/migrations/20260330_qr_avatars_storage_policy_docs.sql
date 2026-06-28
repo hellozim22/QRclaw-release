@@ -1,0 +1,21 @@
+-- =============================================================================
+-- Storage bucket `qr-avatars` — RLS / INSERT policy (documentation migration)
+-- =============================================================================
+--
+-- Why there is no INSERT policy for `anon` / `authenticated`:
+-- - Avatar uploads run only in Gateway `POST /api/create-qrcode` using the Supabase
+--   **service_role** client. Service role **bypasses Row Level Security** on
+--   `storage.objects`, so uploads succeed without an explicit INSERT policy.
+--
+-- Why `qr_avatars_public_read` exists:
+-- - Bucket is **public**; objects need SELECT for `anon`/`authenticated` so profile
+--   images load in the app. Paths include random UUIDs (unguessable).
+--
+-- If you later add **browser-direct** uploads with the anon key, you must add
+-- INSERT (and usually UPDATE/DELETE) policies scoped by path or owner, e.g.
+-- `storage.foldername(name) = auth.uid()::text`, and never expose service_role
+-- to the client.
+--
+-- This file intentionally performs no schema change; it records the model for
+-- reviewers and operators. `SELECT 1` keeps the migration non-empty for runners.
+SELECT 1;

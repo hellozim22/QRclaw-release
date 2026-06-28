@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRClaw — Claude Code Agent Teams 开发指南（从零到上线）</title>
+<style>
+:root { --brand: #0d47a1; --brand-light: #1565c0; --accent: #ff6f00; --green: #2e7d32; --red: #c62828; --bg: #f8f9fc; --card: #fff; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.8; color: #1a1a1a; background: var(--bg); }
+
+/* Header */
+.hero { background: linear-gradient(135deg, #0d47a1 0%, #1565c0 40%, #0277bd 100%); color: #fff; padding: 48px 0 40px; text-align: center; }
+.hero h1 { font-size: 32px; margin-bottom: 12px; }
+.hero .subtitle { font-size: 16px; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+.hero .badge { display: inline-block; background: var(--accent); color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 16px; }
+
+/* Navigation */
+.nav-bar { background: #fff; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.nav-inner { max-width: 900px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; }
+.nav-inner a { padding: 12px 18px; color: #555; text-decoration: none; font-size: 13.5px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.nav-inner a:hover { color: var(--brand); border-bottom-color: #ccc; }
+.nav-inner a.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+
+/* Container */
+.container { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* Sections */
+.section { margin-bottom: 48px; scroll-margin-top: 60px; }
+.section h2 { font-size: 24px; color: var(--brand); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid var(--brand); display: flex; align-items: center; gap: 10px; }
+.section h3 { font-size: 18px; color: var(--brand-light); margin: 24px 0 12px; }
+.section h4 { font-size: 15px; color: #333; margin: 16px 0 8px; font-weight: 600; }
+
+/* Cards */
+.card { background: var(--card); border-radius: 12px; padding: 24px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e8eaf6; }
+.card.warning { border-left: 4px solid var(--accent); background: #fff8e1; }
+.card.success { border-left: 4px solid var(--green); background: #e8f5e9; }
+.card.danger { border-left: 4px solid var(--red); background: #fce4ec; }
+.card.info { border-left: 4px solid var(--brand); background: #e3f2fd; }
+.card-title { font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+/* Code blocks */
+pre { background: #1e1e2e; color: #cdd6f4; border-radius: 10px; padding: 20px; overflow-x: auto; margin: 14px 0; font-size: 13.5px; line-height: 1.6; position: relative; }
+pre .comment { color: #6c7086; }
+pre .cmd { color: #89b4fa; }
+pre .flag { color: #f9e2af; }
+pre .string { color: #a6e3a1; }
+pre .output { color: #6c7086; font-style: italic; }
+code { background: #e8eaf6; color: #283593; padding: 2px 7px; border-radius: 4px; font-size: 0.88em; }
+pre code { background: transparent; color: inherit; padding: 0; }
+
+/* Steps */
+.step { display: flex; gap: 16px; margin: 20px 0; align-items: flex-start; }
+.step-num { width: 36px; height: 36px; min-width: 36px; background: var(--brand); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
+.step-content { flex: 1; }
+.step-content h4 { margin-top: 4px; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; border-radius: 8px; overflow: hidden; }
+th { background: var(--brand); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border: 1px solid #e0e0e0; padding: 10px 14px; }
+tr:nth-child(even) { background: #f8f9fe; }
+
+/* Keyboard shortcuts */
+kbd { background: #e0e0e0; padding: 2px 8px; border-radius: 4px; font-size: 12px; border: 1px solid #bbb; font-family: monospace; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+/* Diagram */
+.diagram { background: #1e1e2e; color: #cdd6f4; border-radius: 10px; padding: 24px; margin: 16px 0; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; white-space: pre; }
+.diagram .highlight { color: #89b4fa; font-weight: bold; }
+.diagram .green { color: #a6e3a1; }
+.diagram .orange { color: #fab387; }
+.diagram .pink { color: #f5c2e7; }
+
+/* Timeline */
+.timeline { border-left: 3px solid var(--brand); padding-left: 24px; margin: 20px 0; }
+.timeline-item { margin: 16px 0; position: relative; }
+.timeline-item::before { content: ''; width: 12px; height: 12px; background: var(--brand); border-radius: 50%; position: absolute; left: -30px; top: 6px; }
+.timeline-item.done::before { background: var(--green); }
+.timeline-label { font-weight: 600; color: var(--brand); }
+
+/* Responsive */
+@media (max-width: 700px) { .container { padding: 16px 12px 60px; } .hero { padding: 32px 16px; } .hero h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<div class="hero">
+  <h1>🦞 QRClaw — Agent Teams 开发指南</h1>
+  <p class="subtitle">从零开始，用 Claude Code Agent Teams 组建 AI 开发团队，按照 ECC 标准完成 QRClaw 全栈开发</p>
+  <span class="badge">适合小白 · macOS · 腾讯内部 Claude Code</span>
+</div>
+
+<!-- ===== Nav ===== -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <a href="#overview" class="active">概览</a>
+    <a href="#prerequisites">环境准备</a>
+    <a href="#ecc-structure">ECC 架构</a>
+    <a href="#enable-teams">启用 Agent Teams</a>
+    <a href="#team-plan">团队规划</a>
+    <a href="#launch">启动开发</a>
+    <a href="#split-screen">分屏监控</a>
+    <a href="#workflow">开发流程</a>
+    <a href="#shortcuts">快捷键速查</a>
+    <a href="#faq">常见问题</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== Section 0: Overview ===== -->
+<div class="section" id="overview">
+  <h2>📖 概览：什么是 Agent Teams？</h2>
+  
+  <div class="card info">
+    <div class="card-title">💡 一句话理解</div>
+    <p><strong>Agent Teams = 你是 CEO，Claude 是 CTO（Team Lead），它帮你招聘和管理一整个 AI 开发团队。</strong></p>
+    <p>每个"队友"（Teammate）是一个独立的 Claude Code 实例，有自己的上下文窗口，负责独立的开发任务，队友之间可以直接沟通协作。</p>
+  </div>
+
+  <h3>传统方式 vs Agent Teams</h3>
+  <table>
+    <tr><th>维度</th><th>传统（单个 Claude）</th><th>Agent Teams（多个 Claude 协作）</th></tr>
+    <tr><td>并行度</td><td>一次只能做一件事</td><td>前端、后端、测试同时进行</td></tr>
+    <tr><td>上下文</td><td>所有代码共享一个窗口（容易溢出）</td><td>每个队友独立窗口，互不干扰</td></tr>
+    <tr><td>沟通</td><td>只有你和 Claude 对话</td><td>队友之间可以直接对话（如前端问后端 API 格式）</td></tr>
+    <tr><td>效率</td><td>1x</td><td>3-5x（取决于任务可并行度）</td></tr>
+    <tr><td>成本</td><td>低</td><td>高（每个队友都消耗 token）</td></tr>
+  </table>
+
+  <h3>QRClaw 项目为什么适合 Agent Teams？</h3>
+  <div class="card">
+    <p>QRClaw 是一个 <strong>前后端分离 + 实时通信</strong> 的项目，天然适合分工：</p>
+    <ul>
+      <li>🎨 <strong>前端</strong>（Next.js + Vercel）— Owner Dashboard + Visitor Chat</li>
+      <li>⚙️ <strong>后端</strong>（Node.js Gateway）— WebSocket 实时通信 + 消息路由</li>
+      <li>🗄️ <strong>数据库</strong>（Supabase）— Schema + RLS + Edge Functions</li>
+      <li>🧪 <strong>测试</strong>（Vitest + Playwright）— 单元/集成/E2E</li>
+    </ul>
+    <p>这 4 个方向可以并行开发，互不阻塞。正是 Agent Teams 的最佳场景。</p>
+  </div>
+</div>
+
+<!-- ===== Section 1: Prerequisites ===== -->
+<div class="section" id="prerequisites">
+  <h2>🔧 第一步：环境准备</h2>
+
+  <div class="card warning">
+    <div class="card-title">⚠️ 开始之前请确认</div>
+    <ul>
+      <li>你有一台 <strong>macOS</strong> 电脑</li>
+      <li>已安装 <strong>Node.js 18+</strong>（终端输入 <code>node -v</code> 检查）</li>
+      <li>已安装 <strong>Git</strong>（终端输入 <code>git --version</code> 检查）</li>
+      <li>已安装 <strong>腾讯内部 Claude Code</strong>（<code>claude-code-internal</code>）</li>
+    </ul>
+  </div>
+
+  <h3>1.1 安装 iTerm2（推荐）</h3>
+  <p>macOS 自带的 Terminal 可以用，但 <strong>iTerm2</strong> 对 Agent Teams 分屏支持更好：</p>
+  <pre><code><span class="comment"># 方式一：Homebrew 安装（推荐）</span>
+<span class="cmd">brew</span> install --cask iterm2
+
+<span class="comment"># 方式二：官网下载</span>
+<span class="comment"># https://iterm2.com/downloads.html</span></code></pre>
+
+  <h3>1.2 安装 tmux（Agent Teams 分屏必需）</h3>
+  <p>tmux 是一个终端复用工具，Agent Teams 用它来给每个队友分配独立的窗格：</p>
+  <pre><code><span class="comment"># 安装 tmux</span>
+<span class="cmd">brew</span> install tmux
+
+<span class="comment"># 验证安装</span>
+<span class="cmd">tmux</span> -V
+<span class="output"># 输出类似：tmux 3.5a</span></code></pre>
+
+  <h3>1.3 确认 Claude Code Internal 可用</h3>
+  <pre><code><span class="comment"># 检查是否已安装</span>
+<span class="cmd">claude-code-internal</span> --version
+
+<span class="comment"># 如果没有安装，联系 IT 部门获取安装包，或：</span>
+<span class="cmd">npm</span> install -g @tencent/claude-code-internal</code></pre>
+
+  <h3>1.4 克隆 QRClaw 项目</h3>
+  <pre><code><span class="comment"># 克隆项目（如果还没有的话）</span>
+<span class="cmd">git</span> clone <span class="string">&lt;your-qrclaw-repo-url&gt;</span>
+<span class="cmd">cd</span> qrclaw
+
+<span class="comment"># 确认项目结构存在</span>
+<span class="cmd">ls</span> .claude/agents/
+<span class="output"># 应该看到：architect.md  code-reviewer.md  e2e-runner.md  tdd-guide.md ...</span></code></pre>
+
+  <div class="card success">
+    <div class="card-title">✅ 环境检查清单</div>
+    <table>
+      <tr><th>工具</th><th>检查命令</th><th>期望输出</th></tr>
+      <tr><td>Node.js</td><td><code>node -v</code></td><td>v18.x 或更高</td></tr>
+      <tr><td>Git</td><td><code>git --version</code></td><td>git version 2.x</td></tr>
+      <tr><td>tmux</td><td><code>tmux -V</code></td><td>tmux 3.x</td></tr>
+      <tr><td>Claude Code</td><td><code>claude-code-internal --version</code></td><td>版本号</td></tr>
+      <tr><td>项目</td><td><code>ls .claude/agents/</code></td><td>多个 .md 文件</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== Section 2: ECC Structure ===== -->
+<div class="section" id="ecc-structure">
+  <h2>🏗️ 第二步：理解 ECC 架构</h2>
+  
+  <p>ECC（Everything Claude Code）是 QRClaw 项目的 AI 开发标准。它不是一个工具，而是一套<strong>让 Claude 读懂你项目的配置体系</strong>。</p>
+
+  <h3>ECC 文件结构</h3>
+  <div class="diagram">qrclaw/
+├── <span class="highlight">CLAUDE.md</span>              ← Claude 的"入职手册"（自动加载）
+├── <span class="highlight">.claude/</span>
+│   ├── <span class="green">agents/</span>            ← 13 个专业 AI 角色定义
+│   │   ├── architect.md       （架构师）
+│   │   ├── tdd-guide.md       （TDD 专家）
+│   │   ├── code-reviewer.md   （代码审查）
+│   │   ├── security-reviewer.md（安全审查）
+│   │   ├── e2e-runner.md      （E2E 测试）
+│   │   └── ...
+│   ├── <span class="orange">commands/</span>          ← 31 个斜杠命令
+│   │   ├── orchestrate.md     （编排工作流）
+│   │   ├── plan.md            （生成计划）
+│   │   └── ...
+│   ├── <span class="pink">rules/</span>             ← 自动加载的规则
+│   │   ├── 01-foundation.md   （基础规则）
+│   │   ├── 03-dev-workflow.md （开发流程）
+│   │   └── ...
+│   └── settings.json          ← 权限设置
+├── <span class="green">requirements/</span>          ← 你的需求文档 ⭐
+│   ├── product-requirements.md     （产品需求）
+│   ├── technical-specification.md  （技术方案）
+│   └── ...
+└── <span class="green">design/</span>                ← 设计文档 ⭐
+    └── qrclaw-design-report.html</div>
+
+  <div class="card info">
+    <div class="card-title">💡 为什么 ECC 这么重要？</div>
+    <p>没有 ECC，Claude 就像一个刚入职的实习生，对你的项目一无所知。</p>
+    <p>有了 ECC，Claude 打开项目时会<strong>自动读取 CLAUDE.md</strong>，了解项目架构、编码规范、技术栈。然后根据 agents/ 中的角色定义知道"我是谁"、根据 rules/ 中的规则知道"什么能做什么不能做"。</p>
+  </div>
+
+  <h3>Agent Teams 使用的关键文件</h3>
+  <table>
+    <tr><th>文件</th><th>作用</th><th>Agent Teams 如何使用</th></tr>
+    <tr><td><code>CLAUDE.md</code></td><td>项目总入口</td><td>Team Lead 和每个 Teammate 启动时都会自动读取</td></tr>
+    <tr><td><code>.claude/agents/*.md</code></td><td>角色定义</td><td>定义每个 Teammate 的专长和行为准则</td></tr>
+    <tr><td><code>requirements/*.md</code></td><td>需求文档</td><td>Teammates 据此实现功能，这是"做什么"的权威来源</td></tr>
+    <tr><td><code>.claude/rules/*.md</code></td><td>编码规则</td><td>自动加载，确保所有 Teammates 遵循同一套标准</td></tr>
+  </table>
+</div>
+
+<!-- ===== Section 3: Enable Agent Teams ===== -->
+<div class="section" id="enable-teams">
+  <h2>⚡ 第三步：启用 Agent Teams</h2>
+
+  <div class="card danger">
+    <div class="card-title">🔴 重要：Agent Teams 默认关闭</div>
+    <p>这是一个实验性功能，需要手动开启。不开启的话，Claude 无法创建团队。</p>
+  </div>
+
+  <h3>方式一：修改 settings.json（永久生效，推荐）</h3>
+  <pre><code><span class="comment"># 打开 Claude Code 的全局配置文件</span>
+<span class="cmd">mkdir</span> -p ~/.claude
+<span class="cmd">cat</span> > ~/.claude/settings.json << 'EOF'
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": ["Read", "Write", "Execute"]
+  },
+  "teammateMode": "tmux"
+}
+EOF
+
+<span class="comment"># 解释：</span>
+<span class="comment"># CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: "1"  → 启用 Agent Teams</span>
+<span class="comment"># teammateMode: "tmux"  → 使用 tmux 分屏（每个队友独立窗格）</span></code></pre>
+
+  <h3>方式二：环境变量（临时生效）</h3>
+  <pre><code><span class="comment"># 在 .zshrc 或 .bash_profile 中添加</span>
+<span class="cmd">echo</span> <span class="string">'export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1'</span> >> ~/.zshrc
+<span class="cmd">source</span> ~/.zshrc</code></pre>
+
+  <h3>验证是否启用成功</h3>
+  <pre><code><span class="comment"># 启动 Claude Code</span>
+<span class="cmd">cd</span> /path/to/qrclaw
+<span class="cmd">claude-code-internal</span>
+
+<span class="comment"># 在 Claude 的对话中输入：</span>
+<span class="string">请创建一个简单的 agent team 来测试功能是否正常</span>
+
+<span class="comment"># 如果看到 Claude 开始创建 team 和 teammates → 成功！</span>
+<span class="comment"># 如果报错说 agent teams 未启用 → 检查 settings.json</span></code></pre>
+</div>
+
+<!-- ===== Section 4: Team Plan ===== -->
+<div class="section" id="team-plan">
+  <h2>📋 第四步：规划你的 Agent Team</h2>
+
+  <p>在启动开发之前，你需要想清楚：<strong>团队需要几个人？每个人负责什么？</strong></p>
+
+  <h3>QRClaw 推荐的团队结构</h3>
+  <div class="diagram">
+                    ┌─────────────┐
+            ┌───── │  <span class="highlight">Team Lead</span>   │ ─────┐
+            │      │  (编排协调)   │      │
+            │      └──────┬──────┘      │
+            │             │             │
+    ┌───────▼──────┐ ┌───▼────────┐ ┌──▼───────────┐
+    │ <span class="green">前端 Teammate</span> │ │ <span class="orange">后端 Teammate</span>│ │ <span class="pink">数据库 Teammate</span> │
+    │              │ │            │ │              │
+    │ Next.js 15   │ │ Gateway    │ │ Supabase     │
+    │ Dashboard    │ │ WebSocket  │ │ Schema + RLS │
+    │ Visitor Chat │ │ 消息路由    │ │ Edge Funcs   │
+    └──────────────┘ └────────────┘ └──────────────┘
+            │             │             │
+            └─────────────┼─────────────┘
+                          │
+                  ┌───────▼──────┐
+                  │ <span class="green">测试 Teammate</span> │
+                  │              │
+                  │ Unit Tests   │
+                  │ E2E Tests    │
+                  │ 质量门禁      │
+                  └──────────────┘</div>
+
+  <table>
+    <tr><th>角色</th><th>负责内容</th><th>对应 ECC Agent</th><th>模型建议</th></tr>
+    <tr><td>🎯 Team Lead</td><td>任务分配、进度协调、冲突解决</td><td>architect + planner</td><td>Opus（最强推理）</td></tr>
+    <tr><td>🎨 前端</td><td>Dashboard UI、Visitor Chat、i18n</td><td>—</td><td>Sonnet（速度快）</td></tr>
+    <tr><td>⚙️ 后端</td><td>Gateway、WebSocket、加密、Redis</td><td>—</td><td>Sonnet</td></tr>
+    <tr><td>🗄️ 数据库</td><td>Schema、RLS、Edge Functions、迁移</td><td>—</td><td>Sonnet</td></tr>
+    <tr><td>🧪 测试</td><td>单元测试、E2E、覆盖率门禁</td><td>tdd-guide + e2e-runner</td><td>Sonnet</td></tr>
+  </table>
+
+  <div class="card warning">
+    <div class="card-title">⚠️ 建议先从 3 个 Teammate 开始</div>
+    <p>Agent Teams 每多一个队友就多一份 token 开销。建议第一次用 <strong>3 个</strong>（前端 + 后端 + 数据库），测试队友可以稍后加入。熟悉流程后再扩展到 4-5 个。</p>
+  </div>
+</div>
+
+<!-- ===== Section 5: Launch ===== -->
+<div class="section" id="launch">
+  <h2>🚀 第五步：启动开发！</h2>
+
+  <h3>5.1 打开终端，进入项目</h3>
+  <pre><code><span class="comment"># 打开 iTerm2（推荐）或 Terminal</span>
+<span class="cmd">cd</span> /path/to/qrclaw
+
+<span class="comment"># 启动 Claude Code</span>
+<span class="cmd">claude-code-internal</span></code></pre>
+
+  <h3>5.2 用自然语言创建 Agent Team</h3>
+  <p>在 Claude 的对话界面中，<strong>直接用中文描述你想要的团队</strong>：</p>
+
+  <div class="card" style="background: #1e1e2e; color: #cdd6f4; font-family: monospace; font-size: 14px; line-height: 1.8;">
+    <p style="color: #89b4fa;">📝 你输入（复制这段到 Claude）：</p>
+    <br>
+    <p>我要开发 QRClaw 项目。请创建一个 Agent Team：</p>
+    <br>
+    <p>团队结构：</p>
+    <p>1. 前端 Teammate（frontend）：负责 Next.js 15 前端开发，包括 Owner Dashboard 和 Visitor Chat 页面。请阅读 requirements/product-requirements.md 了解需求，参考 design/ 目录的设计稿。使用 Sonnet 模型。</p>
+    <br>
+    <p>2. 后端 Teammate（backend）：负责 Node.js Gateway 开发，包括 WebSocket 实时通信、消息路由、AES-256-GCM 加密。请阅读 requirements/technical-specification-v3.0.3-combined.md 的技术方案。使用 Sonnet 模型。</p>
+    <br>
+    <p>3. 数据库 Teammate（database）：负责 Supabase 数据库，包括 Schema 设计、RLS 策略、Edge Functions（Owner 解密代理）。请阅读技术方案的 §11 数据库章节和补充协议的 §P7 章节。使用 Sonnet 模型。</p>
+    <br>
+    <p>工作要求：</p>
+    <p>- 所有 Teammate 必须阅读 CLAUDE.md 了解项目约束</p>
+    <p>- 遵循 TDD（先写测试再实现）</p>
+    <p>- 每个 Teammate 先提交计划，获得你的批准后再开始编码</p>
+    <p>- 使用 tmux 分屏模式，让我能同时看到所有人的进度</p>
+  </div>
+
+  <h3>5.3 Team Lead 会开始工作</h3>
+  <p>Claude（作为 Team Lead）会：</p>
+  <div class="timeline">
+    <div class="timeline-item">
+      <span class="timeline-label">创建团队</span>
+      <p>建立共享任务列表和通讯邮箱</p>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">生成任务</span>
+      <p>从你的需求文档中拆解出具体开发任务</p>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">派生队友</span>
+      <p>为每个方向创建独立的 Claude Code 实例</p>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">分配任务</span>
+      <p>将任务分配给对应的队友</p>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">审批计划</span>
+      <p>队友提交实施计划后，Lead 审核并批准/驳回</p>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">协调沟通</span>
+      <p>当队友之间有依赖（如前端需要后端 API）时，Lead 协调</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Section 6: Split Screen ===== -->
+<div class="section" id="split-screen">
+  <h2>🖥️ 第六步：分屏监控所有 Agent</h2>
+
+  <div class="card info">
+    <div class="card-title">💡 这是你最关心的部分</div>
+    <p>Agent Teams 支持两种显示模式。<strong>推荐使用 tmux 分屏</strong>，可以同时看到所有队友的工作状态。</p>
+  </div>
+
+  <h3>6.1 tmux 分屏模式（推荐）</h3>
+  <p>当你在 settings.json 中设置了 <code>"teammateMode": "tmux"</code> 后，Agent Teams 创建时会<strong>自动</strong>为每个队友生成一个 tmux 窗格：</p>
+
+  <div class="diagram">┌─────────────────────────────────────────────────┐
+│ <span class="highlight">Team Lead</span> (你的主窗口)                           │
+│ > Creating team "qrclaw-dev"...                 │
+│ > Spawning frontend teammate...                 │
+│ > Spawning backend teammate...                  │
+│ > Task list: 12 tasks created                   │
+├──────────────────────┬──────────────────────────┤
+│ <span class="green">frontend</span>              │ <span class="orange">backend</span>                   │
+│ Reading PRD...       │ Reading tech spec...      │
+│ Creating pages/      │ Setting up gateway/       │
+│ dashboard layout...  │ ws handler...             │
+├──────────────────────┼──────────────────────────┤
+│ <span class="pink">database</span>              │ <span class="green">（可以后续添加更多）</span>         │
+│ Creating schema...   │                          │
+│ Setting up RLS...    │                          │
+└──────────────────────┴──────────────────────────┘</div>
+
+  <h3>6.2 关键操作（tmux 模式）</h3>
+  <table>
+    <tr><th>操作</th><th>快捷键</th><th>说明</th></tr>
+    <tr><td>切换到下一个窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> 然后 <kbd>O</kbd></td><td>在 Lead 和各 Teammate 之间切换</td></tr>
+    <tr><td>切换到指定窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> 然后 <kbd>Q</kbd> 然后数字</td><td>按窗格编号跳转（0=Lead, 1=前端...）</td></tr>
+    <tr><td>放大当前窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> 然后 <kbd>Z</kbd></td><td>全屏查看某个 Teammate 的输出</td></tr>
+    <tr><td>恢复分屏</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> 然后 <kbd>Z</kbd></td><td>再按一次恢复</td></tr>
+    <tr><td>向上翻页（查看历史）</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> 然后 <kbd>[</kbd></td><td>进入翻页模式，用方向键/PgUp 翻页</td></tr>
+    <tr><td>退出翻页</td><td><kbd>Q</kbd></td><td>回到正常模式</td></tr>
+    <tr><td>滚动查看</td><td>鼠标滚轮</td><td>iTerm2 中可以直接滚动</td></tr>
+  </table>
+
+  <h3>6.3 In-Process 模式（备选）</h3>
+  <p>如果 tmux 有问题，可以用内置模式：</p>
+  <table>
+    <tr><th>操作</th><th>快捷键</th><th>说明</th></tr>
+    <tr><td>切换到下一个队友</td><td><kbd>Shift</kbd>+<kbd>↓</kbd></td><td>在 Lead 和 Teammates 之间循环</td></tr>
+    <tr><td>给当前队友发消息</td><td>直接打字 + <kbd>Enter</kbd></td><td>给当前选中的队友发指令</td></tr>
+    <tr><td>查看任务列表</td><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>显示/隐藏共享任务列表</td></tr>
+    <tr><td>中断队友当前操作</td><td><kbd>Escape</kbd></td><td>停止队友正在做的事情</td></tr>
+  </table>
+
+  <h3>6.4 iTerm2 原生分屏（最舒适）</h3>
+  <p>如果你用 iTerm2，还可以手动开多个窗格配合使用：</p>
+  <pre><code><span class="comment"># 水平分屏</span>
+<span class="comment"># 快捷键：⌘D</span>
+
+<span class="comment"># 垂直分屏</span>
+<span class="comment"># 快捷键：⌘⇧D (Cmd+Shift+D)</span>
+
+<span class="comment"># 在分屏之间切换</span>
+<span class="comment"># 快捷键：⌘[ 和 ⌘] (Cmd+左右方括号)</span>
+
+<span class="comment"># 关闭当前窗格</span>
+<span class="comment"># 快捷键：⌘W</span></code></pre>
+</div>
+
+<!-- ===== Section 7: Workflow ===== -->
+<div class="section" id="workflow">
+  <h2>🔄 第七步：日常开发流程</h2>
+
+  <h3>Phase 1：项目初始化（第 1 天）</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>让数据库队友先行</h4>
+      <p>数据库 Schema 是前后端的基础，让数据库 Teammate 先创建好表结构：</p>
+      <pre><code><span class="comment"># 在 Lead 窗口中输入：</span>
+<span class="string">请让数据库队友优先完成以下任务：
+1. 根据技术方案 §11 创建所有数据库表
+2. 设置 RLS 策略
+3. 创建 Edge Function：get-decrypted-messages
+完成后通知前端和后端队友。</span></code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>前端和后端并行启动</h4>
+      <p>数据库 Schema 完成后，前端和后端可以同时开始：</p>
+      <pre><code><span class="comment"># 在 Lead 窗口中输入：</span>
+<span class="string">数据库 Schema 已就绪。请：
+- 前端队友：搭建 Next.js 项目结构 + Dashboard 登录页
+- 后端队友：搭建 Gateway 项目结构 + WebSocket 基础框架
+两个队友并行工作，互不等待。</span></code></pre>
+    </div>
+  </div>
+
+  <h3>Phase 2：功能开发（第 2-6 天）</h3>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>按模块推进，保持沟通</h4>
+      <pre><code><span class="comment"># 给 Lead 下一批任务：</span>
+<span class="string">请安排以下任务：
+- 后端：实现 ws-ticket 认证流程（§P2.3）
+- 前端：实现 Visitor Chat 扫码入口页
+- 数据库：实现 encryption_keys 表 + DEK 管理函数
+
+后端完成 ws-ticket 后，通知前端队友接口格式。</span></code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>队友之间直接沟通</h4>
+      <p>Agent Teams 的强大之处：队友可以互相问问题！</p>
+      <pre><code><span class="comment"># 切换到前端队友的窗格（Ctrl+B → O，或 Shift+↓）</span>
+<span class="comment"># 前端队友可能会说：</span>
+<span class="output">"我需要 WebSocket 连接的消息格式，正在询问后端队友..."</span>
+
+<span class="comment"># 后端队友自动收到消息并回复：</span>
+<span class="output">"消息格式参见 §P1.1，帧结构是 {type, id, timestamp, payload}"</span></code></pre>
+    </div>
+  </div>
+
+  <h3>Phase 3：集成测试（第 7-8 天）</h3>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>添加测试队友</h4>
+      <pre><code><span class="comment"># 在 Lead 窗口中：</span>
+<span class="string">请创建一个新的测试队友（test），负责：
+1. 为 Gateway 写单元测试（参考 §T1-T8）
+2. 为前端写 E2E 测试
+3. 确保覆盖率 ≥ 85%
+使用 Sonnet 模型。先提交计划等我批准。</span></code></pre>
+    </div>
+  </div>
+
+  <h3>日常管理命令</h3>
+  <table>
+    <tr><th>你想做的事</th><th>在 Lead 窗口中说</th></tr>
+    <tr><td>查看所有任务状态</td><td>"请显示当前所有任务的状态"</td></tr>
+    <tr><td>给某个队友新任务</td><td>"请让前端队友去实现 i18n 功能"</td></tr>
+    <tr><td>让队友暂停</td><td>"请让后端队友暂停当前工作"</td></tr>
+    <tr><td>让队友关闭</td><td>"请让数据库队友关闭"</td></tr>
+    <tr><td>查看某队友进度</td><td>"后端队友目前在做什么？"</td></tr>
+    <tr><td>解决队友冲突</td><td>"前端和后端对 API 格式有分歧，请协调"</td></tr>
+    <tr><td>结束整个团队</td><td>"请清理整个团队"（先关闭所有队友）</td></tr>
+  </table>
+</div>
+
+<!-- ===== Section 8: Shortcuts ===== -->
+<div class="section" id="shortcuts">
+  <h2>⌨️ 快捷键速查表</h2>
+
+  <h3>Claude Code Agent Teams</h3>
+  <table>
+    <tr><th>快捷键</th><th>功能</th><th>模式</th></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>↓</kbd></td><td>切换到下一个队友</td><td>In-Process</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>显示/隐藏任务列表</td><td>In-Process</td></tr>
+    <tr><td><kbd>Escape</kbd></td><td>中断队友当前操作</td><td>两种模式</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>查看队友的会话</td><td>In-Process</td></tr>
+  </table>
+
+  <h3>tmux（分屏模式必用）</h3>
+  <p>所有 tmux 快捷键以 <kbd>Ctrl</kbd>+<kbd>B</kbd> 开头（先按这个组合键，松开，再按后面的键）：</p>
+  <table>
+    <tr><th>操作</th><th>按键序列</th></tr>
+    <tr><td>切换窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>O</kbd></td></tr>
+    <tr><td>跳到指定窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>Q</kbd> → 数字</td></tr>
+    <tr><td>全屏/恢复窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>Z</kbd></td></tr>
+    <tr><td>翻页模式</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>[</kbd>（<kbd>Q</kbd> 退出）</td></tr>
+    <tr><td>上/下/左/右窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → 方向键</td></tr>
+    <tr><td>调整窗格大小</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>Ctrl</kbd>+方向键</td></tr>
+    <tr><td>关闭当前窗格</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>X</kbd></td></tr>
+    <tr><td>显示所有会话</td><td><kbd>Ctrl</kbd>+<kbd>B</kbd> → <kbd>S</kbd></td></tr>
+  </table>
+
+  <h3>iTerm2 原生</h3>
+  <table>
+    <tr><th>操作</th><th>快捷键</th></tr>
+    <tr><td>水平分屏</td><td><kbd>⌘</kbd>+<kbd>D</kbd></td></tr>
+    <tr><td>垂直分屏</td><td><kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>D</kbd></td></tr>
+    <tr><td>切换分屏</td><td><kbd>⌘</kbd>+<kbd>[</kbd> / <kbd>⌘</kbd>+<kbd>]</kbd></td></tr>
+    <tr><td>关闭分屏</td><td><kbd>⌘</kbd>+<kbd>W</kbd></td></tr>
+    <tr><td>新建标签页</td><td><kbd>⌘</kbd>+<kbd>T</kbd></td></tr>
+  </table>
+</div>
+
+<!-- ===== Section 9: FAQ ===== -->
+<div class="section" id="faq">
+  <h2>❓ 常见问题</h2>
+
+  <div class="card">
+    <div class="card-title">Q: 队友做错了怎么办？</div>
+    <p><strong>A:</strong> 直接在 Lead 窗口说："前端队友的实现不对，请让它回滚并重新按照 §P1 的协议格式实现"。Lead 会传达指令并监督修改。你也可以切换到队友窗格直接跟它沟通。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Q: 队友之间有代码冲突怎么办？</div>
+    <p><strong>A:</strong> Agent Teams 的队友共享同一个代码仓库。如果两个队友修改了同一个文件，Git 会报冲突。这时你在 Lead 窗口说："请解决前端和后端队友在 types.ts 上的冲突"，Lead 会协调处理。</p>
+    <p><strong>最佳实践</strong>：规划任务时确保每个队友负责的文件不重叠。比如前端只碰 <code>web/</code>，后端只碰 <code>gateway/</code>。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Q: Token 会不会很贵？</div>
+    <p><strong>A:</strong> 会！每个队友都是一个独立的 Claude 实例。4 个队友 = 约 4 倍的 token 消耗。建议：</p>
+    <ul>
+      <li>队友用 <strong>Sonnet</strong>（便宜且快），只有 Lead 用 Opus</li>
+      <li>不需要的队友及时关闭</li>
+      <li>简单任务用 Subagent 而不是 Agent Teams</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Q: 中途退出后怎么恢复？</div>
+    <p><strong>A:</strong> Agent Teams 目前对会话恢复的支持有限（实验性功能）。建议：</p>
+    <ul>
+      <li>重要代码及时 <code>git commit</code></li>
+      <li>退出前让 Lead 总结当前进度</li>
+      <li>重新启动后，告诉 Claude 之前的进度，重新创建团队</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Q: 我的 claude-code-internal 版本不支持 Agent Teams？</div>
+    <p><strong>A:</strong> Agent Teams 是较新的功能。如果你的版本不支持，可以：</p>
+    <ul>
+      <li>升级：<code>npm update -g @tencent/claude-code-internal</code></li>
+      <li>联系 IT 确认最新版本</li>
+      <li>备选方案：手动开 3-4 个终端窗口，每个窗口独立运行 <code>claude-code-internal</code>，通过 CLAUDE.md 和 Git 共享上下文</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Q: 可以在 Agent Teams 中使用 ECC 的 /orchestrate 命令吗？</div>
+    <p><strong>A:</strong> 可以！Agent Teams 和 ECC 命令是兼容的。你可以让队友在自己的窗口中执行 <code>/orchestrate feature 实现消息加密</code>，它会在队友的上下文中运行 agent 工作流。</p>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div style="text-align: center; padding: 40px 0; color: #999; font-size: 13px;">
+  <p>🦞 QRClaw Agent Teams 开发指南 — 生成时间：2026-03-12</p>
+  <p>基于 Claude Code Agent Teams 官方文档 + QRClaw ECC 架构</p>
+</div>
+
+</div><!-- container -->
+
+<!-- Nav highlight on scroll -->
+<script>
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (s.getBoundingClientRect().top <= 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
