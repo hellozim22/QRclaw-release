@@ -1,4 +1,8 @@
-# <img src="./docs/assets/qrclaw-logo.jpg" width="40" height="40" alt="QRClaw logo" align="center"> QRClaw
+<div align="center">
+  <img src="./docs/assets/qrclaw-logo.jpg" width="48" alt="QRClaw logo">
+</div>
+
+# QRClaw
 
 本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent
 

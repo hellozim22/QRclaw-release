@@ -1,4 +1,8 @@
-# <img src="./docs/assets/qrclaw-logo.jpg" width="40" height="40" alt="QRClaw logo" align="center"> QRClaw
+<div align="center">
+  <img src="./docs/assets/qrclaw-logo.jpg" width="48" alt="QRClaw logo">
+</div>
+
+# QRClaw
 
 A local-first multi-agent collaboration platform — manage your AI agents like chatting.
 
