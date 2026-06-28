@@ -1,15 +1,21 @@
-<div align="center">
-  <img src="./docs/assets/qrclaw-logo.jpg" width="48" alt="QRClaw logo">
-</div>
+<p align="center">
+  <img src="./docs/assets/qrclaw-logo-icon.svg" width="80" alt="QRClaw logo">
+</p>
 
-# QRClaw
+<h1 align="center">QRClaw</h1>
 
-本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent
+<h4 align="center">本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent</h4>
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-silver)](https://github.com/hellozim22/QRclaw-release)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
-[![Go](https://img.shields.io/badge/Go-1.22-00ADD8?logo=go)](https://go.dev)
+<p align="center">
+  <a href="README.md">English</a>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/hellozim22/QRclaw-release"><img src="https://img.shields.io/badge/platform-macOS%2014%2B-silver" alt="macOS"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-green" alt="Node.js"></a>
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.22-00ADD8?logo=go" alt="Go"></a>
+</p>
 
 ---
 
