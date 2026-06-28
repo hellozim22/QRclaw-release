@@ -1,85 +1,76 @@
 # <img src="./docs/assets/qrclaw-logo-icon.svg" width="40" height="40" alt="QRClaw logo" align="center"> QRClaw
 
-本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent。
+本地优先的多智能体协作平台 — 像聊天一样管理你的 AI Agent
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey)](https://github.com/hellozim22/QRclaw-release)
+[![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-silver)](https://github.com/hellozim22/QRclaw-release)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
-[![Go](https://img.shields.io/badge/go-1.22-00ADD8?logo=go)](https://go.dev)
+[![Go](https://img.shields.io/badge/Go-1.22-00ADD8?logo=go)](https://go.dev)
 
 ---
 
 ## 功能特性
 
-| 模块 | 说明 |
-|------|------|
-| **Chat** | 像聊天软件一样，与不同 Agent 分别对话，每条消息都有独立上下文 |
-| **Agents** | 查看、配置和连接本机 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等） |
-| **Progress** | 将长对话沉淀为任务，以看板方式跟踪进度，告别信息过载 |
-| **个人中心** | 管理头像与名称，内置 macOS 桌面端更新检测 |
+### Chat — 独立对话
+
+按 Agent 划分独立会话窗口，支持多 Agent 并行对话，就像用聊天软件分别与不同的人聊天。
+
+### Agents — 运行时管理
+
+查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等），一键配置连接，统一管理 Agent 生命周期。
+
+### Progress — 任务看板
+
+将长对话中的待办事项沉淀为结构化任务，在看板中跟踪进度。支持任务创建、状态流转、详情查看，让 AI 对话产出可追溯、可度量。
+
+### 个人中心
+
+管理头像、名称等个人资料，macOS 桌面端支持自动更新检测。
+
+![Chat 对话界面](./docs/assets/screenshots/01-chat-openclaw.png)
+
+![Progress 任务看板](./docs/assets/screenshots/02-progress-board.png)
+
+![Progress 任务详情](./docs/assets/screenshots/03-progress-task-detail.png)
+
+![Agent 管理](./docs/assets/screenshots/04-agents.png)
 
 ---
 
 ## 快速上手
 
-### 普通用户：通过 DMG 安装（macOS）
+### 普通用户 — macOS 桌面端安装
 
-1. **下载 DMG 文件**
+1. 下载 DMG 安装包：[`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)（约 150 MB）
+2. 双击打开 DMG，将 `QRClaw.app` 拖入 `Applications` 文件夹
+3. 首次打开时，在「系统设置 > 隐私与安全性」中点击「仍要打开」以信任开发者
+4. 启动后按引导完成 Agent 运行时配置，即可开始使用
 
-   从本仓库 `download/` 目录直接下载最新版本：
-   - 文件路径：[`download/QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)（约 150 MB）
-   - 你也可以从 [GitHub Releases](https://github.com/hellozim22/QRclaw-release/releases) 页面获取历史版本
+> 系统要求：macOS 14 (Sonoma) 或更高版本
 
-2. **安装**
-
-   - 双击下载的 `QRClaw-0.1.1.dmg` 挂载磁盘映像
-   - 将 `QRClaw.app` 拖入 `Applications` 文件夹
-   - 弹出磁盘映像即可
-
-3. **启动**
-
-   - 从 `Applications` 或 Launchpad 打开 QRClaw
-   - 首次启动时，如果 macOS 提示"无法验证开发者"，请前往 **系统设置 → 隐私与安全性**，点击"仍要打开"即可放行
-
-> **系统要求：** macOS 14（Sonoma）及以上
-
-### 开发者：从源码启动
-
-**前置依赖**
-
-- Node.js ≥ 22
-- Go 1.22+
-- Redis（本地或远程）
-- Supabase 项目（PostgreSQL）
-
-**克隆与安装**
+### 开发者 — 源码启动
 
 ```bash
+# 克隆仓库
 git clone https://github.com/hellozim22/QRclaw-release.git
 cd QRclaw-release
 
-# 前端
-npm install
+# 安装前端依赖并启动
+cd web
+pnpm install
+pnpm dev
+
+# 启动 Gateway（新终端）
+cd gateway
+pnpm install
+pnpm dev
+
+# 启动 Agent Host（新终端）
+cd qrclaw-agent-host
+go run ./cmd/host
 ```
 
-**启动开发环境**
-
-```bash
-# 方式一：一键启动（推荐）
-bash scripts/dev-up.sh
-
-# 方式二：分别启动
-# 终端 1 — 启动 Gateway
-cd gateway && npm run dev
-
-# 终端 2 — 启动 Web 前端
-cd web && npm run dev
-
-# 终端 3 — 启动 Agent Host（可选）
-cd qrclaw-agent-host && go run ./cmd/qrclaw-agent-host run
-```
-
-启动后访问 `http://localhost:3000` 即可。
+详细的开发环境配置请参阅 [`docs/`](./docs/) 目录。
 
 ---
 
@@ -87,12 +78,12 @@ cd qrclaw-agent-host && go run ./cmd/qrclaw-agent-host run
 
 | 层级 | 技术 |
 |------|------|
-| **前端** | Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript |
-| **后端** | Express 5 (Gateway) · WebSocket · Redis |
-| **Agent Host** | Go 1.22 |
-| **数据库** | Supabase (PostgreSQL) |
-| **桌面端** | SwiftUI (macOS 14+) |
-| **测试** | Vitest · Playwright |
+| 前端 | Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript |
+| 后端 | Express 5 · WebSocket · Redis |
+| Agent Host | Go 1.22 |
+| 数据库 | Supabase (PostgreSQL) |
+| 桌面端 | SwiftUI (macOS 14+) |
+| 测试 | Vitest · Playwright |
 
 ---
 
@@ -121,16 +112,12 @@ QRclaw-release/
 
 欢迎提交 Issue 和 Pull Request。
 
-1. Fork 本仓库
-2. 创建特性分支：`git checkout -b feat/your-feature`
-3. 提交变更：`git commit -m "feat: 描述你的变更"`
-4. 推送到分支：`git push origin feat/your-feature`
-5. 提交 Pull Request
-
-请确保代码通过 lint 检查和现有测试。
+1. Fork 本仓库，创建特性分支 `feat/your-feature`
+2. 确保代码通过 lint 检查和现有测试
+3. 提交 Pull Request 并关联对应 Issue
 
 ---
 
 ## 许可证
 
-本项目基于 [Apache 2.0 许可证](LICENSE) 开源。
+[Apache 2.0](./LICENSE) © QRClaw Contributors
