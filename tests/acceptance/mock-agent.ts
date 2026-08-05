@@ -6,7 +6,7 @@ import jsonwebtoken from 'jsonwebtoken';
 const jwt = jsonwebtoken;
 import WebSocket from 'ws';
 
-const WS_TICKET_SECRET = process.env.WS_TICKET_SECRET || 'CHANGE_ME_TEST_WS_TICKET_SECRET';
+const WS_TICKET_SECRET = '97c0d88e04b6b62ccfb0113907f7b7f1c3fbe3554b4e7e680e871c6d07d6fad0';
 const GATEWAY_WS_URL = 'ws://localhost:3001/ws';
 
 export interface MockAgentOptions {

@@ -1,11 +1,4 @@
-export const TASK_STATUSES = [
-  'backlog',
-  'todo',
-  'in_progress',
-  'in_review',
-  'done',
-  'blocked',
-] as const;
+export const TASK_STATUSES = ['todo', 'in_progress', 'in_review', 'done', 'blocked'] as const;
 
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
@@ -46,13 +39,12 @@ export interface ProgressTask {
   updatedAt: string;
 }
 
-export const STATUS_META: Record<TaskStatus, { title: string; hint: string }> = {
-  backlog: { title: 'Backlog', hint: '待整理' },
-  todo: { title: 'Todo', hint: '准备开始' },
-  in_progress: { title: 'In Progress', hint: '执行中' },
-  in_review: { title: 'In Review', hint: '等待确认' },
-  done: { title: 'Done', hint: '已完成' },
-  blocked: { title: 'Blocked', hint: '遇到阻塞' },
+export const STATUS_META: Record<TaskStatus, { title: string }> = {
+  todo: { title: 'Todo' },
+  in_progress: { title: 'In Progress' },
+  in_review: { title: 'In Review' },
+  done: { title: 'Done' },
+  blocked: { title: 'Blocked' },
 };
 
 export const PRIORITY_LABEL: Record<TaskPriority, string> = {

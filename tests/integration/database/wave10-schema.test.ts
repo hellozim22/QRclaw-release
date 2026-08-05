@@ -13,7 +13,7 @@ const PROJECT_ROOT = process.cwd().endsWith(`${path.sep}tests`)
 const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
-const OWNER_PASSWORD = process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD';
+const OWNER_PASSWORD = 'Wave10SchemaTest123!';
 
 interface QueryResult<T> {
   rows: T[];
@@ -305,7 +305,10 @@ describe('Wave 10 runtime/session schema', () => {
 
     const runtime = await createRuntime(ownerA.ownerId, 'fk');
     const agent = await createAgent(ownerA.ownerId, runtime, 'fk');
-    const { error: deleteError } = await adminClient.from('agent_runtimes').delete().eq('id', runtime);
+    const { error: deleteError } = await adminClient
+      .from('agent_runtimes')
+      .delete()
+      .eq('id', runtime);
     expect(deleteError).toBeNull();
 
     const { data: updatedAgent, error: agentError } = await adminClient

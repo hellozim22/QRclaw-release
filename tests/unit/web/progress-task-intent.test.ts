@@ -16,8 +16,6 @@ describe('isCompleteProgressTask', () => {
   });
 
   it('accepts numbered task lists', () => {
-    expect(
-      isCompleteProgressTask('1. 统一 banner 字体\n2. 修复 agent 离线'),
-    ).toBe(true);
+    expect(isCompleteProgressTask('1. 统一 banner 字体\n2. 修复 agent 离线')).toBe(true);
   });
 });

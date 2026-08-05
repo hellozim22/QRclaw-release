@@ -57,7 +57,7 @@ export function RuntimesPage() {
   const runtimes = status?.providers ?? [];
   const selectedRuntime = useMemo(
     () => runtimes.find((runtime) => runtime.provider === selectedProvider) ?? runtimes[0] ?? null,
-    [runtimes, selectedProvider],
+    [runtimes, selectedProvider]
   );
 
   return (

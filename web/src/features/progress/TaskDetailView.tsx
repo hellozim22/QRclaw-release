@@ -55,13 +55,7 @@ const formatDateTime = (value: string) => {
   });
 };
 
-function PropertyRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
+function PropertyRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div
       style={{
@@ -151,7 +145,9 @@ function TimelineEntry({
   }
 
   const actorName = item.actorName ?? (item.actorType === 'agent' ? 'Agent' : 'System');
-  const agent = item.actorId ? agents.find((candidate) => candidate.id === item.actorId) ?? null : null;
+  const agent = item.actorId
+    ? (agents.find((candidate) => candidate.id === item.actorId) ?? null)
+    : null;
   const status = agent ? statusByAgent[agent.id] : undefined;
 
   return (
@@ -183,7 +179,8 @@ function TimelineEntry({
             display: 'inline-grid',
             placeItems: 'center',
             borderRadius: 'var(--radius-full)',
-            background: item.actorType === 'agent' ? 'var(--color-red-bg)' : 'var(--color-gray-100)',
+            background:
+              item.actorType === 'agent' ? 'var(--color-red-bg)' : 'var(--color-gray-100)',
             color: item.actorType === 'agent' ? 'var(--color-red)' : 'var(--color-gray-600)',
             fontSize: 'var(--text-xs)',
             fontWeight: 'var(--font-semibold)',
@@ -193,9 +190,7 @@ function TimelineEntry({
         </span>
       )}
       <div>
-        <strong style={{ color: 'var(--color-gray-800)' }}>
-          {actorName}
-        </strong>
+        <strong style={{ color: 'var(--color-gray-800)' }}>{actorName}</strong>
         <span> {formatActivity(item)}</span>
       </div>
       <span style={{ whiteSpace: 'nowrap', color: 'var(--color-gray-500)' }}>
@@ -233,10 +228,14 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
     return subscribeProgressTasks(reload);
   }, [taskId]);
 
-  useEffect(() => {
+  // React-recommended "adjust state when a prop changes" pattern: reset
+  // transient delete state whenever the active task changes, without an effect.
+  const [prevTaskId, setPrevTaskId] = useState(taskId);
+  if (prevTaskId !== taskId) {
+    setPrevTaskId(taskId);
     setConfirmingDelete(false);
     setIsDeleting(false);
-  }, [taskId]);
+  }
 
   useEffect(() => {
     const reload = () => setProjects(listProgressProjects());
@@ -285,7 +284,7 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
 
   const update = (
     patch: Parameters<typeof updateProgressTask>[1],
-    options?: Parameters<typeof updateProgressTask>[2],
+    options?: Parameters<typeof updateProgressTask>[2]
   ) => {
     const next = updateProgressTask(task.id, patch, options);
     if (next) setTask(next);
@@ -435,7 +434,12 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
           <TaskAgentLive task={task} />
           <div
             data-testid="progress-task-timeline"
-            style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}
+            style={{
+              marginTop: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-4)',
+            }}
           >
             {timeline.map((item) => (
               <TimelineEntry
@@ -492,14 +496,21 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
           <PropertyRow label="Status">
             <SelectField<TaskStatus> value={task.status} onChange={(status) => update({ status })}>
               {TASK_STATUSES.map((status) => (
-                <option key={status} value={status}>{STATUS_META[status].title}</option>
+                <option key={status} value={status}>
+                  {STATUS_META[status].title}
+                </option>
               ))}
             </SelectField>
           </PropertyRow>
           <PropertyRow label="Priority">
-            <SelectField<TaskPriority> value={task.priority} onChange={(priority) => update({ priority })}>
+            <SelectField<TaskPriority>
+              value={task.priority}
+              onChange={(priority) => update({ priority })}
+            >
               {priorityOptions.map((priority) => (
-                <option key={priority} value={priority}>{PRIORITY_LABEL[priority]}</option>
+                <option key={priority} value={priority}>
+                  {PRIORITY_LABEL[priority]}
+                </option>
               ))}
             </SelectField>
           </PropertyRow>
@@ -555,7 +566,7 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
               <option value="">未分组</option>
               {projects.map((project) => (
                 <option key={project.id} value={project.id}>
-                  {(project.icon ?? '📁')} {project.title}
+                  {project.icon ?? '📁'} {project.title}
                 </option>
               ))}
             </SelectField>
@@ -617,8 +628,12 @@ export function TaskDetailView({ taskId }: { taskId: string }) {
                     height: 32,
                     border: 'none',
                     borderRadius: 'var(--radius-md)',
-                    background: projectTitleDraft.trim() ? 'var(--color-red)' : 'var(--color-gray-200)',
-                    color: projectTitleDraft.trim() ? 'var(--color-white)' : 'var(--color-gray-500)',
+                    background: projectTitleDraft.trim()
+                      ? 'var(--color-red)'
+                      : 'var(--color-gray-200)',
+                    color: projectTitleDraft.trim()
+                      ? 'var(--color-white)'
+                      : 'var(--color-gray-500)',
                     cursor: projectTitleDraft.trim() ? 'pointer' : 'not-allowed',
                     fontFamily: 'var(--font-primary)',
                   }}

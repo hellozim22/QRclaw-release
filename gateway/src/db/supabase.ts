@@ -22,7 +22,7 @@ const unconfiguredClient = new Proxy(
     get() {
       throw new Error('Supabase admin client is not configured (desktop-local slim mode)');
     },
-  },
+  }
 ) as unknown as SupabaseClient;
 
 export const supabase: SupabaseClient = configured

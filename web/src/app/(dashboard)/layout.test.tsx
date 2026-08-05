@@ -31,7 +31,7 @@ describe('DashboardLayout', () => {
     render(
       <DashboardLayout>
         <div>Dashboard content</div>
-      </DashboardLayout>,
+      </DashboardLayout>
     );
 
     expect(screen.queryByRole('link', { name: /messages/i })).toBeNull();
@@ -43,7 +43,7 @@ describe('DashboardLayout', () => {
     render(
       <DashboardLayout>
         <div>Dashboard content</div>
-      </DashboardLayout>,
+      </DashboardLayout>
     );
 
     const secondaryNav = screen.getByRole('navigation', {
@@ -53,8 +53,9 @@ describe('DashboardLayout', () => {
     // /qrcodes is no longer a standalone sidebar entry; QR codes live under
     // /agents/[agentId]?tab=qrcodes. Account (settings) remains.
     expect(within(secondaryNav).queryByRole('link', { name: /qr/i })).toBeNull();
-    expect(
-      within(secondaryNav).getByRole('link', { name: /个人/i }),
-    ).toHaveAttribute('href', '/settings');
+    expect(within(secondaryNav).getByRole('link', { name: /个人/i })).toHaveAttribute(
+      'href',
+      '/settings'
+    );
   });
 });

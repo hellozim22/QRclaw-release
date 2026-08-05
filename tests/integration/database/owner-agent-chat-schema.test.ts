@@ -126,7 +126,7 @@ async function createOwner(label: string): Promise<OwnerFixture> {
   const email = `owner-agent-schema-${label}-${randomUUID()}@qrclaw.test`;
   const { data: userResult, error: userError } = await adminClient.auth.admin.createUser({
     email,
-    password: process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD',
+    password: 'OwnerAgentSchemaTest123!',
     email_confirm: true,
   });
   if (userError || !userResult.user) {
@@ -323,7 +323,10 @@ function expectDbErrorCode(error: { code?: string } | null, code: string) {
 describe('Owner Agent Chat schema', () => {
   afterAll(async () => {
     if (createdOwnerIds.size > 0) {
-      await adminClient.from('owners').delete().in('id', [...createdOwnerIds]);
+      await adminClient
+        .from('owners')
+        .delete()
+        .in('id', [...createdOwnerIds]);
     }
     await Promise.allSettled(
       [...createdUserIds].map((userId) => adminClient.auth.admin.deleteUser(userId))
@@ -387,7 +390,8 @@ describe('Owner Agent Chat schema', () => {
 
     expect(rows.map((row) => row.indexname)).toEqual([...REQUIRED_FK_INDEXES].sort());
     for (const row of rows) {
-      const expected = REQUIRED_FK_INDEX_BY_NAME[row.indexname as (typeof REQUIRED_FK_INDEXES)[number]];
+      const expected =
+        REQUIRED_FK_INDEX_BY_NAME[row.indexname as (typeof REQUIRED_FK_INDEXES)[number]];
       expect(row.tablename, `${row.indexname} table`).toBe(expected.table);
       expect(row.indexdef, `${row.indexname} column`).toContain(`(${expected.column})`);
     }

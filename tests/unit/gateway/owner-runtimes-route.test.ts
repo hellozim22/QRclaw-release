@@ -22,7 +22,10 @@ const createResponse = () => {
     status: vi.fn().mockReturnThis(),
     json: vi.fn().mockReturnThis(),
   };
-  return res as unknown as Response & { status: ReturnType<typeof vi.fn>; json: ReturnType<typeof vi.fn> };
+  return res as unknown as Response & {
+    status: ReturnType<typeof vi.fn>;
+    json: ReturnType<typeof vi.fn>;
+  };
 };
 
 describe('owner-runtimes route handlers', () => {
@@ -36,7 +39,8 @@ describe('owner-runtimes route handlers', () => {
   });
 
   it('lists owner runtimes for the authenticated owner', async () => {
-    const { handleListOwnerRuntimes } = await import('../../../gateway/src/routes/owner-runtimes.js');
+    const { handleListOwnerRuntimes } =
+      await import('../../../gateway/src/routes/owner-runtimes.js');
     const req = { user: { id: USER_ID, role: 'authenticated' } } as unknown as Request;
     const res = createResponse();
 
@@ -49,7 +53,8 @@ describe('owner-runtimes route handlers', () => {
   });
 
   it('rescans host providers before returning owner runtimes', async () => {
-    const { handleRescanOwnerRuntimes } = await import('../../../gateway/src/routes/owner-runtimes.js');
+    const { handleRescanOwnerRuntimes } =
+      await import('../../../gateway/src/routes/owner-runtimes.js');
     const req = { user: { id: USER_ID, role: 'authenticated' } } as unknown as Request;
     const res = createResponse();
 
@@ -60,7 +65,8 @@ describe('owner-runtimes route handlers', () => {
   });
 
   it('returns forbidden when the auth user has no owner profile', async () => {
-    const { handleListOwnerRuntimes } = await import('../../../gateway/src/routes/owner-runtimes.js');
+    const { handleListOwnerRuntimes } =
+      await import('../../../gateway/src/routes/owner-runtimes.js');
     mocks.getOwnerByUserId.mockResolvedValue(null);
     const req = { user: { id: USER_ID, role: 'authenticated' } } as unknown as Request;
     const res = createResponse();
@@ -74,7 +80,8 @@ describe('owner-runtimes route handlers', () => {
   });
 
   it('hides internal errors from API callers', async () => {
-    const { handleListOwnerRuntimes } = await import('../../../gateway/src/routes/owner-runtimes.js');
+    const { handleListOwnerRuntimes } =
+      await import('../../../gateway/src/routes/owner-runtimes.js');
     mocks.getOwnerRuntimeOverview.mockRejectedValue(new Error('database password leaked detail'));
     const req = { user: { id: USER_ID, role: 'authenticated' } } as unknown as Request;
     const res = createResponse();

@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-import {
-  parseOpenAISSE,
-  type OpenAISSEEvent,
-} from '@/lib/openai-sse-client';
+import { parseOpenAISSE, type OpenAISSEEvent } from '@/lib/openai-sse-client';
 import { createClient } from '@/lib/supabase/browser';
 import { connectLocalHost, type ConnectLocalHostResult } from '@/lib/connect-local-host';
 import { isDesktopMode } from '@/lib/desktop-bridge';
@@ -48,12 +45,7 @@ interface OwnerAgentHistoryMessage {
   created_at: string;
 }
 
-export type AgentConnectionStatus =
-  | 'online'
-  | 'offline'
-  | 'pending'
-  | 'running'
-  | 'failed';
+export type AgentConnectionStatus = 'online' | 'offline' | 'pending' | 'running' | 'failed';
 
 export interface ChatClient {
   listAgents(): Promise<OwnerAgentSummary[]>;
@@ -63,15 +55,19 @@ export interface ChatClient {
   sendMessage(
     agentId: string,
     content: string,
-    clientId: string,
+    clientId: string
   ): Promise<OwnerAgentSendMessageResponse>;
   streamMessage(
     agentId: string,
     content: string,
     clientId: string,
-    signal: AbortSignal,
+    signal: AbortSignal
   ): AsyncGenerator<OpenAISSEEvent>;
-  waitForRunReply(agentId: string, runId: string, timeoutMs?: number): Promise<OwnerAgentReply | null>;
+  waitForRunReply(
+    agentId: string,
+    runId: string,
+    timeoutMs?: number
+  ): Promise<OwnerAgentReply | null>;
   resetContext(agentId: string): Promise<void>;
   stopStream?(agentId: string): void;
 }
@@ -112,11 +108,7 @@ const getAuthContext = async (): Promise<AuthContext> => {
 
 const getOwnerId = async (userId: string): Promise<string> => {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('owners')
-    .select('id')
-    .eq('user_id', userId)
-    .single();
+  const { data, error } = await supabase.from('owners').select('id').eq('user_id', userId).single();
 
   const ownerId = (data as { id?: string } | null)?.id;
   if (error || !ownerId) {
@@ -126,11 +118,7 @@ const getOwnerId = async (userId: string): Promise<string> => {
   return ownerId;
 };
 
-const callGateway = async <T>(
-  path: string,
-  accessToken: string,
-  init: RequestInit,
-): Promise<T> => {
+const callGateway = async <T>(path: string, accessToken: string, init: RequestInit): Promise<T> => {
   const response = await fetch(`${getGatewayBaseUrl()}${path}`, {
     ...init,
     headers: {
@@ -141,7 +129,7 @@ const callGateway = async <T>(
   });
 
   const text = await response.text();
-  const parsed = text ? JSON.parse(text) as unknown : null;
+  const parsed = text ? (JSON.parse(text) as unknown) : null;
 
   if (!response.ok) {
     const body = (parsed ?? {}) as GatewayErrorBody;
@@ -159,7 +147,7 @@ const activeStreams = new Map<string, AbortController>();
 const waitForOwnerAgentRunReply = async (
   agentId: string,
   runId: string,
-  timeoutMs = 60_000,
+  timeoutMs = 60_000
 ): Promise<OwnerAgentReply | null> => {
   const { accessToken } = await getAuthContext();
   const deadline = Date.now() + timeoutMs;
@@ -169,7 +157,7 @@ const waitForOwnerAgentRunReply = async (
       const response = await callGateway<{ data: OwnerAgentHistoryMessage[] }>(
         `/api/owner/agents/${agentId}/messages`,
         accessToken,
-        { method: 'GET' },
+        { method: 'GET' }
       );
       const message = [...response.data]
         .reverse()
@@ -178,7 +166,7 @@ const waitForOwnerAgentRunReply = async (
             entry.sender_type === 'agent' &&
             entry.run_id === runId &&
             entry.content.trim().length > 0 &&
-            !isDecryptionSentinel(entry.content),
+            !isDecryptionSentinel(entry.content)
         );
       if (message) {
         return {
@@ -203,7 +191,7 @@ export const httpChatClient: ChatClient = {
     const response = await callGateway<{ data: OwnerAgentSummary[] }>(
       '/api/owner/agents',
       accessToken,
-      { method: 'GET' },
+      { method: 'GET' }
     );
     return response.data;
   },
@@ -212,7 +200,7 @@ export const httpChatClient: ChatClient = {
     const response = await callGateway<{ data: OwnerAgentHistoryMessage[] }>(
       `/api/owner/agents/${agentId}/messages`,
       accessToken,
-      { method: 'GET' },
+      { method: 'GET' }
     );
     return response.data.map(mapHistoryMessage).filter((m): m is ChatMessage => m !== null);
   },
@@ -224,7 +212,7 @@ export const httpChatClient: ChatClient = {
       {
         method: 'POST',
         body: JSON.stringify(payload),
-      },
+      }
     );
     return response.data;
   },
@@ -245,7 +233,7 @@ export const httpChatClient: ChatClient = {
             can_receive_private_runs: true,
           },
         }),
-      },
+      }
     );
   },
   async sendMessage(agentId, content, clientId) {
@@ -260,7 +248,7 @@ export const httpChatClient: ChatClient = {
           content_type: 'text',
           client_message_id: clientId,
         }),
-      },
+      }
     );
   },
   async *streamMessage(agentId, content, clientId, signal) {
@@ -316,11 +304,9 @@ export const httpChatClient: ChatClient = {
   waitForRunReply: waitForOwnerAgentRunReply,
   async resetContext(agentId) {
     const { accessToken } = await getAuthContext();
-    await callGateway(
-      `/api/owner/agents/${agentId}/conversation/reset`,
-      accessToken,
-      { method: 'POST' },
-    );
+    await callGateway(`/api/owner/agents/${agentId}/conversation/reset`, accessToken, {
+      method: 'POST',
+    });
   },
 };
 
@@ -415,11 +401,7 @@ export interface OwnerAgentChatState {
   loadAgents(): Promise<void>;
   loadMessages(agentId: string): Promise<void>;
   selectAgent(agentId: string | null): void;
-  sendMessage(
-    agentId: string,
-    content: string,
-    clientMessageId?: string,
-  ): Promise<void>;
+  sendMessage(agentId: string, content: string, clientMessageId?: string): Promise<void>;
   stopStream(agentId: string): void;
   resetContext(agentId: string): Promise<void>;
   createAgent(payload: OwnerAgentCreateAgentRequest): Promise<OwnerAgentSummary>;
@@ -433,8 +415,7 @@ const genId = () =>
     : `cid-${Math.random().toString(36).slice(2)}-${Date.now()}`;
 
 const isDecryptionSentinel = (content: string): boolean =>
-  content === DECRYPTION_FAILED_SENTINEL ||
-  content === DECRYPTION_UNAVAILABLE_SENTINEL;
+  content === DECRYPTION_FAILED_SENTINEL || content === DECRYPTION_UNAVAILABLE_SENTINEL;
 
 const mapHistoryMessage = (message: OwnerAgentHistoryMessage): ChatMessage | null => {
   if (isDecryptionSentinel(message.content)) {
@@ -452,7 +433,7 @@ const mapHistoryMessage = (message: OwnerAgentHistoryMessage): ChatMessage | nul
 };
 
 const mapRuntimeStatusToConnectionStatus = (
-  status: OwnerAgentSummary['runtime_status'],
+  status: OwnerAgentSummary['runtime_status']
 ): AgentConnectionStatus => {
   if (status === 'online') {
     return 'online';
@@ -499,9 +480,7 @@ const mergeMessages = (history: ChatMessage[], current: ChatMessage[]): ChatMess
 
   for (const message of current) {
     const keepLocal =
-      isInFlightMessage(message) ||
-      message.status === 'failed' ||
-      !historyIds.has(message.id);
+      isInFlightMessage(message) || message.status === 'failed' || !historyIds.has(message.id);
     if (keepLocal) {
       tryAdd(message);
     }
@@ -515,9 +494,9 @@ const loadMessagesForAgent = async (
   set: (
     partial:
       | Partial<OwnerAgentChatState>
-      | ((state: OwnerAgentChatState) => Partial<OwnerAgentChatState> | OwnerAgentChatState),
+      | ((state: OwnerAgentChatState) => Partial<OwnerAgentChatState> | OwnerAgentChatState)
   ) => void,
-  agentId: string,
+  agentId: string
 ): Promise<void> => {
   try {
     const messages = await get().client.listMessages(agentId);
@@ -570,15 +549,13 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
     let lastError: unknown = null;
     for (let attempt = 0; attempt < (isLocalShell ? 5 : 1); attempt += 1) {
       try {
-        let hostStatus:
-          | {
-              online_runtime_count: number;
-              attach_command: string;
-              install_hint: string | null;
-              connect_ui: LocalHostConnectUi | null;
-              providers?: Array<{ provider: string; status: string }>;
-            }
-          | null = null;
+        let hostStatus: {
+          online_runtime_count: number;
+          attach_command: string;
+          install_hint: string | null;
+          connect_ui: LocalHostConnectUi | null;
+          providers?: Array<{ provider: string; status: string }>;
+        } | null = null;
 
         try {
           const { accessToken } = await getAuthContext();
@@ -743,7 +720,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
         messagesByAgent: {
           ...s.messagesByAgent,
           [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
-            message.id === clientId ? { ...message, status: 'sent' } : message,
+            message.id === clientId ? { ...message, status: 'sent' } : message
           ),
         },
       }));
@@ -754,7 +731,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
         agentId,
         trimmed,
         clientId,
-        controller.signal,
+        controller.signal
       )) {
         markOwnerSent();
         if (event.type === 'run_id') {
@@ -770,7 +747,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
                   ? { ...message, run_id: realRunId }
                   : message.id === clientId
                     ? { ...message, run_id: realRunId }
-                    : message,
+                    : message
               ),
             },
           }));
@@ -781,7 +758,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
               [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
                 message.id === assistantId
                   ? { ...message, content: `${message.content}${event.content}` }
-                  : message,
+                  : message
               ),
             },
           }));
@@ -793,7 +770,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
       }
       markOwnerSent();
       let assistantAfterStream = (get().messagesByAgent[agentId] ?? []).find(
-        (message) => message.id === assistantId,
+        (message) => message.id === assistantId
       );
       const needsReplyFallback =
         assistantAfterStream &&
@@ -806,7 +783,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
           const reply = await get().client.waitForRunReply(
             agentId,
             assistantAfterStream.run_id,
-            20_000,
+            20_000
           );
           if (reply?.content) {
             set((s) => ({
@@ -816,18 +793,16 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
                   message.id === assistantId
                     ? {
                         ...message,
-                        content: message.content.trim()
-                          ? message.content
-                          : reply.content,
+                        content: message.content.trim() ? message.content : reply.content,
                         status: 'sent' as const,
                         run_status: 'completed' as const,
                       }
-                    : message,
+                    : message
                 ),
               },
             }));
             assistantAfterStream = get().messagesByAgent[agentId]?.find(
-              (message) => message.id === assistantId,
+              (message) => message.id === assistantId
             );
           }
         } catch {
@@ -842,20 +817,18 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
               ? {
                   ...message,
                   status: message.content.trim() ? ('sent' as const) : ('failed' as const),
-                  run_status: message.content.trim()
-                    ? ('completed' as const)
-                    : ('failed' as const),
+                  run_status: message.content.trim() ? ('completed' as const) : ('failed' as const),
                   // A completed run that produced no text leaves an empty
                   // bubble that would otherwise render the "思考中" indicator
                   // forever. Surface a clean placeholder instead.
                   content: message.content.trim() ? message.content : '回复失败，请重试',
                 }
-              : message,
+              : message
           ),
         },
         statusByAgent: {
           ...s.statusByAgent,
-          [agentId]: assistantAfterStream?.content.trim() ? 'online' : 'failed',
+          [agentId]: 'online',
         },
       }));
       const agent = get().agents.find((item) => item.id === agentId);
@@ -864,7 +837,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
       const aborted = controller.signal.aborted;
       const ownerPersisted = ownerMessageSent || Boolean(adoptedRunId);
       set((s) => ({
-        statusByAgent: { ...s.statusByAgent, [agentId]: aborted ? 'online' : 'failed' },
+        statusByAgent: { ...s.statusByAgent, [agentId]: 'online' },
         messagesByAgent: {
           ...s.messagesByAgent,
           [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
@@ -891,7 +864,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
                           ? '（已取消）'
                           : '回复失败，请重试',
                   }
-                : message,
+                : message
           ),
         },
         error: aborted ? null : e instanceof Error ? e.message : 'send failed',
@@ -995,186 +968,182 @@ export async function ensureOwnerWsSubscription(): Promise<void> {
 
   reconnectState.connecting = true;
   try {
-  const ctx = await getAuthContext();
-  const gatewayBase = getGatewayBaseUrl();
-  const ticketRes = await fetch(`${gatewayBase}/api/owner/ws-ticket`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${ctx.accessToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!ticketRes.ok) throw new Error(`ws-ticket failed: ${ticketRes.status}`);
-  const body = (await ticketRes.json()) as {
-    data: { ticket: string; gateway_url: string };
-  };
+    const ctx = await getAuthContext();
+    const gatewayBase = getGatewayBaseUrl();
+    const ticketRes = await fetch(`${gatewayBase}/api/owner/ws-ticket`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${ctx.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!ticketRes.ok) throw new Error(`ws-ticket failed: ${ticketRes.status}`);
+    const body = (await ticketRes.json()) as {
+      data: { ticket: string; gateway_url: string };
+    };
 
-  const wsUrl = `${body.data.gateway_url}?ticket=${encodeURIComponent(body.data.ticket)}`;
-  const ws = new WebSocket(wsUrl);
-  holder.ws = ws;
+    const wsUrl = `${body.data.gateway_url}?ticket=${encodeURIComponent(body.data.ticket)}`;
+    const ws = new WebSocket(wsUrl);
+    holder.ws = ws;
 
-  ws.onopen = () => {
-    reconnectState.attempt = 0;
-  };
+    ws.onopen = () => {
+      reconnectState.attempt = 0;
+    };
 
-  ws.onmessage = (ev) => {
-    let frame: OwnerWsFrame;
-    try {
-      const parsed = JSON.parse(typeof ev.data === 'string' ? ev.data : '') as unknown;
-      if (!isRecord(parsed)) return;
-      frame = parsed as OwnerWsFrame;
-    } catch {
-      return;
-    }
-    if (
-      frame.type === 'owner_agent_run_event' ||
-      frame.type === 'owner_agent_run_completed' ||
-      frame.type === 'owner_agent_run_failed'
-    ) {
-      if (frame.type === 'owner_agent_run_failed') {
-        const agentId = frame.payload?.agent_id;
-        const runId = frame.payload?.run_id;
-        const errorMessage = 'Agent execution failed. Please check this local agent setup.';
-        if (!agentId || !runId) return;
-        useOwnerAgentChatStore.setState((s) => ({
-          statusByAgent: { ...s.statusByAgent, [agentId]: 'failed' },
-          messagesByAgent: {
-            ...s.messagesByAgent,
-            [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
-              message.run_id === runId && message.sender_type === 'agent'
-                ? {
-                    ...message,
-                    status: 'failed' as const,
-                    run_status: 'failed' as const,
-                    content: message.content || errorMessage || 'Agent run failed',
-                  }
-                : message,
-            ),
-          },
-          error: errorMessage ?? 'Agent run failed',
-        }));
+    ws.onmessage = (ev) => {
+      let frame: OwnerWsFrame;
+      try {
+        const parsed = JSON.parse(typeof ev.data === 'string' ? ev.data : '') as unknown;
+        if (!isRecord(parsed)) return;
+        frame = parsed as OwnerWsFrame;
+      } catch {
         return;
       }
-
-      const agentId = frame.payload?.agent_id;
-      const content =
-        frame.type === 'owner_agent_run_completed'
-          ? frame.payload?.final_message ?? frame.payload?.content
-          : frame.payload?.content;
-      const runId = frame.payload?.run_id;
-      if (!agentId || !content || !runId) return;
-      // The POST /chat response and the owner WS completion can race. If the
-      // completion arrives before the optimistic assistant bubble adopts the
-      // gateway run_id, it used to miss the bubble and leave the composer
-      // permanently locked in `running`. Apply the incoming run_id to the
-      // latest in-flight bubble first, then let the normal matcher update it.
-      const current = useOwnerAgentChatStore.getState();
-      const listForAgent = current.messagesByAgent[agentId] ?? [];
-      const hasRunId = listForAgent.some(
-        (m) => m.sender_type === 'agent' && m.run_id === runId,
-      );
-      if (!hasRunId) {
-        const inFlight = [...listForAgent]
-          .reverse()
-          .find(
-            (m) =>
-              m.sender_type === 'agent' &&
-              (m.status === 'streaming' || m.run_status === 'running'),
-          );
-        if (inFlight) {
+      if (
+        frame.type === 'owner_agent_run_event' ||
+        frame.type === 'owner_agent_run_completed' ||
+        frame.type === 'owner_agent_run_failed'
+      ) {
+        if (frame.type === 'owner_agent_run_failed') {
+          const agentId = frame.payload?.agent_id;
+          const runId = frame.payload?.run_id;
+          const errorMessage = 'Agent execution failed. Please check this local agent setup.';
+          if (!agentId || !runId) return;
           useOwnerAgentChatStore.setState((s) => ({
+            statusByAgent: { ...s.statusByAgent, [agentId]: 'online' },
             messagesByAgent: {
               ...s.messagesByAgent,
               [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
-                message.id === inFlight.id ? { ...message, run_id: runId } : message,
+                message.run_id === runId && message.sender_type === 'agent'
+                  ? {
+                      ...message,
+                      status: 'failed' as const,
+                      run_status: 'failed' as const,
+                      content: message.content || errorMessage || 'Agent run failed',
+                    }
+                  : message
               ),
             },
+            error: errorMessage ?? 'Agent run failed',
           }));
+          return;
         }
-      }
-      const isCompleted = frame.type === 'owner_agent_run_completed';
-      useOwnerAgentChatStore.setState((s) => {
-        const list = s.messagesByAgent[agentId] ?? [];
-        // Prefer matching by run_id (adopted from SSE header) but fall back
-        // to the in-flight streaming assistant bubble when WS beats the SSE
-        // `run_id` event. Without this fallback a duplicate assistant
-        // message is appended AND the original bubble stays
-        // `run_status: running`, which the assistant-ui Thread reads as
-        // "still generating" and locks the composer input.
-        const matched =
-          list.find((m) => m.run_id === runId && m.sender_type === 'agent') ??
-          list.find(
-            (m) =>
-              m.sender_type === 'agent' &&
-              (m.status === 'streaming' || m.run_status === 'running'),
-          );
-        let nextList: ChatMessage[];
-        if (matched) {
-          if (matched.content) {
-            // SSE is the primary stream for the current tab. When WS delivers
-            // the same final message, only use it to settle status; do not
-            // append/overwrite content and create a visible duplicate.
-            nextList = list.map((m) =>
-              m === matched && isCompleted
-                ? {
-                    ...m,
-                    run_id: runId,
-                    status: 'sent' as const,
-                    run_status: 'completed' as const,
-                  }
-                : m,
-            );
-          } else {
-            nextList = list.map((m) =>
-              m === matched
-                ? {
-                    ...m,
-                    run_id: runId,
-                    content,
-                    status: isCompleted ? ('sent' as const) : m.status,
-                    run_status: isCompleted ? ('completed' as const) : m.run_status,
-                  }
-                : m,
-            );
-          }
-        } else {
-          // No in-flight bubble (e.g. reload / other tab) → append fresh.
-          nextList = [
-            ...list,
-            {
-              id: `${runId}-evt`,
-              sender_type: 'agent',
-              content,
-              status: 'sent',
-              run_id: runId,
-              run_status: isCompleted
-                ? ('completed' as const)
-                : ('running' as const),
-              created_at: frame.timestamp ?? new Date().toISOString(),
-            },
-          ];
-        }
-        const next: Partial<OwnerAgentChatState> = {
-          messagesByAgent: { ...s.messagesByAgent, [agentId]: nextList },
-        };
-        if (isCompleted) {
-          next.statusByAgent = {
-            ...s.statusByAgent,
-            [agentId]: 'online',
-          };
-        }
-        return next;
-      });
-    }
-  };
 
-  ws.onclose = () => {
-    holder.ws = null;
-    scheduleOwnerWsReconnect();
-  };
-  ws.onerror = () => {
-    /* onclose handles reconnect */
-  };
+        const agentId = frame.payload?.agent_id;
+        const content =
+          frame.type === 'owner_agent_run_completed'
+            ? (frame.payload?.final_message ?? frame.payload?.content)
+            : frame.payload?.content;
+        const runId = frame.payload?.run_id;
+        if (!agentId || !content || !runId) return;
+        // The POST /chat response and the owner WS completion can race. If the
+        // completion arrives before the optimistic assistant bubble adopts the
+        // gateway run_id, it used to miss the bubble and leave the composer
+        // permanently locked in `running`. Apply the incoming run_id to the
+        // latest in-flight bubble first, then let the normal matcher update it.
+        const current = useOwnerAgentChatStore.getState();
+        const listForAgent = current.messagesByAgent[agentId] ?? [];
+        const hasRunId = listForAgent.some((m) => m.sender_type === 'agent' && m.run_id === runId);
+        if (!hasRunId) {
+          const inFlight = [...listForAgent]
+            .reverse()
+            .find(
+              (m) =>
+                m.sender_type === 'agent' &&
+                (m.status === 'streaming' || m.run_status === 'running')
+            );
+          if (inFlight) {
+            useOwnerAgentChatStore.setState((s) => ({
+              messagesByAgent: {
+                ...s.messagesByAgent,
+                [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
+                  message.id === inFlight.id ? { ...message, run_id: runId } : message
+                ),
+              },
+            }));
+          }
+        }
+        const isCompleted = frame.type === 'owner_agent_run_completed';
+        useOwnerAgentChatStore.setState((s) => {
+          const list = s.messagesByAgent[agentId] ?? [];
+          // Prefer matching by run_id (adopted from SSE header) but fall back
+          // to the in-flight streaming assistant bubble when WS beats the SSE
+          // `run_id` event. Without this fallback a duplicate assistant
+          // message is appended AND the original bubble stays
+          // `run_status: running`, which the assistant-ui Thread reads as
+          // "still generating" and locks the composer input.
+          const matched =
+            list.find((m) => m.run_id === runId && m.sender_type === 'agent') ??
+            list.find(
+              (m) =>
+                m.sender_type === 'agent' &&
+                (m.status === 'streaming' || m.run_status === 'running')
+            );
+          let nextList: ChatMessage[];
+          if (matched) {
+            if (matched.content) {
+              // SSE is the primary stream for the current tab. When WS delivers
+              // the same final message, only use it to settle status; do not
+              // append/overwrite content and create a visible duplicate.
+              nextList = list.map((m) =>
+                m === matched && isCompleted
+                  ? {
+                      ...m,
+                      run_id: runId,
+                      status: 'sent' as const,
+                      run_status: 'completed' as const,
+                    }
+                  : m
+              );
+            } else {
+              nextList = list.map((m) =>
+                m === matched
+                  ? {
+                      ...m,
+                      run_id: runId,
+                      content,
+                      status: isCompleted ? ('sent' as const) : m.status,
+                      run_status: isCompleted ? ('completed' as const) : m.run_status,
+                    }
+                  : m
+              );
+            }
+          } else {
+            // No in-flight bubble (e.g. reload / other tab) → append fresh.
+            nextList = [
+              ...list,
+              {
+                id: `${runId}-evt`,
+                sender_type: 'agent',
+                content,
+                status: 'sent',
+                run_id: runId,
+                run_status: isCompleted ? ('completed' as const) : ('running' as const),
+                created_at: frame.timestamp ?? new Date().toISOString(),
+              },
+            ];
+          }
+          const next: Partial<OwnerAgentChatState> = {
+            messagesByAgent: { ...s.messagesByAgent, [agentId]: nextList },
+          };
+          if (isCompleted) {
+            next.statusByAgent = {
+              ...s.statusByAgent,
+              [agentId]: 'online',
+            };
+          }
+          return next;
+        });
+      }
+    };
+
+    ws.onclose = () => {
+      holder.ws = null;
+      scheduleOwnerWsReconnect();
+    };
+    ws.onerror = () => {
+      /* onclose handles reconnect */
+    };
   } finally {
     reconnectState.connecting = false;
   }

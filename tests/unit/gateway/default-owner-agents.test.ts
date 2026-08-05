@@ -13,7 +13,10 @@ const OWNER_ID = '11111111-1111-4111-8111-111111111111';
 const CLAUDE_RUNTIME_ID = '22222222-2222-4222-8222-222222222222';
 const CURSOR_RUNTIME_ID = '33333333-3333-4333-8333-333333333333';
 
-const existingAgent = (runtimeType: 'claude' | 'cursor', runtimeId: string | null): DefaultOwnerAgentRecord => ({
+const existingAgent = (
+  runtimeType: 'claude' | 'cursor',
+  runtimeId: string | null
+): DefaultOwnerAgentRecord => ({
   id: `agent-${runtimeType}`,
   ownerId: OWNER_ID,
   runtimeId,
@@ -69,7 +72,12 @@ describe('ensureDefaultAgents', () => {
 
     expect(deps.createDefaultOwnerAgentRecord).toHaveBeenCalledTimes(4);
     expect(created.map((agent) => agent.runtimeId)).toContain(CLAUDE_RUNTIME_ID);
-    expect(result.map((agent) => agent.runtimeType)).toEqual(['openclaw', 'claude', 'cursor', 'codex']);
+    expect(result.map((agent) => agent.runtimeType)).toEqual([
+      'openclaw',
+      'claude',
+      'cursor',
+      'codex',
+    ]);
   });
 
   it('does not overwrite an existing renamed default agent', async () => {
@@ -155,7 +163,9 @@ describe('ensureDefaultAgents', () => {
       ownerId: OWNER_ID,
       runtimeId: CURSOR_RUNTIME_ID,
     });
-    expect(result.find((agent) => agent.runtimeType === 'cursor')?.runtimeId).toBe(CURSOR_RUNTIME_ID);
+    expect(result.find((agent) => agent.runtimeType === 'cursor')?.runtimeId).toBe(
+      CURSOR_RUNTIME_ID
+    );
   });
 });
 

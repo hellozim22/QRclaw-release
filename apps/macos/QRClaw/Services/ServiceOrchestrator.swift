@@ -29,7 +29,7 @@ final class ServiceOrchestrator: ObservableObject {
     private let gatewayPort = 3100
 
     private static let localDevEmail = "local-dev@localhost"
-    private static let localDevPassword = "CHANGE_ME_LOCAL_DEV_PASSWORD"
+    private static let localDevPassword = "LocalDev-Only-9x!"
 
     /// Loopback origins the bundled gateway must accept. The WebView loads
     /// 127.0.0.1, but some client/runtime requests use the `localhost` alias;

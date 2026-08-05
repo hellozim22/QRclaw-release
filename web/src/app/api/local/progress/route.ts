@@ -30,7 +30,10 @@ export async function POST(request: Request) {
 
   try {
     const result = await applyLocalProgressAction(body);
-    return NextResponse.json({ data: result }, { status: body.action === 'create_task' ? 201 : 200 });
+    return NextResponse.json(
+      { data: result },
+      { status: body.action === 'create_task' ? 201 : 200 }
+    );
   } catch (error) {
     console.error('[LocalProgress] action failed:', error);
     return errorResponse(500, 'internal_error', 'Failed to update local progress');

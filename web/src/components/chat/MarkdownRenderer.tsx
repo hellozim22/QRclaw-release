@@ -135,14 +135,9 @@ function buildComponents(stripImages: boolean) {
           );
         },
 
-    code: ({
-      className,
-      children,
-      ...props
-    }: ComponentPropsWithoutRef<'code'>) => {
+    code: ({ className, children, ...props }: ComponentPropsWithoutRef<'code'>) => {
       const text = typeof children === 'string' ? children : String(children ?? '');
-      const isBlock =
-        (className?.startsWith('language-') ?? false) || text.includes('\n');
+      const isBlock = (className?.startsWith('language-') ?? false) || text.includes('\n');
       if (isBlock) {
         // language-xxx → xxx ; else undefined → plaintext
         const lang = className?.match(/language-([\w-]+)/)?.[1];
@@ -159,13 +154,7 @@ function buildComponents(stripImages: boolean) {
     pre: ({ children }: ComponentPropsWithoutRef<'pre'>) => <>{children}</>,
 
     a: ({ href, children, ...props }: ComponentPropsWithoutRef<'a'>) => (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={styles.link}
-        {...props}
-      >
+      <a href={href} target="_blank" rel="noopener noreferrer" style={styles.link} {...props}>
         {children}
       </a>
     ),
@@ -208,10 +197,7 @@ function buildComponents(stripImages: boolean) {
       </h4>
     ),
 
-    blockquote: ({
-      children,
-      ...props
-    }: ComponentPropsWithoutRef<'blockquote'>) => (
+    blockquote: ({ children, ...props }: ComponentPropsWithoutRef<'blockquote'>) => (
       <blockquote style={styles.blockquote} {...props}>
         {children}
       </blockquote>

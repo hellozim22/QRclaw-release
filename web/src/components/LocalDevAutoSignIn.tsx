@@ -48,7 +48,7 @@ async function syncSessionFromBootstrap(targetEmail: string): Promise<boolean> {
 
 async function ensureLocalDevSession(
   targetEmail: string,
-  targetPassword: string,
+  targetPassword: string
 ): Promise<boolean> {
   if (await syncSessionFromBootstrap(targetEmail)) {
     return true;
@@ -78,8 +78,7 @@ export function LocalDevAutoSignIn() {
   const runId = useRef(0);
 
   useEffect(() => {
-    const shouldBootstrap =
-      process.env.NEXT_PUBLIC_LOCAL_DEV === '1' || isDesktopMode();
+    const shouldBootstrap = process.env.NEXT_PUBLIC_LOCAL_DEV === '1' || isDesktopMode();
     if (!shouldBootstrap) return;
 
     const id = ++runId.current;

@@ -88,7 +88,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       return this;
     }
 
-    async single(): Promise<{ data: Record<string, unknown> | null; error: { message: string; code?: string } | null }> {
+    async single(): Promise<{
+      data: Record<string, unknown> | null;
+      error: { message: string; code?: string } | null;
+    }> {
       if (this.insertPayload) {
         return { data: this.insertRows(this.insertPayload)[0] ?? null, error: null };
       }
@@ -118,7 +121,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
 
     then<TResult1 = { data: Record<string, unknown>[]; error: null }, TResult2 = never>(
       onfulfilled?:
-        | ((value: { data: Record<string, unknown>[]; error: null }) => TResult1 | PromiseLike<TResult1>)
+        | ((value: {
+            data: Record<string, unknown>[];
+            error: null;
+          }) => TResult1 | PromiseLike<TResult1>)
         | null,
       onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
     ): Promise<TResult1 | TResult2> {
@@ -137,7 +143,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
         if (this.table === 'agent_host_providers') {
           return Promise.resolve({
             data: [],
-            error: { message: 'there is no unique or exclusion constraint matching the ON CONFLICT specification' },
+            error: {
+              message:
+                'there is no unique or exclusion constraint matching the ON CONFLICT specification',
+            },
           } as never).then(onfulfilled, onrejected);
         }
         this.upsertRows(this.upsertPayload);
@@ -155,7 +164,9 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       }
     }
 
-    private insertRows(payload: Record<string, unknown> | Record<string, unknown>[]): Record<string, unknown>[] {
+    private insertRows(
+      payload: Record<string, unknown> | Record<string, unknown>[]
+    ): Record<string, unknown>[] {
       const rows = Array.isArray(payload) ? payload : [payload];
       const target = this.sourceRows();
       const inserted = rows.map((row, index) => ({
@@ -168,7 +179,9 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       return inserted;
     }
 
-    private upsertRows(payload: Record<string, unknown> | Record<string, unknown>[]): Record<string, unknown>[] {
+    private upsertRows(
+      payload: Record<string, unknown> | Record<string, unknown>[]
+    ): Record<string, unknown>[] {
       const rows = Array.isArray(payload) ? payload : [payload];
       return rows.map((row, index) => {
         const target = this.sourceRows();
@@ -187,7 +200,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       });
     }
 
-    private matchesUpsertKey(existing: Record<string, unknown>, row: Record<string, unknown>): boolean {
+    private matchesUpsertKey(
+      existing: Record<string, unknown>,
+      row: Record<string, unknown>
+    ): boolean {
       if (this.table === 'agent_host_providers') {
         return existing.host_id === row.host_id && existing.provider === row.provider;
       }
@@ -198,9 +214,9 @@ vi.mock('../../../gateway/src/db/supabase', () => {
     }
 
     private findRows(): Record<string, unknown>[] {
-      const rows = this.sourceRows().filter((row) => (
+      const rows = this.sourceRows().filter((row) =>
         this.filters.every(([field, value]) => row[field] === value)
-      ));
+      );
       return this.maxRows === null ? rows : rows.slice(0, this.maxRows);
     }
 
@@ -257,9 +273,8 @@ class FakeHostSocket {
   }
 }
 
-const hashToken = (token: string): string => (
-  createHmac('sha256', 'test-host-token-pepper').update(token, 'utf8').digest('hex')
-);
+const hashToken = (token: string): string =>
+  createHmac('sha256', 'test-host-token-pepper').update(token, 'utf8').digest('hex');
 
 const providerCapability = (): HostProviderCapability => ({
   provider: 'claude',
@@ -272,7 +287,9 @@ const providerCapability = (): HostProviderCapability => ({
   },
 });
 
-const registerFrame = (overrides: Partial<HostRegisterFrame['payload']> = {}): HostRegisterFrame => ({
+const registerFrame = (
+  overrides: Partial<HostRegisterFrame['payload']> = {}
+): HostRegisterFrame => ({
   type: 'host_register',
   id: 'host-register-1',
   timestamp: '2026-04-27T00:00:00.000Z',
@@ -285,29 +302,26 @@ const registerFrame = (overrides: Partial<HostRegisterFrame['payload']> = {}): H
   },
 });
 
-const requestFrame = (runId = RUN_ID): OwnerAgentRunRequestFrame => createOwnerAgentRunRequestFixture({
-  id: `request-${runId}`,
-  payload: {
-    run_id: runId,
-    conversation_id: CONVERSATION_ID,
-    agent_id: AGENT_ID,
-    provider: 'claude',
-    correlation_id: `corr-${runId}`,
-    owner_message_id: OWNER_MESSAGE_ID,
-    content: 'Review this repository.',
-    content_type: 'text',
-    instructions: 'Be concise.',
-    requested_model: 'gpt-5.5-high',
-    provider_session_id: null,
-    provider_work_dir: null,
-  },
-});
+const requestFrame = (runId = RUN_ID): OwnerAgentRunRequestFrame =>
+  createOwnerAgentRunRequestFixture({
+    id: `request-${runId}`,
+    payload: {
+      run_id: runId,
+      conversation_id: CONVERSATION_ID,
+      agent_id: AGENT_ID,
+      provider: 'claude',
+      correlation_id: `corr-${runId}`,
+      owner_message_id: OWNER_MESSAGE_ID,
+      content: 'Review this repository.',
+      content_type: 'text',
+      instructions: 'Be concise.',
+      requested_model: 'gpt-5.5-high',
+      provider_session_id: null,
+      provider_work_dir: null,
+    },
+  });
 
-const eventFrame = (
-  seq: number,
-  content: string,
-  runId = RUN_ID
-): OwnerAgentRunEventFrame => ({
+const eventFrame = (seq: number, content: string, runId = RUN_ID): OwnerAgentRunEventFrame => ({
   type: 'owner_agent_run_event',
   id: `event-${runId}-${seq}`,
   timestamp: '2026-04-27T00:00:00.000Z',
@@ -439,7 +453,11 @@ describe('owner-agent-chat Wave 3 Gateway behavior placeholders', () => {
     const secondWs = new FakeHostSocket();
 
     await routeHostMessage(firstWs as never, registerFrame(), hostConnection(firstWs));
-    await routeHostMessage(secondWs as never, registerFrame(), hostConnection(secondWs, 'host-connection-2'));
+    await routeHostMessage(
+      secondWs as never,
+      registerFrame(),
+      hostConnection(secondWs, 'host-connection-2')
+    );
 
     expect(hasHostConnection(HOST_ID)).toBe(true);
     expect(firstWs.close).toHaveBeenCalledTimes(1);
@@ -480,38 +498,46 @@ describe('owner-agent-chat Wave 3 Gateway behavior placeholders', () => {
       await routeHostMessage(ws as never, registerFrame(), hostConnection(ws));
       expect(sendRunToHost(HOST_ID, request)).toBe('sent');
 
-      await routeHostMessage(ws as never, {
-        type: 'owner_agent_run_accepted',
-        id: 'accepted-1',
-        timestamp: '2026-04-27T00:00:00.000Z',
-        payload: {
-          run_id: RUN_ID,
-          conversation_id: CONVERSATION_ID,
-          agent_id: AGENT_ID,
-          provider: 'claude',
-          correlation_id: `corr-${RUN_ID}`,
-          host_id: HOST_ID,
-          accepted_at: '2026-04-27T00:00:00.000Z',
+      await routeHostMessage(
+        ws as never,
+        {
+          type: 'owner_agent_run_accepted',
+          id: 'accepted-1',
+          timestamp: '2026-04-27T00:00:00.000Z',
+          payload: {
+            run_id: RUN_ID,
+            conversation_id: CONVERSATION_ID,
+            agent_id: AGENT_ID,
+            provider: 'claude',
+            correlation_id: `corr-${RUN_ID}`,
+            host_id: HOST_ID,
+            accepted_at: '2026-04-27T00:00:00.000Z',
+          },
         },
-      }, hostConnection(ws));
+        hostConnection(ws)
+      );
       await routeHostMessage(ws as never, eventFrame(1, 'super-secret-token'), hostConnection(ws));
-      await routeHostMessage(ws as never, {
-        type: 'owner_agent_run_completed',
-        id: 'completed-1',
-        timestamp: '2026-04-27T00:00:00.000Z',
-        payload: {
-          run_id: RUN_ID,
-          conversation_id: CONVERSATION_ID,
-          agent_id: AGENT_ID,
-          provider: 'claude',
-          correlation_id: `corr-${RUN_ID}`,
-          seq: 2,
-          final_message: 'final-secret-message',
-          actual_model: 'gpt-5.5-high',
-          provider_session_id: 'provider-session-1',
-          provider_work_dir: null,
+      await routeHostMessage(
+        ws as never,
+        {
+          type: 'owner_agent_run_completed',
+          id: 'completed-1',
+          timestamp: '2026-04-27T00:00:00.000Z',
+          payload: {
+            run_id: RUN_ID,
+            conversation_id: CONVERSATION_ID,
+            agent_id: AGENT_ID,
+            provider: 'claude',
+            correlation_id: `corr-${RUN_ID}`,
+            seq: 2,
+            final_message: 'final-secret-message',
+            actual_model: 'gpt-5.5-high',
+            provider_session_id: 'provider-session-1',
+            provider_work_dir: null,
+          },
         },
-      }, hostConnection(ws));
+        hostConnection(ws)
+      );
     } finally {
       subscription.unsubscribe();
     }
@@ -577,19 +603,23 @@ describe('owner-agent-chat Wave 3 Gateway behavior placeholders', () => {
 
     await routeHostMessage(ws as never, registerFrame(), hostConnection(ws));
     sendRunToHost(HOST_ID, requestFrame(RUN_ID));
-    await routeHostMessage(ws as never, {
-      type: 'owner_agent_run_accepted',
-      id: 'accepted-reset',
-      timestamp: '2026-04-27T00:00:00.000Z',
-      payload: {
-        run_id: RUN_ID,
-        conversation_id: CONVERSATION_ID,
-        agent_id: AGENT_ID,
-        provider: 'claude',
-        correlation_id: `corr-${RUN_ID}`,
-        host_id: HOST_ID,
+    await routeHostMessage(
+      ws as never,
+      {
+        type: 'owner_agent_run_accepted',
+        id: 'accepted-reset',
+        timestamp: '2026-04-27T00:00:00.000Z',
+        payload: {
+          run_id: RUN_ID,
+          conversation_id: CONVERSATION_ID,
+          agent_id: AGENT_ID,
+          provider: 'claude',
+          correlation_id: `corr-${RUN_ID}`,
+          host_id: HOST_ID,
+        },
       },
-    }, hostConnection(ws));
+      hostConnection(ws)
+    );
 
     ws.bufferedAmount = 200_000;
     expect(sendRunToHost(HOST_ID, requestFrame(RUN_ID_2))).toBe('queued');
@@ -620,13 +650,15 @@ describe('owner-agent-chat Wave 3 Gateway behavior placeholders', () => {
 
     await routeHostMessage(ws as never, registerFrame(), hostConnection(ws));
     sendRunToHost(HOST_ID, requestFrame());
-    await routeHostMessage(ws as never, eventFrame(1, 'plaintext-that-must-not-log'), hostConnection(ws));
+    await routeHostMessage(
+      ws as never,
+      eventFrame(1, 'plaintext-that-must-not-log'),
+      hostConnection(ws)
+    );
 
-    const logText = [
-      ...logSpy.mock.calls,
-      ...warnSpy.mock.calls,
-      ...errorSpy.mock.calls,
-    ].flat().join('\n');
+    const logText = [...logSpy.mock.calls, ...warnSpy.mock.calls, ...errorSpy.mock.calls]
+      .flat()
+      .join('\n');
 
     expect(logText).not.toContain('plaintext-that-must-not-log');
 

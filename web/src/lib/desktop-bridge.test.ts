@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  checkDesktopForUpdates,
-  getDesktopAppVersion,
-  isDesktopMode,
-} from './desktop-bridge';
+import { checkDesktopForUpdates, getDesktopAppVersion, isDesktopMode } from './desktop-bridge';
 
 describe('desktop bridge helpers', () => {
   afterEach(() => {

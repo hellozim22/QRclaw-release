@@ -33,8 +33,8 @@ function parseEnvLine(line: string): { key: string; value: string } | null {
   if (!match) return null;
   let value = match[2].trim();
   if (
-    (value.startsWith('"') && value.endsWith('"'))
-    || (value.startsWith("'") && value.endsWith("'"))
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
   ) {
     value = value.slice(1, -1);
   }

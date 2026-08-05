@@ -119,13 +119,7 @@ function labelFor(status: RuntimeStatus): string {
   }
 }
 
-function PrimaryButton({
-  onClick,
-  children,
-}: {
-  onClick?: () => void;
-  children: ReactNode;
-}) {
+function PrimaryButton({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
   return (
     <button
       type="button"
@@ -161,13 +155,7 @@ function PrimaryButton({
   );
 }
 
-function SecondaryButton({
-  onClick,
-  children,
-}: {
-  onClick?: () => void;
-  children: ReactNode;
-}) {
+function SecondaryButton({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
   return (
     <button
       type="button"
@@ -216,96 +204,96 @@ export default function OnboardingEmptyState({
         overflowY: 'auto',
         // Vertically center short states (connected/unauth);
         // `empty`/`partial` have enough content to stay top-aligned.
-        justifyContent:
-          state === 'connected' || state === 'unauth' ? 'center' : 'flex-start',
+        justifyContent: state === 'connected' || state === 'unauth' ? 'center' : 'flex-start',
         alignItems: 'stretch',
       }}
     >
-      <div style={{ maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       <div
         style={{
-          fontSize: 'var(--text-sm)',
-          color: 'var(--color-gray-600)',
-          fontFamily: 'var(--font-primary)',
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
+          maxWidth: 560,
+          width: '100%',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-6)',
         }}
       >
-        Runtime {onlineCount}/{totalCount} 已就绪
-      </div>
+        <div
+          style={{
+            fontSize: 'var(--text-sm)',
+            color: 'var(--color-gray-600)',
+            fontFamily: 'var(--font-primary)',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Runtime {onlineCount}/{totalCount} 已就绪
+        </div>
 
-      {state === 'connected' && (
-        <>
-          <StateHeader
-            title="一切就绪"
-            subtitle="本机 AI 助手已连接，从左侧选择一位开始对话。"
-          />
-          <RuntimeListCompact runtimes={runtimes} />
-          <div>
-            <PrimaryButton onClick={onStartWithFirstOnline}>
-              开始对话
-            </PrimaryButton>
-          </div>
-        </>
-      )}
+        {state === 'connected' && (
+          <>
+            <StateHeader title="一切就绪" subtitle="本机 AI 助手已连接，从左侧选择一位开始对话。" />
+            <RuntimeListCompact runtimes={runtimes} />
+            <div>
+              <PrimaryButton onClick={onStartWithFirstOnline}>开始对话</PrimaryButton>
+            </div>
+          </>
+        )}
 
-      {state === 'partial' && (
-        <>
-          <StateHeader
-            title="部分助手已就绪"
-            subtitle="已连接的助手可以直接使用，其余助手可以稍后再设置。"
-          />
-          <RuntimeListCompact runtimes={runtimes} />
-          <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-            <PrimaryButton onClick={onStartWithFirstOnline}>开始对话</PrimaryButton>
-          </div>
-          {children}
-        </>
-      )}
+        {state === 'partial' && (
+          <>
+            <StateHeader
+              title="部分助手已就绪"
+              subtitle="已连接的助手可以直接使用，其余助手可以稍后再设置。"
+            />
+            <RuntimeListCompact runtimes={runtimes} />
+            <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+              <PrimaryButton onClick={onStartWithFirstOnline}>开始对话</PrimaryButton>
+            </div>
+            {children}
+          </>
+        )}
 
-      {state === 'empty' && (
-        <>
-          <StateHeader
-            title="正在准备 AI 助手"
-            subtitle="正在检测本机已安装的 AI 工具并建立连接，通常只需几秒钟。请稍候…"
-          />
-          {process.env.NEXT_PUBLIC_LOCAL_DEV !== '1' && (
-            <>
-              <ol
-                style={{
-                  margin: 0,
-                  paddingLeft: 'var(--space-5)',
-                  color: 'var(--color-gray-800)',
-                  fontSize: 'var(--text-md)',
-                  fontFamily: 'var(--font-primary)',
-                  lineHeight: 1.8,
-                }}
-              >
-                <li>Install QRClaw Host</li>
-                <li>授权这台机器</li>
-                <li>回到这里自动刷新</li>
-              </ol>
-              <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                <PrimaryButton onClick={onInstallHost}>下载 Mac App</PrimaryButton>
-                <SecondaryButton onClick={onShowHomebrew}>Homebrew 命令</SecondaryButton>
-              </div>
-            </>
-          )}
-          <RuntimeListCompact runtimes={runtimes} />
-        </>
-      )}
+        {state === 'empty' && (
+          <>
+            <StateHeader
+              title="正在准备 AI 助手"
+              subtitle="正在检测本机已安装的 AI 工具并建立连接，通常只需几秒钟。请稍候…"
+            />
+            {process.env.NEXT_PUBLIC_LOCAL_DEV !== '1' && (
+              <>
+                <ol
+                  style={{
+                    margin: 0,
+                    paddingLeft: 'var(--space-5)',
+                    color: 'var(--color-gray-800)',
+                    fontSize: 'var(--text-md)',
+                    fontFamily: 'var(--font-primary)',
+                    lineHeight: 1.8,
+                  }}
+                >
+                  <li>Install QRClaw Host</li>
+                  <li>授权这台机器</li>
+                  <li>回到这里自动刷新</li>
+                </ol>
+                <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                  <PrimaryButton onClick={onInstallHost}>下载 Mac App</PrimaryButton>
+                  <SecondaryButton onClick={onShowHomebrew}>Homebrew 命令</SecondaryButton>
+                </div>
+              </>
+            )}
+            <RuntimeListCompact runtimes={runtimes} />
+          </>
+        )}
 
-      {state === 'unauth' && (
-        <>
-          <StateHeader
-            title="请先登录"
-            subtitle="登录后即可使用本机 AI 助手。"
-          />
-          <div>
-            <PrimaryButton onClick={onSignIn}>登录</PrimaryButton>
-          </div>
-        </>
-      )}
+        {state === 'unauth' && (
+          <>
+            <StateHeader title="请先登录" subtitle="登录后即可使用本机 AI 助手。" />
+            <div>
+              <PrimaryButton onClick={onSignIn}>登录</PrimaryButton>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

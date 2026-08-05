@@ -38,9 +38,7 @@ export default function AgentDetailPage() {
   const agentId = params?.agentId ?? '';
 
   const initialTab = (searchParams.get('tab') as Tab) ?? 'qrcodes';
-  const [tab, setTab] = useState<Tab>(
-    VALID_TABS.includes(initialTab) ? initialTab : 'qrcodes',
-  );
+  const [tab, setTab] = useState<Tab>(VALID_TABS.includes(initialTab) ? initialTab : 'qrcodes');
 
   useEffect(() => {
     const next = (searchParams.get('tab') as Tab) ?? 'qrcodes';
@@ -61,16 +59,16 @@ export default function AgentDetailPage() {
 
   const agentQrcodes = useMemo(
     () => qrcodes.filter((q) => q.agent_id === agentId),
-    [qrcodes, agentId],
+    [qrcodes, agentId]
   );
 
   const totalScans = useMemo(
     () => agentQrcodes.reduce((s, q) => s + getQrProfileScanCount(q), 0),
-    [agentQrcodes],
+    [agentQrcodes]
   );
   const totalChats = useMemo(
     () => agentQrcodes.reduce((s, q) => s + getQrProfileConversationCount(q), 0),
-    [agentQrcodes],
+    [agentQrcodes]
   );
 
   return (
@@ -164,10 +162,7 @@ export default function AgentDetailPage() {
             >
               Continue the owner-side conversation with this agent in the Chat workspace.
             </p>
-            <Link
-              href={`/chat?agent=${agentId}`}
-              style={primaryLinkStyle}
-            >
+            <Link href={`/chat?agent=${agentId}`} style={primaryLinkStyle}>
               Open chat →
             </Link>
           </div>
@@ -193,24 +188,17 @@ export default function AgentDetailPage() {
                 }}
               >
                 <span>
-                  <strong style={{ color: 'var(--color-gray-800)' }}>
-                    {agentQrcodes.length}
-                  </strong>{' '}
+                  <strong style={{ color: 'var(--color-gray-800)' }}>{agentQrcodes.length}</strong>{' '}
                   QR code{agentQrcodes.length === 1 ? '' : 's'}
                 </span>
                 <span>
-                  <strong style={{ color: 'var(--color-gray-800)' }}>{totalScans}</strong>{' '}
-                  scans
+                  <strong style={{ color: 'var(--color-gray-800)' }}>{totalScans}</strong> scans
                 </span>
                 <span>
-                  <strong style={{ color: 'var(--color-gray-800)' }}>{totalChats}</strong>{' '}
-                  chats
+                  <strong style={{ color: 'var(--color-gray-800)' }}>{totalChats}</strong> chats
                 </span>
               </div>
-              <Link
-                href={`/qrcodes/create?agent=${agentId}`}
-                style={primaryBtnLinkStyle}
-              >
+              <Link href={`/qrcodes/create?agent=${agentId}`} style={primaryBtnLinkStyle}>
                 <Plus size={14} />
                 <span>New QR Code</span>
               </Link>
@@ -301,7 +289,6 @@ export default function AgentDetailPage() {
             )}
           </div>
         )}
-
       </div>
     </div>
   );
@@ -331,9 +318,7 @@ function TabButton({
         padding: '12px 16px',
         background: 'transparent',
         border: 'none',
-        borderBottom: active
-          ? '2px solid var(--color-red)'
-          : '2px solid transparent',
+        borderBottom: active ? '2px solid var(--color-red)' : '2px solid transparent',
         color: active ? 'var(--color-red)' : 'var(--color-gray-700)',
         fontFamily: 'var(--font-primary)',
         fontSize: 13,

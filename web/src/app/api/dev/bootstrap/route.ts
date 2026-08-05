@@ -2,10 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { isDesktopBootstrap, isLocalHostRequest } from '@/lib/local-app-shell';
 
-function jsonWithCookies(
-  body: Record<string, unknown>,
-  cookieSource: NextResponse,
-): NextResponse {
+function jsonWithCookies(body: Record<string, unknown>, cookieSource: NextResponse): NextResponse {
   const res = NextResponse.json(body);
   cookieSource.cookies.getAll().forEach(({ name, value }) => {
     res.cookies.set(name, value);
@@ -13,10 +10,15 @@ function jsonWithCookies(
   return res;
 }
 
-function sessionPayload(session: {
-  access_token: string;
-  refresh_token: string;
-} | null | undefined) {
+function sessionPayload(
+  session:
+    | {
+        access_token: string;
+        refresh_token: string;
+      }
+    | null
+    | undefined
+) {
   if (!session?.access_token || !session?.refresh_token) {
     return {};
   }
@@ -76,7 +78,7 @@ export async function POST(request: NextRequest) {
           });
         },
       },
-    },
+    }
   );
 
   const {
@@ -93,7 +95,7 @@ export async function POST(request: NextRequest) {
         already: true,
         ...sessionPayload(sessionData.session),
       },
-      cookieJar,
+      cookieJar
     );
   }
 
@@ -103,10 +105,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error || !data.user || !data.session) {
-    return NextResponse.json(
-      { error: error?.message ?? 'sign_in_failed' },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: error?.message ?? 'sign_in_failed' }, { status: 401 });
   }
 
   return jsonWithCookies(
@@ -117,6 +116,6 @@ export async function POST(request: NextRequest) {
       already: false,
       ...sessionPayload(data.session),
     },
-    cookieJar,
+    cookieJar
   );
 }

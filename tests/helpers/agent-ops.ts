@@ -17,7 +17,7 @@ import { expect, type Page } from '@playwright/test';
  */
 export async function createOpenClawAgent(
   page: Page,
-  opts: { name: string },
+  opts: { name: string }
 ): Promise<{ agentName: string }> {
   await page.goto('/agents');
   await page.getByRole('button', { name: 'Create Agent' }).click();
@@ -37,7 +37,7 @@ export async function createOpenClawAgent(
   await dlg.getByRole('button', { name: 'Create' }).click();
 
   await expect(
-    dlg.getByText('此 token 已自动写入本机 ~/.qrclaw/agent-host/tokens/, 无需手动操作。'),
+    dlg.getByText('此 token 已自动写入本机 ~/.qrclaw/agent-host/tokens/, 无需手动操作。')
   ).toBeVisible({ timeout: 15_000 });
   return { agentName: opts.name };
 }
@@ -64,10 +64,7 @@ export async function sendChatMessage(page: Page, text: string): Promise<void> {
  * background color `rgb(37, 99, 235)` (#2563eb, owner). Assistant bubbles
  * use `#f3f4f6`.
  */
-export async function waitForReply(
-  page: Page,
-  opts: { timeoutMs: number },
-): Promise<string> {
+export async function waitForReply(page: Page, opts: { timeoutMs: number }): Promise<string> {
   const deadline = Date.now() + opts.timeoutMs;
   while (Date.now() < deadline) {
     const bubbles = page.locator('div[style*="background: rgb(243, 244, 246)"]');

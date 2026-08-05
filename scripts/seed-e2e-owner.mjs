@@ -12,8 +12,8 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
-const EMAIL = process.argv[2] || 'e2e-owner@example.invalid';
-const PASSWORD = process.argv[3] || 'CHANGE_ME_E2E_PASSWORD';
+const EMAIL = process.argv[2] || 'e2e-owner@test.qrclaw.ai';
+const PASSWORD = process.argv[3] || 'E2E-HappyPath-9x!';
 
 function loadEnv(file) {
   try {
@@ -36,9 +36,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_ROLE) {
-  console.error(
-    'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY (checked env + gateway/.env)',
-  );
+  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY (checked env + gateway/.env)');
   process.exit(1);
 }
 
@@ -54,7 +52,11 @@ async function supabaseAdmin(pathname, init = {}) {
   });
   const text = await res.text();
   let json;
-  try { json = text ? JSON.parse(text) : null; } catch { json = { raw: text }; }
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = { raw: text };
+  }
   if (!res.ok) {
     throw new Error(`${init.method ?? 'GET'} ${pathname} ${res.status}: ${text.slice(0, 300)}`);
   }
@@ -63,9 +65,7 @@ async function supabaseAdmin(pathname, init = {}) {
 
 async function ensureAuthUser() {
   // Try find by email first
-  const list = await supabaseAdmin(
-    `/auth/v1/admin/users?email=${encodeURIComponent(EMAIL)}`,
-  );
+  const list = await supabaseAdmin(`/auth/v1/admin/users?email=${encodeURIComponent(EMAIL)}`);
   const existing = (list.users || []).find((u) => u.email === EMAIL);
   if (existing) {
     // Reset password to a known value so reruns work

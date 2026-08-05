@@ -94,7 +94,7 @@ async function main() {
   step(
     'stale session recovery',
     (staleRecovery.localHostOnlineCount ?? 0) > 0 && staleRecovery.agentCount >= 4,
-    staleRecovery,
+    staleRecovery
   );
 
   // Reload 期间可能有短暂 401，不计入最终 console 检查
@@ -131,10 +131,16 @@ async function main() {
     if (store && store.agentCount >= 4 && (store.localHostOnlineCount ?? 0) > 0) break;
     await page.waitForTimeout(2000);
   }
-  step('zustand store loaded', Boolean(store && store.agentCount >= 4), store ?? { msg: 'store not exposed' });
+  step(
+    'zustand store loaded',
+    Boolean(store && store.agentCount >= 4),
+    store ?? { msg: 'store not exposed' }
+  );
 
   const onlineFromStore = store?.localHostOnlineCount ?? 0;
-  step('local host online count > 0', onlineFromStore > 0, { localHostOnlineCount: onlineFromStore });
+  step('local host online count > 0', onlineFromStore > 0, {
+    localHostOnlineCount: onlineFromStore,
+  });
 
   // 4. Composer
   const composer = await page.evaluate(() => {
@@ -173,14 +179,17 @@ async function main() {
     await page.getByTestId('chat-search-input').fill('');
   }
 
-  const progressLink = page.getByRole('navigation', { name: 'Dashboard primary navigation' })
+  const progressLink = page
+    .getByRole('navigation', { name: 'Dashboard primary navigation' })
     .getByRole('link', { name: /progress/i });
   await progressLink.click();
   await page.waitForURL(/\/progress/, { timeout: 10_000 });
   const progressVisible = await page.getByTestId('progress-board').isVisible();
   step('progress board route visible', progressVisible);
   const boardDetailPanelCount = await page.getByTestId('progress-task-detail').count();
-  step('progress board does not show inline detail panel', boardDetailPanelCount === 0, { boardDetailPanelCount });
+  step('progress board does not show inline detail panel', boardDetailPanelCount === 0, {
+    boardDetailPanelCount,
+  });
 
   if (prompt) {
     const autoTaskCount = await page.getByText(prompt.slice(0, 24), { exact: false }).count();
@@ -193,10 +202,17 @@ async function main() {
   step('manual task opens dedicated detail page', detailVisible, { url: page.url() });
   const titleVisible = await page.getByTestId('progress-task-title-input').inputValue();
   step('task detail title editable', titleVisible.includes('新任务'), { titleVisible });
-  await page.getByTestId('progress-task-description').fill('验收：支持直接输入详情，离开后自动渲染。');
+  await page
+    .getByTestId('progress-task-description')
+    .fill('验收：支持直接输入详情，离开后自动渲染。');
   const descriptionDraft = await page.getByTestId('progress-task-description').inputValue();
-  step('task detail description editor works', /直接输入详情/.test(descriptionDraft), { descriptionDraft });
-  const detailsSaveVisible = await page.getByRole('button', { name: '保存' }).isVisible().catch(() => false);
+  step('task detail description editor works', /直接输入详情/.test(descriptionDraft), {
+    descriptionDraft,
+  });
+  const detailsSaveVisible = await page
+    .getByRole('button', { name: '保存' })
+    .isVisible()
+    .catch(() => false);
   step('task detail description has save button', detailsSaveVisible);
   const assigneeSelectVisible = await page.getByTestId('progress-task-assignee-select').isVisible();
   const projectSelectVisible = await page.getByTestId('progress-task-project-select').isVisible();
@@ -210,14 +226,16 @@ async function main() {
   step('screenshot saved', true, { path: path.join(OUT_DIR, 'chat-verify.png') });
 
   if (consoleErrors.length) {
-    step('no console errors', false, { count: consoleErrors.length, sample: consoleErrors.slice(0, 3) });
+    step('no console errors', false, {
+      count: consoleErrors.length,
+      sample: consoleErrors.slice(0, 3),
+    });
   } else {
     step('no console errors', true);
   }
 
   const forbiddenCopy = await page.evaluate(() => document.body.innerText);
-  const hasDevLeak =
-    /dev-up|Multica daemon|bash scripts|Agent Host/i.test(forbiddenCopy);
+  const hasDevLeak = /dev-up|Multica daemon|bash scripts|Agent Host/i.test(forbiddenCopy);
   step('no developer-only onboarding copy', !hasDevLeak);
 
   report.pass = report.steps.every((s) => s.ok);

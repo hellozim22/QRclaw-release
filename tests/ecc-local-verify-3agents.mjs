@@ -61,7 +61,11 @@ const CASES = {
 };
 
 const selectedKeys = agentArg
-  ? agentArg.replace('--agents=', '').split(',').map((item) => item.trim()).filter(Boolean)
+  ? agentArg
+      .replace('--agents=', '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
   : ['claude', 'openclaw', 'cursor'];
 
 const report = {
@@ -92,11 +96,12 @@ async function waitForStore(page, predicate, timeoutMs = 30_000) {
       const s = window.__OWNER_AGENT_STORE__?.getState?.();
       if (!s) return null;
       return {
-        agents: s.agents?.map((agent) => ({
-          id: agent.id,
-          name: agent.name,
-          backendProvider: agent.backend_provider,
-        })) ?? [],
+        agents:
+          s.agents?.map((agent) => ({
+            id: agent.id,
+            name: agent.name,
+            backendProvider: agent.backend_provider,
+          })) ?? [],
         localHostOnlineCount: s.localHostOnlineCount,
         statusByAgent: s.statusByAgent,
         selectedAgentId: s.selectedAgentId,
@@ -129,7 +134,8 @@ async function waitForTask(page, prompt, predicate, timeoutMs = 180_000) {
   let last = null;
   while (Date.now() - started < timeoutMs) {
     const tasks = await readTasks(page);
-    last = tasks.find((task) => task.sourceMessage === prompt || task.description === prompt) ?? null;
+    last =
+      tasks.find((task) => task.sourceMessage === prompt || task.description === prompt) ?? null;
     if (last && predicate(last)) return last;
     await page.waitForTimeout(1500);
   }
@@ -142,7 +148,9 @@ async function selectAgent(page, testCase) {
     return s?.agents?.find((item) => item.backend_provider === provider && item.is_default) ?? null;
   }, testCase.provider);
   if (!agent?.id) return null;
-  await page.getByRole('button', { name: new RegExp(testCase.name, 'i') }).waitFor({ timeout: 10_000 });
+  await page
+    .getByRole('button', { name: new RegExp(testCase.name, 'i') })
+    .waitFor({ timeout: 10_000 });
   await page.getByTestId(`agent-list-item-${agent.id}`).click();
   return agent;
 }
@@ -197,12 +205,16 @@ async function main() {
   const store = await waitForStore(
     page,
     (s) => Boolean(s && s.agents.length >= 4 && (s.localHostOnlineCount ?? 0) > 0),
-    45_000,
+    45_000
   );
-  step('local agents online', Boolean(store && store.agents.length >= 4 && store.localHostOnlineCount > 0), {
-    agentCount: store?.agents?.length ?? 0,
-    localHostOnlineCount: store?.localHostOnlineCount ?? 0,
-  });
+  step(
+    'local agents online',
+    Boolean(store && store.agents.length >= 4 && store.localHostOnlineCount > 0),
+    {
+      agentCount: store?.agents?.length ?? 0,
+      localHostOnlineCount: store?.localHostOnlineCount ?? 0,
+    }
+  );
   // Initial Supabase auth/session recovery can briefly log fetch errors while
   // the local-dev session is being restored. Match ecc-local-verify.mjs and
   // only enforce console cleanliness after the app is stable.
@@ -241,20 +253,35 @@ async function main() {
       page,
       testCase.prompt,
       (task) => task.status === 'in_progress',
-      45_000,
+      45_000
     );
     const reply = await sendAndWait(page, agent, testCase.prompt);
     agentReport.reply = reply?.content ?? '';
     const runTerminal = ['completed', 'failed'].includes(reply?.runStatus ?? '');
-    agentStep(agentReport, 'agent run surfaced terminal UI state', Boolean(reply?.content?.trim()) && runTerminal, reply ?? {});
+    agentStep(
+      agentReport,
+      'agent run surfaced terminal UI state',
+      Boolean(reply?.content?.trim()) && runTerminal,
+      reply ?? {}
+    );
     if (reply?.runStatus === 'completed') {
-      agentStep(agentReport, 'reply matches expected shape', testCase.expect(reply?.content ?? ''), {
-        reply: (reply?.content ?? '').slice(0, 300),
-      });
+      agentStep(
+        agentReport,
+        'reply matches expected shape',
+        testCase.expect(reply?.content ?? ''),
+        {
+          reply: (reply?.content ?? '').slice(0, 300),
+        }
+      );
     } else {
-      agentStep(agentReport, 'failed agent shows user-safe error', /Agent execution failed/i.test(reply?.content ?? ''), {
-        reply: (reply?.content ?? '').slice(0, 300),
-      });
+      agentStep(
+        agentReport,
+        'failed agent shows user-safe error',
+        /Agent execution failed/i.test(reply?.content ?? ''),
+        {
+          reply: (reply?.content ?? '').slice(0, 300),
+        }
+      );
     }
 
     const startedTask = await taskStarted;
@@ -266,7 +293,7 @@ async function main() {
       page,
       testCase.prompt,
       (task) => ['done', 'blocked'].includes(task.status),
-      120_000,
+      120_000
     );
     agentReport.taskId = finishedTask?.id ?? startedTask?.id ?? null;
     const taskTerminal = ['done', 'blocked'].includes(finishedTask?.status ?? '');
@@ -279,17 +306,21 @@ async function main() {
     });
   }
 
-  const progressLink = page.getByRole('navigation', { name: 'Dashboard primary navigation' })
+  const progressLink = page
+    .getByRole('navigation', { name: 'Dashboard primary navigation' })
     .getByRole('link', { name: /progress/i });
   await progressLink.click();
   await page.waitForURL(/\/progress/, { timeout: 30_000 });
   await page.getByTestId('progress-board').waitFor({ timeout: 10_000 });
   const expectedTaskIds = report.agents.map((agent) => agent.taskId).filter(Boolean);
-  await page.waitForFunction(
-    (expected) => document.querySelectorAll('[data-testid^="progress-task-card-"]').length >= expected,
-    expectedTaskIds.length,
-    { timeout: 15_000 },
-  ).catch(() => undefined);
+  await page
+    .waitForFunction(
+      (expected) =>
+        document.querySelectorAll('[data-testid^="progress-task-card-"]').length >= expected,
+      expectedTaskIds.length,
+      { timeout: 15_000 }
+    )
+    .catch(() => undefined);
   const doneCards = await page.locator('[data-testid^="progress-task-card-"]').count();
   const tasksAfterNav = await readTasks(page);
   step('progress board shows agent tasks', doneCards >= expectedTaskIds.length, {
@@ -298,20 +329,36 @@ async function main() {
     localStorageTasks: tasksAfterNav.length,
   });
   const agentBadgeCount = await page.locator('[data-testid^="progress-task-card-agent-"]').count();
-  const projectBadgeCount = await page.locator('[data-testid^="progress-task-card-project-"]').count();
-  step('progress cards show agent and project', agentBadgeCount >= expectedTaskIds.length && projectBadgeCount >= expectedTaskIds.length, {
-    agentBadgeCount,
-    projectBadgeCount,
-  });
+  const projectBadgeCount = await page
+    .locator('[data-testid^="progress-task-card-project-"]')
+    .count();
+  step(
+    'progress cards show agent and project',
+    agentBadgeCount >= expectedTaskIds.length && projectBadgeCount >= expectedTaskIds.length,
+    {
+      agentBadgeCount,
+      projectBadgeCount,
+    }
+  );
 
-  const firstTaskId = report.agents.find((agent) => agent.taskId && agent.pass)?.taskId
-    ?? report.agents.find((agent) => agent.taskId)?.taskId;
+  const firstTaskId =
+    report.agents.find((agent) => agent.taskId && agent.pass)?.taskId ??
+    report.agents.find((agent) => agent.taskId)?.taskId;
   if (firstTaskId) {
     await page.getByTestId(`progress-task-card-${firstTaskId}`).click();
     await page.waitForURL(new RegExp(`/progress/${firstTaskId}$`), { timeout: 30_000 });
-    await page.getByTestId('progress-task-detail-page').waitFor({ timeout: 15_000 }).catch(() => undefined);
-    const detailVisible = await page.getByTestId('progress-task-detail-page').isVisible().catch(() => false);
-    const detailText = await page.locator('body').innerText().catch(() => '');
+    await page
+      .getByTestId('progress-task-detail-page')
+      .waitFor({ timeout: 15_000 })
+      .catch(() => undefined);
+    const detailVisible = await page
+      .getByTestId('progress-task-detail-page')
+      .isVisible()
+      .catch(() => false);
+    const detailText = await page
+      .locator('body')
+      .innerText()
+      .catch(() => '');
     step('agent task detail page visible', detailVisible, {
       taskId: firstTaskId,
       body: detailText.slice(0, 200),
@@ -328,7 +375,10 @@ async function main() {
   step('screenshot saved', true, { path: path.join(OUT_DIR, '3agents-progress.png') });
 
   if (consoleErrors.length) {
-    step('no console errors', false, { count: consoleErrors.length, sample: consoleErrors.slice(0, 3) });
+    step('no console errors', false, {
+      count: consoleErrors.length,
+      sample: consoleErrors.slice(0, 3),
+    });
   } else {
     step('no console errors', true);
   }
@@ -344,6 +394,9 @@ async function main() {
 
 main().catch((err) => {
   console.error(err);
-  writeFileSync(path.join(OUT_DIR, '3agents-error.json'), JSON.stringify({ error: String(err) }, null, 2));
+  writeFileSync(
+    path.join(OUT_DIR, '3agents-error.json'),
+    JSON.stringify({ error: String(err) }, null, 2)
+  );
   process.exit(1);
 });

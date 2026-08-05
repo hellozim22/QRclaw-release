@@ -24,9 +24,7 @@ describe('StreamingText', () => {
   });
 
   it('supports plain-text settled mode', () => {
-    render(
-      <StreamingText text="**as-is**" isStreaming={false} asMarkdown={false} />,
-    );
+    render(<StreamingText text="**as-is**" isStreaming={false} asMarkdown={false} />);
     expect(screen.getByTestId('streaming-text').textContent).toBe('**as-is**');
   });
 });

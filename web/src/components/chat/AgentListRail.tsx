@@ -48,10 +48,7 @@ export interface AgentListRailProps {
 
 const RAIL_WIDTH = 280;
 
-const isOnline = (
-  agent: OwnerAgentSummary,
-  status: AgentConnectionStatus | undefined,
-): boolean => {
+const isOnline = (agent: OwnerAgentSummary, status: AgentConnectionStatus | undefined): boolean => {
   if (status === 'online' || status === 'running') return true;
   if (status === 'failed') return false;
   return agent.runtime_status === 'online';
@@ -84,9 +81,7 @@ function AgentRow({
         width: '100%',
         padding: 'var(--space-3) var(--space-4)',
         border: 'none',
-        borderLeft: selected
-          ? '3px solid var(--color-red)'
-          : '3px solid transparent',
+        borderLeft: selected ? '3px solid var(--color-red)' : '3px solid transparent',
         background: selected ? 'var(--color-red-bg)' : 'transparent',
         cursor: 'pointer',
         textAlign: 'left',
@@ -187,7 +182,7 @@ function Skeleton() {
 function buildSearchResults(
   agents: OwnerAgentSummary[],
   messagesByAgent: Record<string, ChatMessage[]>,
-  query: string,
+  query: string
 ): ChatSearchResult[] {
   const needle = query.trim().toLowerCase();
   if (!needle) return [];
@@ -202,25 +197,16 @@ function buildSearchResults(
         agentId,
         agentName: getAgentDisplayName(agent),
         messageId: message.id,
-        snippet: message.content.length > 120
-          ? `${message.content.slice(0, 120)}…`
-          : message.content,
+        snippet:
+          message.content.length > 120 ? `${message.content.slice(0, 120)}…` : message.content,
         createdAt: message.created_at,
       });
     }
   }
-  return results
-    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-    .slice(0, 20);
+  return results.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 20);
 }
 
-function SearchResultRow({
-  result,
-  onClick,
-}: {
-  result: ChatSearchResult;
-  onClick: () => void;
-}) {
+function SearchResultRow({ result, onClick }: { result: ChatSearchResult; onClick: () => void }) {
   return (
     <button
       type="button"

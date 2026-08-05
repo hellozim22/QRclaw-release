@@ -1,6 +1,9 @@
 import { EventEmitter } from 'node:events';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { OwnerAgentRunCompletedFrame, OwnerAgentRunEventFrame } from '../../../shared/contracts/ws/types';
+import type {
+  OwnerAgentRunCompletedFrame,
+  OwnerAgentRunEventFrame,
+} from '../../../shared/contracts/ws/types';
 
 const mockServices = vi.hoisted(() => ({
   getOwnerByUserId: vi.fn(),
@@ -12,9 +15,9 @@ vi.mock('../../../gateway/src/db/owner-agent-chat', () => ({
 }));
 
 vi.mock('../../../gateway/src/services/owner-agent-chat', async () => {
-  const actual = await vi.importActual<typeof import('../../../gateway/src/services/owner-agent-chat')>(
-    '../../../gateway/src/services/owner-agent-chat'
-  );
+  const actual = await vi.importActual<
+    typeof import('../../../gateway/src/services/owner-agent-chat')
+  >('../../../gateway/src/services/owner-agent-chat');
   return {
     OwnerAgentChatServiceError: actual.OwnerAgentChatServiceError,
     startOwnerAgentRun: mockServices.startOwnerAgentRun,
@@ -109,45 +112,51 @@ describe('OpenAI-compatible owner-agent SSE route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockServices.getOwnerByUserId.mockResolvedValue({ id: OWNER_ID });
-    mockServices.startOwnerAgentRun.mockImplementation(async (
-      _ownerId: string,
-      _agentId: string,
-      _input: unknown,
-      options?: { beforeDispatch?: (run: unknown) => void }
-    ) => {
-      options?.beforeDispatch?.({
-        runId: RUN_ID,
-        conversationId: CONVERSATION_ID,
-        provider: 'cursor',
-        requestedModel: 'gpt-5.5-high',
-      });
-      return {
-        runId: RUN_ID,
-        conversationId: CONVERSATION_ID,
-        status: 'running',
-        provider: 'cursor',
-        requestedModel: 'gpt-5.5-high',
-      };
-    });
+    mockServices.startOwnerAgentRun.mockImplementation(
+      async (
+        _ownerId: string,
+        _agentId: string,
+        _input: unknown,
+        options?: { beforeDispatch?: (run: unknown) => void }
+      ) => {
+        options?.beforeDispatch?.({
+          runId: RUN_ID,
+          conversationId: CONVERSATION_ID,
+          provider: 'cursor',
+          requestedModel: 'gpt-5.5-high',
+        });
+        return {
+          runId: RUN_ID,
+          conversationId: CONVERSATION_ID,
+          status: 'running',
+          provider: 'cursor',
+          requestedModel: 'gpt-5.5-high',
+        };
+      }
+    );
   });
 
   it('extracts the latest user text and rejects inline base64 attachments before streaming', () => {
-    expect(extractLatestUserTextForTest({
-      messages: [
-        { role: 'user', content: 'older' },
-        { role: 'assistant', content: 'reply' },
-        { role: 'user', content: [{ type: 'text', text: 'new text' }] },
-      ],
-    })).toBe('new text');
+    expect(
+      extractLatestUserTextForTest({
+        messages: [
+          { role: 'user', content: 'older' },
+          { role: 'assistant', content: 'reply' },
+          { role: 'user', content: [{ type: 'text', text: 'new text' }] },
+        ],
+      })
+    ).toBe('new text');
 
-    expect(() => extractLatestUserTextForTest({
-      messages: [
-        {
-          role: 'user',
-          content: [{ type: 'image_url', image_url: { url: 'data:image/png;base64,abc' } }],
-        },
-      ],
-    })).toThrow('base64 data: URLs not allowed');
+    expect(() =>
+      extractLatestUserTextForTest({
+        messages: [
+          {
+            role: 'user',
+            content: [{ type: 'image_url', image_url: { url: 'data:image/png;base64,abc' } }],
+          },
+        ],
+      })
+    ).toThrow('base64 data: URLs not allowed');
   });
 
   it('formats anonymous OpenAI data chunks and never ai-sdk stream lines', () => {

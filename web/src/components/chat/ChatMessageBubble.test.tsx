@@ -27,26 +27,19 @@ describe('ChatMessageBubble', () => {
   it('invokes onRegenerate when button clicked', async () => {
     const spy = vi.fn();
     const user = userEvent.setup();
-    render(
-      <ChatMessageBubble role="agent" content="x" onRegenerate={spy} />,
-    );
+    render(<ChatMessageBubble role="agent" content="x" onRegenerate={spy} />);
     await user.click(screen.getByTestId('chat-bubble-regenerate'));
     expect(spy).toHaveBeenCalledOnce();
   });
 
   it('shows error banner with alert role', () => {
-    render(
-      <ChatMessageBubble role="agent" content="x" errorMessage="timeout" />,
-    );
+    render(<ChatMessageBubble role="agent" content="x" errorMessage="timeout" />);
     expect(screen.getByRole('alert')).toHaveTextContent('timeout');
   });
 
   it('system role centers and hides actions', () => {
     render(<ChatMessageBubble role="system" content="joined" />);
-    expect(screen.getByTestId('chat-bubble')).toHaveAttribute(
-      'data-role',
-      'system',
-    );
+    expect(screen.getByTestId('chat-bubble')).toHaveAttribute('data-role', 'system');
     expect(screen.queryByTestId('chat-bubble-copy')).toBeNull();
   });
 });

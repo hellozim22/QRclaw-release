@@ -39,7 +39,7 @@ async function probeHostHealth(): Promise<Record<string, unknown> | null> {
 
 async function gatewayOnlineForSession(
   gatewayBase: string,
-  accessToken: string,
+  accessToken: string
 ): Promise<{ online: number; connected: boolean } | null> {
   try {
     const statusRes = await fetch(`${gatewayBase}/api/owner/local-host/status`, {
@@ -64,10 +64,7 @@ function shellPath(): string {
 }
 
 function loadHostTokenPepper(): string {
-  const pepperPath = path.join(
-    process.env.HOME ?? '',
-    '.config/qrclaw/host-token-pepper.env',
-  );
+  const pepperPath = path.join(process.env.HOME ?? '', '.config/qrclaw/host-token-pepper.env');
   if (fs.existsSync(pepperPath)) {
     const match = fs.readFileSync(pepperPath, 'utf8').match(/^QRCLAW_HOST_TOKEN_PEPPER=(.+)$/m);
     if (match?.[1]) return match[1].trim();
@@ -82,7 +79,7 @@ function runProcess(
     cwd?: string;
     env?: Record<string, string>;
     input?: string;
-  } = {},
+  } = {}
 ): Promise<{ code: number; stderr: string }> {
   return new Promise((resolve, reject) => {
     const child = spawn(executable, args, {
@@ -107,10 +104,7 @@ function runProcess(
   });
 }
 
-async function resolveOwnerId(
-  gatewayBase: string,
-  accessToken: string,
-): Promise<string | null> {
+async function resolveOwnerId(gatewayBase: string, accessToken: string): Promise<string | null> {
   try {
     const res = await fetch(`${gatewayBase}/api/owner/local-host/status`, {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -127,7 +121,7 @@ async function resolveOwnerId(
 async function mintHostTokenViaGateway(
   gatewayBase: string,
   accessToken: string,
-  ownerId: string,
+  ownerId: string
 ): Promise<string | null> {
   try {
     const res = await fetch(`${gatewayBase}/api/owner/host-tokens`, {
@@ -157,7 +151,7 @@ async function mintHostTokenViaGateway(
 
 async function attachViaGatewayMint(
   accessToken: string,
-  userId: string,
+  userId: string
 ): Promise<{ ok: boolean; stderr: string }> {
   const root = bundledRuntimeRoot();
   const hostBin = path.join(root, 'qrclaw-agent-host');
@@ -234,7 +228,7 @@ function runDevSetup(userId: string): Promise<{ code: number; stderr: string }> 
 }
 
 async function waitForHealthyHost(
-  accessToken?: string,
+  accessToken?: string
 ): Promise<{ health: Record<string, unknown>; gatewayOnline: number } | null> {
   const gatewayBase =
     process.env.NEXT_PUBLIC_GATEWAY_URL?.replace(/\/+$/, '') ?? 'http://127.0.0.1:3100';
@@ -283,7 +277,7 @@ export async function POST(request: NextRequest) {
           });
         },
       },
-    },
+    }
   );
 
   const {
@@ -318,7 +312,7 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json(
         { ok: false, error: 'no_attach_script', message: '本机 attach 脚本不可用' },
-        { status: 503 },
+        { status: 503 }
       );
     }
   }
@@ -349,7 +343,7 @@ export async function POST(request: NextRequest) {
       exitCode: result.code,
       stderr: result.stderr.slice(0, 400),
     },
-    { status: 503 },
+    { status: 503 }
   );
   cookieResponse.cookies.getAll().forEach(({ name, value }) => {
     res.cookies.set(name, value);

@@ -3,10 +3,7 @@ import type { Request, Response } from 'express';
 import { getOwnerByUserId } from '../db/owner-agent-chat.js';
 import { jwtAuthMiddleware } from '../middleware/auth.js';
 import { safeLog } from '../middleware/redact-log.js';
-import {
-  OwnerAgentChatServiceError,
-  startOwnerAgentRun,
-} from '../services/owner-agent-chat.js';
+import { OwnerAgentChatServiceError, startOwnerAgentRun } from '../services/owner-agent-chat.js';
 import type { AuthUser } from '../types/index.js';
 import {
   subscribeRunFrames,
@@ -63,10 +60,10 @@ export const extractLatestUserTextForTest = (body: unknown): string => {
       textParts.push(part.text);
     }
     if (
-      part.type === 'image_url'
-      && isRecord(part.image_url)
-      && typeof part.image_url.url === 'string'
-      && part.image_url.url.startsWith('data:')
+      part.type === 'image_url' &&
+      isRecord(part.image_url) &&
+      typeof part.image_url.url === 'string' &&
+      part.image_url.url.startsWith('data:')
     ) {
       throw new OwnerAgentChatServiceError(400, 'invalid_request', 'base64 data: URLs not allowed');
     }
@@ -245,7 +242,7 @@ interface FrameHandlerContext {
 
 const handleRunStreamFrame = async (
   payload: RunStreamFrame,
-  ctx: FrameHandlerContext,
+  ctx: FrameHandlerContext
 ): Promise<void> => {
   if (payload.kind === 'accepted') {
     ctx.res.write(`: accepted host=${payload.frame.payload.host_id}\n\n`);
@@ -330,27 +327,27 @@ const getMessages = (body: unknown): Array<{ role: string; content: unknown }> =
   if (!isRecord(body) || !Array.isArray(body.messages)) {
     return [];
   }
-  return body.messages.filter((message): message is { role: string; content: unknown } => (
-    isRecord(message) && typeof message.role === 'string' && 'content' in message
-  ));
+  return body.messages.filter(
+    (message): message is { role: string; content: unknown } =>
+      isRecord(message) && typeof message.role === 'string' && 'content' in message
+  );
 };
 
-const getRequestedModel = (body: unknown): string | null => (
-  isRecord(body) && typeof body.model === 'string' ? body.model : null
-);
+const getRequestedModel = (body: unknown): string | null =>
+  isRecord(body) && typeof body.model === 'string' ? body.model : null;
 
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-  typeof value === 'object' && value !== null
-);
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
 
 const RHYTHM_CHUNK_DELAY_MS = 12;
 const RHYTHM_MIN_CHUNKS = 4;
 const RHYTHM_TARGET_CHUNK_SIZE = 6;
 const INSTANT_EMIT_MAX_GRAPHEMES = 96;
 
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => {
-  setTimeout(resolve, ms);
-});
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 const sliceForRhythm = (text: string): string[] => {
   const graphemes = Array.from(text);
@@ -388,9 +385,7 @@ const emitCompletionChunks = async (
       return;
     }
     ctx.markTextDelta();
-    ctx.res.write(
-      formatOpenAIChatChunkForTest(ctx.runId, ctx.model, { content: finalMessage }),
-    );
+    ctx.res.write(formatOpenAIChatChunkForTest(ctx.runId, ctx.model, { content: finalMessage }));
     ctx.finish('stop');
     return;
   }
@@ -401,9 +396,7 @@ const emitCompletionChunks = async (
       return;
     }
     ctx.markTextDelta();
-    ctx.res.write(
-      formatOpenAIChatChunkForTest(ctx.runId, ctx.model, { content: chunks[i] }),
-    );
+    ctx.res.write(formatOpenAIChatChunkForTest(ctx.runId, ctx.model, { content: chunks[i] }));
     if (i < chunks.length - 1) {
       await sleep(RHYTHM_CHUNK_DELAY_MS);
     }

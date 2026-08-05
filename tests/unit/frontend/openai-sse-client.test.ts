@@ -54,17 +54,13 @@ describe('parseOpenAISSE', () => {
   });
 
   it('surfaces OpenAI error payloads without logging content', async () => {
-    const stream = streamFromChunks([
-      'data: {"error":{"message":"runtime unavailable"}}\n\n',
-    ]);
+    const stream = streamFromChunks(['data: {"error":{"message":"runtime unavailable"}}\n\n']);
 
     const events = [];
     for await (const event of parseOpenAISSE(stream)) {
       events.push(event);
     }
 
-    expect(events).toEqual([
-      { type: 'error', message: 'runtime unavailable' },
-    ]);
+    expect(events).toEqual([{ type: 'error', message: 'runtime unavailable' }]);
   });
 });

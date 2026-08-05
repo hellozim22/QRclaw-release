@@ -128,10 +128,7 @@ export const listAgentRuntimes = async (
 ): Promise<AgentRuntimeRecord[]> => {
   ensureSupabaseConfigured();
 
-  let query = supabase
-    .from('agent_runtimes')
-    .select(runtimeColumns)
-    .eq('owner_id', input.ownerId);
+  let query = supabase.from('agent_runtimes').select(runtimeColumns).eq('owner_id', input.ownerId);
 
   if (input.runtimeStatus) {
     query = query.eq('runtime_status', input.runtimeStatus);
@@ -253,7 +250,9 @@ export const syncAgentRuntimesFromHostProviders = async (
   for (const host of (hosts ?? []) as AgentHostRow[]) {
     const { data: providers, error: providersError } = await supabase
       .from('agent_host_providers')
-      .select('host_id, provider, status, binary_path, version, capabilities, health_check_passed_at')
+      .select(
+        'host_id, provider, status, binary_path, version, capabilities, health_check_passed_at'
+      )
       .eq('host_id', host.id);
 
     if (providersError) {
@@ -268,11 +267,8 @@ export const syncAgentRuntimesFromHostProviders = async (
 
       // Host sidecar reports 'online' (detect.StatusOnline); legacy rows may
       // carry 'available'. Treat both as operational.
-      const providerOnline =
-        provider.status === 'available' || provider.status === 'online';
-      const runtimeStatus = host.status === 'online' && providerOnline
-        ? 'online'
-        : 'offline';
+      const providerOnline = provider.status === 'available' || provider.status === 'online';
+      const runtimeStatus = host.status === 'online' && providerOnline ? 'online' : 'offline';
       const existingRuntime = existingByKey.get(buildRuntimeKey(host.id, runtimeType));
       const record = await upsertAgentRuntime({
         id: existingRuntime?.id,
@@ -365,7 +361,9 @@ export const updateDefaultOwnerAgentRuntime = async (
     .single();
 
   if (error || !data) {
-    throw new Error(`Failed to update default owner agent runtime: ${error?.message ?? 'missing row'}`);
+    throw new Error(
+      `Failed to update default owner agent runtime: ${error?.message ?? 'missing row'}`
+    );
   }
 
   return mapDefaultOwnerAgentRow(data as unknown as DefaultOwnerAgentRow);
@@ -435,7 +433,9 @@ export const upsertDefaultOwnerAgentBinding = async (
     .single();
 
   if (error || !data) {
-    throw new Error(`Failed to upsert default owner agent binding: ${error?.message ?? 'missing row'}`);
+    throw new Error(
+      `Failed to upsert default owner agent binding: ${error?.message ?? 'missing row'}`
+    );
   }
 
   return mapDefaultOwnerAgentBindingRow(data as unknown as DefaultOwnerAgentBindingRow);

@@ -73,9 +73,8 @@ const parsePayload = (payload: string): OpenAISSEEvent[] => {
     if (choice.finish_reason === 'error') {
       events.push({
         type: 'error',
-        message: typeof content === 'string' && content.length > 0
-          ? content
-          : 'Agent execution failed',
+        message:
+          typeof content === 'string' && content.length > 0 ? content : 'Agent execution failed',
       });
     } else {
       events.push({ type: 'done', finishReason: choice.finish_reason });
@@ -87,7 +86,7 @@ const parsePayload = (payload: string): OpenAISSEEvent[] => {
 
 export async function* parseOpenAISSE(
   stream: ReadableStream<Uint8Array>,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): AsyncGenerator<OpenAISSEEvent> {
   const reader = stream.getReader();
   const decoder = new TextDecoder();

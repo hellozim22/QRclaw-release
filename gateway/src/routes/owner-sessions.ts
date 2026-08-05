@@ -36,19 +36,11 @@ const toSessionResponse = (record: OwnerAgentSessionRecord): OwnerAgentSessionRe
   created_at: record.createdAt,
 });
 
-const sendError = (
-  res: Response,
-  statusCode: number,
-  code: string,
-  message: string
-): void => {
+const sendError = (res: Response, statusCode: number, code: string, message: string): void => {
   res.status(statusCode).json({ error: { code, message } });
 };
 
-const assertAgentOwnership = async (
-  ownerId: string,
-  agentId: string
-): Promise<boolean> => {
+const assertAgentOwnership = async (ownerId: string, agentId: string): Promise<boolean> => {
   if (!isSupabaseConfigured()) {
     throw new Error('Database not configured');
   }
@@ -64,10 +56,7 @@ const assertAgentOwnership = async (
   return !!data;
 };
 
-const resolveOwner = async (
-  req: Request,
-  res: Response
-): Promise<{ id: string } | null> => {
+const resolveOwner = async (req: Request, res: Response): Promise<{ id: string } | null> => {
   const user = (req as Request & { user: AuthUser }).user;
   const owner = await getOwnerByUserId(user.id);
   if (!owner) {
@@ -216,11 +205,7 @@ ownerSessionsRouter.get(
   jwtAuthMiddleware,
   handleListSessions
 );
-ownerSessionsRouter.patch(
-  '/api/owner/sessions/:sessionId',
-  jwtAuthMiddleware,
-  handleRenameSession
-);
+ownerSessionsRouter.patch('/api/owner/sessions/:sessionId', jwtAuthMiddleware, handleRenameSession);
 ownerSessionsRouter.delete(
   '/api/owner/sessions/:sessionId',
   jwtAuthMiddleware,

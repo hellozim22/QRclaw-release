@@ -1,6 +1,12 @@
 'use client';
 
-import type { ProgressActivity, ProgressComment, ProgressTask, TaskPriority, TaskStatus } from './types';
+import type {
+  ProgressActivity,
+  ProgressComment,
+  ProgressTask,
+  TaskPriority,
+  TaskStatus,
+} from './types';
 import { DEFAULT_PROJECT_ID } from './project-types';
 import { ensureDefaultProject, getProgressProject } from './project-store';
 import { fetchLocalProgressState, postLocalProgressAction } from './local-progress-api';
@@ -44,18 +50,26 @@ const normalizeActivity = (activity: Partial<ProgressActivity>): ProgressActivit
   text: activity.text ?? '任务已更新',
 });
 
-const normalizeStoredTask = (task: ProgressTask & { projectId?: string | null }): ProgressTask => ({
-  ...task,
-  projectId: task.projectId === undefined ? DEFAULT_PROJECT_ID : task.projectId,
-  description: normalizeProgressMarkdownText(task.description ?? ''),
-  activity: Array.isArray(task.activity) ? task.activity.map(normalizeActivity) : [],
-  comments: Array.isArray(task.comments)
-    ? task.comments.map((comment) => ({
-        ...comment,
-        content: normalizeProgressMarkdownText(comment.content),
-      }))
-    : [],
-});
+const normalizeStoredTask = (
+  task: Omit<ProgressTask, 'status'> & { projectId?: string | null; status?: string }
+): ProgressTask => {
+  const rawStatus = typeof task.status === 'string' ? task.status : 'todo';
+  const status: TaskStatus = rawStatus === 'backlog' ? 'todo' : (rawStatus as TaskStatus);
+
+  return {
+    ...task,
+    status,
+    projectId: task.projectId === undefined ? DEFAULT_PROJECT_ID : task.projectId,
+    description: normalizeProgressMarkdownText(task.description ?? ''),
+    activity: Array.isArray(task.activity) ? task.activity.map(normalizeActivity) : [],
+    comments: Array.isArray(task.comments)
+      ? task.comments.map((comment) => ({
+          ...comment,
+          content: normalizeProgressMarkdownText(comment.content),
+        }))
+      : [],
+  };
+};
 
 const readTasksFromKey = (key: string): ProgressTask[] => {
   if (typeof window === 'undefined') return [];
@@ -141,7 +155,7 @@ export const getProgressTask = (taskId: string): ProgressTask | null => {
 
 export const saveProgressTasks = (
   tasks: ProgressTask[],
-  options: { persistReplace?: boolean } = {},
+  options: { persistReplace?: boolean } = {}
 ) => {
   if (typeof window === 'undefined') return;
   ensureDefaultProject();
@@ -153,10 +167,19 @@ export const saveProgressTasks = (
   notifyProgressTaskChange();
 };
 
-type ProgressTaskPatch = Partial<Pick<
-  ProgressTask,
-  'title' | 'description' | 'status' | 'priority' | 'position' | 'agentId' | 'agentName' | 'projectId'
->>;
+type ProgressTaskPatch = Partial<
+  Pick<
+    ProgressTask,
+    | 'title'
+    | 'description'
+    | 'status'
+    | 'priority'
+    | 'position'
+    | 'agentId'
+    | 'agentName'
+    | 'projectId'
+  >
+>;
 
 const describePatch = (task: ProgressTask, patch: ProgressTaskPatch) => {
   if (patch.status && patch.status !== task.status) {
@@ -170,7 +193,7 @@ const describePatch = (task: ProgressTask, patch: ProgressTaskPatch) => {
   }
   if ('projectId' in patch && patch.projectId !== task.projectId) {
     const projectTitle = patch.projectId
-      ? getProgressProject(patch.projectId)?.title ?? '未知项目'
+      ? (getProgressProject(patch.projectId)?.title ?? '未知项目')
       : '未分组';
     return { action: 'project_changed', text: `移动到项目「${projectTitle}」` };
   }
@@ -221,12 +244,13 @@ export const createProgressTask = (input: {
     description,
     status: input.status ?? 'todo',
     priority: input.priority ?? 'medium',
-    position: Math.max(
-      0,
-      ...tasks
-        .filter((item) => item.status === (input.status ?? 'todo'))
-        .map((item) => item.position),
-    ) + 1,
+    position:
+      Math.max(
+        0,
+        ...tasks
+          .filter((item) => item.status === (input.status ?? 'todo'))
+          .map((item) => item.position)
+      ) + 1,
     projectId,
     agentId: input.agentId ?? null,
     agentName: input.agentName ?? null,
@@ -254,7 +278,7 @@ export const createProgressTask = (input: {
 export const updateProgressTask = (
   taskId: string,
   patch: ProgressTaskPatch,
-  options: { recordActivity?: boolean } = {},
+  options: { recordActivity?: boolean } = {}
 ): ProgressTask | null => {
   const tasks = listProgressTasks();
   let updated: ProgressTask | null = null;
@@ -307,7 +331,7 @@ export const updateProgressTask = (
 
 export const appendProgressTaskActivity = (
   taskId: string,
-  activity: Omit<ProgressActivity, 'id' | 'at'> & { at?: string },
+  activity: Omit<ProgressActivity, 'id' | 'at'> & { at?: string }
 ): ProgressTask | null => {
   const tasks = listProgressTasks();
   let updated: ProgressTask | null = null;
@@ -339,7 +363,7 @@ export const appendProgressTaskActivity = (
 export const addProgressTaskComment = (
   taskId: string,
   content: string,
-  authorName = 'You',
+  authorName = 'You'
 ): ProgressComment | null => {
   const trimmed = normalizeProgressMarkdownText(content).trim();
   if (!trimmed) return null;
@@ -385,7 +409,7 @@ export const addProgressTaskComment = (
 export const updateProgressTaskComment = (
   taskId: string,
   commentId: string,
-  content: string,
+  content: string
 ): ProgressComment | null => {
   const trimmed = normalizeProgressMarkdownText(content).trim();
   if (!trimmed) return null;
@@ -404,10 +428,7 @@ export const updateProgressTaskComment = (
   return updated;
 };
 
-const formatLegacyChatTaskDescription = (input: {
-  agentName: string;
-  content: string;
-}): string => {
+const formatLegacyChatTaskDescription = (input: { agentName: string; content: string }): string => {
   const normalized = input.content.trim();
   return [
     '## 任务背景',
@@ -430,10 +451,11 @@ export const ensureProgressTaskForMessage = (input: {
 }): ProgressTask => {
   const tasks = listProgressTasks();
   const projectId = input.projectId ?? DEFAULT_PROJECT_ID;
-  const existing = tasks.find((task) =>
-    task.agentId === input.agentId &&
-    task.sourceMessage === input.content &&
-    task.status !== 'done'
+  const existing = tasks.find(
+    (task) =>
+      task.agentId === input.agentId &&
+      task.sourceMessage === input.content &&
+      task.status !== 'done'
   );
   if (existing) {
     const updated = updateProgressTask(existing.id, { status: 'in_progress' });
@@ -454,7 +476,7 @@ export const ensureProgressTaskForMessage = (input: {
 export const moveProgressTask = (
   taskId: string,
   status: TaskStatus,
-  position: number,
+  position: number
 ): ProgressTask | null => {
   const tasks = listProgressTasks();
   let updated: ProgressTask | null = null;
@@ -471,16 +493,16 @@ export const moveProgressTask = (
           {
             id: makeId(),
             at: nowIso(),
-          actorType: 'owner',
-          actorName: 'You',
-          actorId: null,
-          action: 'status_changed',
+            actorType: 'owner',
+            actorName: 'You',
+            actorId: null,
+            action: 'status_changed',
             text: `移动到 ${status}`,
           },
         ],
       };
       return updated;
-    }),
+    })
   );
   saveProgressTasks(next, { persistReplace: false });
   if (updated) {
@@ -493,5 +515,5 @@ export const moveProgressTask = (
       recordActivity: true,
     });
   }
-  return updated ? next.find((task) => task.id === taskId) ?? updated : null;
+  return updated ? (next.find((task) => task.id === taskId) ?? updated) : null;
 };

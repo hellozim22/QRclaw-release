@@ -179,7 +179,11 @@ const validateRequiredEnv = (): void => {
     if (!process.env.DESKTOP_LOCAL_TICKET_KEY?.trim() && process.env.WS_TICKET_SECRET?.trim()) {
       process.env.DESKTOP_LOCAL_TICKET_KEY = process.env.WS_TICKET_SECRET;
     }
-    const desktopRequired = ['DESKTOP_LOCAL_TICKET_KEY', 'DESKTOP_RUNTIME_TOKEN', 'DESKTOP_CLOUD_GATEWAY_URL'];
+    const desktopRequired = [
+      'DESKTOP_LOCAL_TICKET_KEY',
+      'DESKTOP_RUNTIME_TOKEN',
+      'DESKTOP_CLOUD_GATEWAY_URL',
+    ];
     const missingDesktop = desktopRequired.filter((key) => !process.env[key]?.trim());
     if (missingDesktop.length > 0) {
       console.error(`[Server] FATAL: Desktop mode missing env: ${missingDesktop.join(', ')}`);

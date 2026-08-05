@@ -17,7 +17,11 @@ function step(name, ok, detail = {}) {
 }
 
 async function main() {
-  const browser = await chromium.launch({ headless: true, channel: 'chrome', args: ['--no-first-run'] });
+  const browser = await chromium.launch({
+    headless: true,
+    channel: 'chrome',
+    args: ['--no-first-run'],
+  });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await context.request.post(`${BASE}/api/dev/bootstrap`);
   const page = await context.newPage();
@@ -36,9 +40,15 @@ async function main() {
 
   const runtimesNavCount = await page.getByRole('link', { name: /runtimes/i }).count();
   step('runtimes nav hidden', runtimesNavCount === 0, { runtimesNavCount });
-  const runtimeStatusVisible = await page.getByText('本机运行状态', { exact: true }).isVisible().catch(() => false);
+  const runtimeStatusVisible = await page
+    .getByText('本机运行状态', { exact: true })
+    .isVisible()
+    .catch(() => false);
   step('runtime status module hidden on agents page', !runtimeStatusVisible);
-  step('no console errors', consoleErrors.length === 0, { count: consoleErrors.length, sample: consoleErrors.slice(0, 3) });
+  step('no console errors', consoleErrors.length === 0, {
+    count: consoleErrors.length,
+    sample: consoleErrors.slice(0, 3),
+  });
 
   report.pass = report.steps.every((s) => s.ok);
   writeFileSync(path.join(OUT_DIR, 'runtimes-report.json'), JSON.stringify(report, null, 2));

@@ -26,7 +26,7 @@ const agent: OwnerAgentSummary = {
 const message = (
   id: string,
   senderType: ChatMessage['sender_type'],
-  content: string,
+  content: string
 ): ChatMessage => ({
   id,
   sender_type: senderType,
@@ -39,7 +39,10 @@ describe('local progress conversation summarizer', () => {
   beforeEach(() => {
     window.localStorage.clear();
     vi.stubEnv('NEXT_PUBLIC_PROGRESS_SUMMARY_CONTEXT_LIMIT_CHARS', '200');
-    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response('{}', { status: 200 }))));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(new Response('{}', { status: 200 })))
+    );
   });
 
   afterEach(() => {
@@ -58,7 +61,11 @@ describe('local progress conversation summarizer', () => {
 
   it('creates then updates a structured Progress task for long conversations', () => {
     const firstLongConversation = [
-      message('owner-1', 'owner', '请帮我验证长对话自动压缩是否会创建 Progress 任务，并记录背景和下一步。'),
+      message(
+        'owner-1',
+        'owner',
+        '请帮我验证长对话自动压缩是否会创建 Progress 任务，并记录背景和下一步。'
+      ),
       message('agent-1', 'agent', '我会持续跟进，并在上下文达到阈值后沉淀为任务。'.repeat(3)),
     ];
 
@@ -87,8 +94,8 @@ describe('local progress conversation summarizer', () => {
         message(
           `owner-followup-${index}`,
           index % 2 === 0 ? 'owner' : 'agent',
-          `第 ${index + 1} 轮追加上下文：需要确认自动压缩会更新已有任务，而不是创建重复任务。`,
-        ),
+          `第 ${index + 1} 轮追加上下文：需要确认自动压缩会更新已有任务，而不是创建重复任务。`
+        )
       ),
     ];
 

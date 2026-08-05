@@ -23,7 +23,13 @@ export function RuntimeList({
         overflowY: 'auto',
       }}
     >
-      <h1 style={{ margin: '0 0 var(--space-4)', color: 'var(--color-gray-800)', fontSize: 'var(--text-2xl)' }}>
+      <h1
+        style={{
+          margin: '0 0 var(--space-4)',
+          color: 'var(--color-gray-800)',
+          fontSize: 'var(--text-2xl)',
+        }}
+      >
         Runtimes
       </h1>
       <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
@@ -52,7 +58,9 @@ export function RuntimeList({
             >
               <ProviderLogo provider={runtime.provider} size={28} />
               <span style={{ minWidth: 0, flex: 1 }}>
-                <strong style={{ display: 'block' }}>{getProviderDisplayName(runtime.provider)}</strong>
+                <strong style={{ display: 'block' }}>
+                  {getProviderDisplayName(runtime.provider)}
+                </strong>
                 <span style={{ color: 'var(--color-gray-600)', fontSize: 'var(--text-sm)' }}>
                   {online ? 'Online' : runtime.detected ? 'Detected' : 'Offline'}
                 </span>

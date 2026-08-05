@@ -21,7 +21,9 @@ const RUN_ID = 'bbbbbbbb-cccc-4ddd-8eee-bbbbbbbbbbbb';
 
 const mockState = vi.hoisted(() => ({
   authUserId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-  owners: [{ id: '11111111-1111-4111-8111-111111111111', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' }],
+  owners: [
+    { id: '11111111-1111-4111-8111-111111111111', user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' },
+  ],
   tokens: [] as Array<{
     id: string;
     owner_id: string;
@@ -194,7 +196,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       return this;
     }
 
-    async single(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }> {
+    async single(): Promise<{
+      data: Record<string, unknown> | null;
+      error: { message: string } | null;
+    }> {
       if (this.insertPayload) {
         return this.insertSingle();
       }
@@ -215,7 +220,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
 
     then<TResult1 = { data: Record<string, unknown>[]; error: null }, TResult2 = never>(
       onfulfilled?:
-        | ((value: { data: Record<string, unknown>[]; error: null }) => TResult1 | PromiseLike<TResult1>)
+        | ((value: {
+            data: Record<string, unknown>[];
+            error: null;
+          }) => TResult1 | PromiseLike<TResult1>)
         | null,
       onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
     ): Promise<TResult1 | TResult2> {
@@ -263,7 +271,8 @@ vi.mock('../../../gateway/src/db/supabase', () => {
           owner_id: this.insertPayload.owner_id as string,
           binding_kind: this.insertPayload.binding_kind as string,
           host_id: (this.insertPayload.host_id as string | null | undefined) ?? null,
-          preferred_host_id: (this.insertPayload.preferred_host_id as string | null | undefined) ?? null,
+          preferred_host_id:
+            (this.insertPayload.preferred_host_id as string | null | undefined) ?? null,
           provider: this.insertPayload.provider as string,
           execution_mode: this.insertPayload.execution_mode as string,
           status: (this.insertPayload.status as string | undefined) ?? 'active',
@@ -278,8 +287,10 @@ vi.mock('../../../gateway/src/db/supabase', () => {
           owner_id: this.insertPayload.owner_id as string,
           agent_id: this.insertPayload.agent_id as string,
           title: (this.insertPayload.title as string | undefined) ?? 'New chat',
-          provider_session_id: (this.insertPayload.provider_session_id as string | null | undefined) ?? null,
-          provider_work_dir: (this.insertPayload.provider_work_dir as string | null | undefined) ?? null,
+          provider_session_id:
+            (this.insertPayload.provider_session_id as string | null | undefined) ?? null,
+          provider_work_dir:
+            (this.insertPayload.provider_work_dir as string | null | undefined) ?? null,
           status: (this.insertPayload.status as string | undefined) ?? 'active',
           last_active_at: (this.insertPayload.last_active_at as string | null | undefined) ?? null,
           created_at: '2026-04-27T00:00:00.000Z',
@@ -310,10 +321,13 @@ vi.mock('../../../gateway/src/db/supabase', () => {
           host_id: (this.insertPayload.host_id as string | null | undefined) ?? null,
           provider: this.insertPayload.provider as string,
           status: (this.insertPayload.status as string | undefined) ?? 'queued',
-          requested_model: (this.insertPayload.requested_model as string | null | undefined) ?? null,
+          requested_model:
+            (this.insertPayload.requested_model as string | null | undefined) ?? null,
           actual_model: (this.insertPayload.actual_model as string | null | undefined) ?? null,
-          provider_session_id: (this.insertPayload.provider_session_id as string | null | undefined) ?? null,
-          provider_work_dir: (this.insertPayload.provider_work_dir as string | null | undefined) ?? null,
+          provider_session_id:
+            (this.insertPayload.provider_session_id as string | null | undefined) ?? null,
+          provider_work_dir:
+            (this.insertPayload.provider_work_dir as string | null | undefined) ?? null,
           error_code: (this.insertPayload.error_code as string | null | undefined) ?? null,
           error_message: (this.insertPayload.error_message as string | null | undefined) ?? null,
           created_at: '2026-04-27T00:00:00.000Z',
@@ -342,7 +356,8 @@ vi.mock('../../../gateway/src/db/supabase', () => {
       }
       if (this.table === 'owner_agent_run_events') {
         const existing = mockState.runEvents.find(
-          (event) => event.run_id === this.insertPayload?.run_id && event.seq === this.insertPayload?.seq
+          (event) =>
+            event.run_id === this.insertPayload?.run_id && event.seq === this.insertPayload?.seq
         );
         if (existing) {
           return { data: existing, error: null };
@@ -353,8 +368,11 @@ vi.mock('../../../gateway/src/db/supabase', () => {
           owner_id: this.insertPayload.owner_id as string,
           seq: this.insertPayload.seq as number,
           type: this.insertPayload.type as string,
-          content_encrypted: (this.insertPayload.content_encrypted as string | null | undefined) ?? null,
-          encryption_meta: (this.insertPayload.encryption_meta as Record<string, unknown> | null | undefined) ?? null,
+          content_encrypted:
+            (this.insertPayload.content_encrypted as string | null | undefined) ?? null,
+          encryption_meta:
+            (this.insertPayload.encryption_meta as Record<string, unknown> | null | undefined) ??
+            null,
           metadata: (this.insertPayload.metadata as Record<string, unknown> | undefined) ?? {},
           created_at: '2026-04-27T00:00:00.000Z',
         };
@@ -393,17 +411,18 @@ vi.mock('../../../gateway/src/db/supabase', () => {
                   ? mockState.providers
                   : this.table === 'agent_bindings'
                     ? mockState.bindings
-                : this.table === 'owner_agent_conversations' || this.table === 'owner_agent_sessions'
-                  ? mockState.conversations
-                  : this.table === 'owner_agent_conversation_keys'
-                    ? mockState.conversationKeys
-                    : this.table === 'owner_agent_messages'
-                      ? mockState.messages
-                      : this.table === 'owner_agent_runs'
-                        ? mockState.runs
-                        : this.table === 'owner_agent_run_events'
-                          ? mockState.runEvents
-                          : [];
+                    : this.table === 'owner_agent_conversations' ||
+                        this.table === 'owner_agent_sessions'
+                      ? mockState.conversations
+                      : this.table === 'owner_agent_conversation_keys'
+                        ? mockState.conversationKeys
+                        : this.table === 'owner_agent_messages'
+                          ? mockState.messages
+                          : this.table === 'owner_agent_runs'
+                            ? mockState.runs
+                            : this.table === 'owner_agent_run_events'
+                              ? mockState.runEvents
+                              : [];
       return source.filter((row) => {
         const matchesEq = this.filters.every(([field, value]) => row[field] === value);
         const matchesNull = this.nullFilters.every((field) => row[field] === null);
@@ -806,7 +825,9 @@ function validCreateSessionBody(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function seedOwnerAgent(overrides: { agentId?: string; ownerId?: string; hostId?: string | null } = {}) {
+function seedOwnerAgent(
+  overrides: { agentId?: string; ownerId?: string; hostId?: string | null } = {}
+) {
   const ownerId = overrides.ownerId ?? OWNER_A_ID;
   const agentId = overrides.agentId ?? AGENT_A_ID;
   const hostId = overrides.hostId === undefined ? HOST_ID : overrides.hostId;
@@ -1051,41 +1072,43 @@ describe('Owner Agent Chat Host Token API', () => {
     expect(response._statusCode).toBe(200);
     const agents = response._body?.data as Array<Record<string, unknown>>;
     expect(agents).toHaveLength(5);
-    expect(agents).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        id: AGENT_A_ID,
-        description: 'A private agent.',
-        avatar_url: 'https://example.com/a.png',
-        instructions: 'Only help owner A.',
-        suggested_prompts: ['Summarize this repo'],
-        execution_mode: 'standard',
-        status: 'active',
-      }),
-      expect.objectContaining({
-        name: 'OpenClaw Assistant',
-        backend_provider: 'openclaw',
-        is_default: true,
-        source: 'system_default',
-      }),
-      expect.objectContaining({
-        name: 'Claude Assistant',
-        backend_provider: 'claude',
-        is_default: true,
-        source: 'system_default',
-      }),
-      expect.objectContaining({
-        name: 'Cursor Assistant',
-        backend_provider: 'cursor',
-        is_default: true,
-        source: 'system_default',
-      }),
-      expect.objectContaining({
-        name: 'Codex Assistant',
-        backend_provider: 'codex',
-        is_default: true,
-        source: 'system_default',
-      }),
-    ]));
+    expect(agents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: AGENT_A_ID,
+          description: 'A private agent.',
+          avatar_url: 'https://example.com/a.png',
+          instructions: 'Only help owner A.',
+          suggested_prompts: ['Summarize this repo'],
+          execution_mode: 'standard',
+          status: 'active',
+        }),
+        expect.objectContaining({
+          name: 'OpenClaw Assistant',
+          backend_provider: 'openclaw',
+          is_default: true,
+          source: 'system_default',
+        }),
+        expect.objectContaining({
+          name: 'Claude Assistant',
+          backend_provider: 'claude',
+          is_default: true,
+          source: 'system_default',
+        }),
+        expect.objectContaining({
+          name: 'Cursor Assistant',
+          backend_provider: 'cursor',
+          is_default: true,
+          source: 'system_default',
+        }),
+        expect.objectContaining({
+          name: 'Codex Assistant',
+          backend_provider: 'codex',
+          is_default: true,
+          source: 'system_default',
+        }),
+      ])
+    );
   });
 
   it('POST /api/owner/agents creates an agent and an active provider binding', async () => {
@@ -1155,7 +1178,9 @@ describe('Owner Agent Chat Host Token API', () => {
     seedOwnerAgent();
     seedConversation();
 
-    const response = await runRenameOwnerAgentSession(CONVERSATION_ID, { title: 'PR review thread' });
+    const response = await runRenameOwnerAgentSession(CONVERSATION_ID, {
+      title: 'PR review thread',
+    });
 
     expect(response._statusCode).toBe(200);
     expect(response._body?.data).toEqual(
@@ -1164,7 +1189,9 @@ describe('Owner Agent Chat Host Token API', () => {
         title: 'PR review thread',
       })
     );
-    expect(mockState.conversations[0]).toEqual(expect.objectContaining({ title: 'PR review thread' }));
+    expect(mockState.conversations[0]).toEqual(
+      expect.objectContaining({ title: 'PR review thread' })
+    );
   });
 
   it('PATCH /api/owner/sessions/:sessionId rejects blank titles', async () => {
@@ -1203,7 +1230,9 @@ describe('Owner Agent Chat Host Token API', () => {
       updated_at: '2026-04-27T00:00:00.000Z',
     });
 
-    const renameResponse = await runRenameOwnerAgentSession(SESSION_B_ID, { title: 'Stolen title' });
+    const renameResponse = await runRenameOwnerAgentSession(SESSION_B_ID, {
+      title: 'Stolen title',
+    });
     const archiveResponse = await runArchiveOwnerAgentSession(SESSION_B_ID);
 
     expect(renameResponse._statusCode).toBe(404);
@@ -1291,7 +1320,9 @@ describe('Owner Agent Chat Host Token API', () => {
       })
     );
     expect(mockState.messages[0]).toEqual(expect.objectContaining({ status: 'sent' }));
-    expect(mockState.runs[0]).toEqual(expect.objectContaining({ status: 'running', started_at: expect.any(String) }));
+    expect(mockState.runs[0]).toEqual(
+      expect.objectContaining({ status: 'running', started_at: expect.any(String) })
+    );
     expect(sentFrames).toHaveLength(1);
     expect(JSON.parse(sentFrames[0])).toEqual(
       expect.objectContaining({
@@ -1319,7 +1350,9 @@ describe('Owner Agent Chat Host Token API', () => {
       })
     );
     expect(mockState.messages[0]).toEqual(expect.objectContaining({ status: 'pending' }));
-    expect(mockState.runs[0]).toEqual(expect.objectContaining({ status: 'pending', started_at: null }));
+    expect(mockState.runs[0]).toEqual(
+      expect.objectContaining({ status: 'pending', started_at: null })
+    );
   });
 
   it('POST /api/owner/agents/:agentId/messages rejects the 51st pending owner message', async () => {
@@ -1389,11 +1422,17 @@ describe('Owner Agent Chat Host Token API', () => {
     mockState.nextMessageId = 'eeeeeeee-ffff-4aaa-8bbb-eeeeeeeeeeee';
     mockState.nextRunId = 'ffffffff-aaaa-4bbb-8ccc-ffffffffffff';
 
-    const response = await runResendOwnerAgentMessage(AGENT_A_ID, RUN_ID, validSendMessageBody({ content: 'Retry now.' }));
+    const response = await runResendOwnerAgentMessage(
+      AGENT_A_ID,
+      RUN_ID,
+      validSendMessageBody({ content: 'Retry now.' })
+    );
 
     expect(response._statusCode).toBe(201);
     expect(mockState.messages[0].status).toBe('replaced');
-    expect(mockState.runs[0]).toEqual(expect.objectContaining({ status: 'cancelled', error_code: 'replaced' }));
+    expect(mockState.runs[0]).toEqual(
+      expect.objectContaining({ status: 'cancelled', error_code: 'replaced' })
+    );
     expect(response._body).toEqual(
       expect.objectContaining({
         message_id: 'eeeeeeee-ffff-4aaa-8bbb-eeeeeeeeeeee',
@@ -1459,7 +1498,10 @@ describe('Owner Agent Chat Host Token API', () => {
     seedOwnerAgent();
     const plaintext = 'plain owner secret that must not be stored';
 
-    const response = await runSendOwnerAgentMessage(AGENT_A_ID, validSendMessageBody({ content: plaintext }));
+    const response = await runSendOwnerAgentMessage(
+      AGENT_A_ID,
+      validSendMessageBody({ content: plaintext })
+    );
 
     expect(response._statusCode).toBe(201);
     expect(mockState.messages[0].content_encrypted).not.toContain(plaintext);

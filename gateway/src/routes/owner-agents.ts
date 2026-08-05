@@ -21,11 +21,9 @@ import type { AuthUser } from '../types/index.js';
 const LOCAL_HOST_CONNECT_UI = {
   banner_title_idle: '本机助手尚未连接',
   banner_title_reconnecting: '正在重连本机助手…',
-  banner_body:
-    '正在连接本机 AI 助手，请稍候。若长时间无响应，请刷新页面后重试。',
+  banner_body: '正在连接本机 AI 助手，请稍候。若长时间无响应，请刷新页面后重试。',
   banner_extra: '你也可以在左侧查看各助手状态，或按提示安装缺失的 AI 工具。',
-  agents_hint:
-    '本机助手尚未连接，可点击「一键连接」自动检测并连接（最多重试 3 次）。',
+  agents_hint: '本机助手尚未连接，可点击「一键连接」自动检测并连接（最多重试 3 次）。',
 } as const;
 
 export const handleListOwnerAgents = async (req: Request, res: Response): Promise<void> => {
@@ -71,10 +69,7 @@ export const handleLocalHostStatus = async (req: Request, res: Response): Promis
       const runtime = runtimes.find((row) => row.runtimeType === provider);
       const dbStatus = runtime?.runtimeStatus ?? 'offline';
       const liveStatus = liveProviders.get(provider);
-      const status =
-        dbStatus === 'online' || liveStatus === 'online'
-          ? 'online'
-          : dbStatus;
+      const status = dbStatus === 'online' || liveStatus === 'online' ? 'online' : dbStatus;
       return {
         provider,
         status,
@@ -170,11 +165,13 @@ const parseCreateAgentBody = (body: unknown): ParsedCreateAgentBody | InvalidCre
 
 const isSemanticCreateAgentViolation = (issue: z.ZodIssue | undefined): boolean => {
   const field = String(issue?.path[0] ?? '');
-  return field === 'name'
-    || field === 'avatar_url'
-    || field === 'description'
-    || field === 'instructions'
-    || field === 'suggested_prompts';
+  return (
+    field === 'name' ||
+    field === 'avatar_url' ||
+    field === 'description' ||
+    field === 'instructions' ||
+    field === 'suggested_prompts'
+  );
 };
 
 export const ownerAgentsRouter = Router();

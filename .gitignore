@@ -12,6 +12,7 @@ node_modules/
 out/
 dist/
 build/
+output/
 
 # OS files
 .DS_Store
@@ -55,6 +56,9 @@ test-results/pixel-audit/
 .cursor/todos/
 .trae/user_rules/
 
-# Release binaries
-*.dmg
-download/
+# Colleague handoff docs (not for public repo)
+COLLEAGUE-QUICKSTART.md
+PACKAGE-MANIFEST.md
+PRD.SKILL.md
+README.html
+REVIEW.md

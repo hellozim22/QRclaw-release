@@ -21,9 +21,7 @@ const LEGACY_REDIRECT_PREFIXES = [
 ];
 
 const isLegacyRedirect = (pathname: string): boolean =>
-  LEGACY_REDIRECT_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(prefix),
-  );
+  LEGACY_REDIRECT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix));
 
 export const updateSession = async (request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
@@ -50,11 +48,11 @@ export const updateSession = async (request: NextRequest) => {
               httpOnly: true,
               secure: isProduction,
               sameSite: 'lax',
-            }),
+            })
           );
         },
       },
-    },
+    }
   );
 
   const {

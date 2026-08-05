@@ -6,7 +6,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 
-const OWNER_PASSWORD = process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD';
+const OWNER_PASSWORD = 'OwnerAgentChatTest123!';
 
 const PRIVATE_TABLES = [
   'agent_hosts',
@@ -356,11 +356,15 @@ describe('Owner Agent Chat RLS', () => {
   it('keeps agents extension fields owner-scoped through owners.user_id mapping', async () => {
     const own = await ownerA.client
       .from('agents')
-      .select('id, description, avatar_url, instructions, suggested_prompts, execution_mode, status')
+      .select(
+        'id, description, avatar_url, instructions, suggested_prompts, execution_mode, status'
+      )
       .eq('id', rowsA.agentId);
     const other = await ownerA.client
       .from('agents')
-      .select('id, description, avatar_url, instructions, suggested_prompts, execution_mode, status')
+      .select(
+        'id, description, avatar_url, instructions, suggested_prompts, execution_mode, status'
+      )
       .eq('id', rowsB.agentId);
 
     expect(own.error).toBeNull();
@@ -387,7 +391,10 @@ describe('Owner Agent Chat RLS', () => {
     });
 
     for (const table of PRIVATE_TABLES) {
-      const anonRead = await anonymousClient.from(table).select(PRIMARY_KEY_BY_TABLE[table]).limit(1);
+      const anonRead = await anonymousClient
+        .from(table)
+        .select(PRIMARY_KEY_BY_TABLE[table])
+        .limit(1);
       const pluginRead = await pluginTokenClient
         .from(table)
         .select(PRIMARY_KEY_BY_TABLE[table])

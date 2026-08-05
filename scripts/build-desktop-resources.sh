@@ -44,7 +44,7 @@ export NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:3100
 export NEXT_PUBLIC_GATEWAY_WS_URL=ws://127.0.0.1:3100/ws
 export NEXT_PUBLIC_LOCAL_DEV=1
 export NEXT_PUBLIC_LOCAL_DEV_EMAIL=local-dev@localhost
-export NEXT_PUBLIC_LOCAL_DEV_PASSWORD=CHANGE_ME_LOCAL_DEV_PASSWORD
+export NEXT_PUBLIC_LOCAL_DEV_PASSWORD=LocalDev-Only-9x!
 export NEXT_PUBLIC_DESKTOP_SHELL=1
 # Use existing .env.local for Supabase public keys if present
 npm run build
@@ -163,7 +163,7 @@ cat >"$OUT_DIR/desktop-public.env.json" <<EOF
   "supabaseUrl": "${SUPABASE_PUBLIC_URL:-}",
   "supabaseAnonKey": "${SUPABASE_PUBLIC_ANON:-}",
   "localDevEmail": "local-dev@localhost",
-  "localDevPassword": "CHANGE_ME_LOCAL_DEV_PASSWORD",
+  "localDevPassword": "LocalDev-Only-9x!",
   "cloudGatewayUrl": "https://gateway-test.qrclaw.ai"
 }
 EOF

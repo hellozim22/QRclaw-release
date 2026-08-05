@@ -128,9 +128,7 @@ function CodeBlock({ code, language, children }: CodeBlockProps) {
         </button>
       </div>
       <pre style={preStyle}>
-        <code className={language ? `hljs language-${language}` : 'hljs'}>
-          {children ?? code}
-        </code>
+        <code className={language ? `hljs language-${language}` : 'hljs'}>{children ?? code}</code>
       </pre>
     </div>
   );

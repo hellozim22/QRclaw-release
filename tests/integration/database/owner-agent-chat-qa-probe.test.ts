@@ -5,7 +5,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
-const OWNER_PASSWORD = process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD';
+const OWNER_PASSWORD = 'OwnerAgentQaProbe123!';
 
 const PRIVATE_TABLES = [
   'agent_hosts',
@@ -346,9 +346,14 @@ async function insertAgentCase(ownerId: string, values: Record<string, unknown>)
 describe('Owner Agent Chat QA independent probe', () => {
   afterAll(async () => {
     if (createdOwnerIds.size > 0) {
-      await adminClient.from('owners').delete().in('id', [...createdOwnerIds]);
+      await adminClient
+        .from('owners')
+        .delete()
+        .in('id', [...createdOwnerIds]);
     }
-    await Promise.all([...createdUserIds].map((userId) => adminClient.auth.admin.deleteUser(userId)));
+    await Promise.all(
+      [...createdUserIds].map((userId) => adminClient.auth.admin.deleteUser(userId))
+    );
   }, 60000);
 
   it('covers P0 owner isolation, unauthorized actors, and service-role access', async () => {
@@ -389,11 +394,15 @@ describe('Owner Agent Chat QA independent probe', () => {
 
     const ownAgent = await ownerA.client
       .from('agents')
-      .select('id, description, avatar_url, instructions, suggested_prompts, execution_mode, status')
+      .select(
+        'id, description, avatar_url, instructions, suggested_prompts, execution_mode, status'
+      )
       .eq('id', rowsA.agentId);
     const otherAgent = await ownerA.client
       .from('agents')
-      .select('id, description, avatar_url, instructions, suggested_prompts, execution_mode, status')
+      .select(
+        'id, description, avatar_url, instructions, suggested_prompts, execution_mode, status'
+      )
       .eq('id', rowsB.agentId);
     const updateOtherAgent = await ownerA.client
       .from('agents')
@@ -426,7 +435,10 @@ describe('Owner Agent Chat QA independent probe', () => {
 
     for (const table of PRIVATE_TABLES) {
       const pk = PRIMARY_KEY_BY_TABLE[table];
-      const serviceRead = await adminClient.from(table).select(pk).in(pk, [idsA[table], idsB[table]]);
+      const serviceRead = await adminClient
+        .from(table)
+        .select(pk)
+        .in(pk, [idsA[table], idsB[table]]);
       expect(serviceRead.error, `${table} service-role read`).toBeNull();
       expect(serviceRead.data, `${table} service-role read`).toHaveLength(2);
     }
@@ -504,7 +516,10 @@ describe('Owner Agent Chat QA independent probe', () => {
 
     const agentCascadeOwner = await createOwner('cascade-agent');
     const agentCascadeRows = await seedOwnerRows(agentCascadeOwner, 'cascade-agent');
-    const agentDelete = await adminClient.from('agents').delete().eq('id', agentCascadeRows.agentId);
+    const agentDelete = await adminClient
+      .from('agents')
+      .delete()
+      .eq('id', agentCascadeRows.agentId);
     expect(agentDelete.error).toBeNull();
 
     await expectGone('agent_bindings', 'id', agentCascadeRows.bindingId);

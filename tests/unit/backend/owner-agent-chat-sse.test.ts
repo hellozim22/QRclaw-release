@@ -20,14 +20,16 @@ describe('owner-agent OpenAI SSE helpers', () => {
   });
 
   it('rejects inline base64 image URLs before opening an SSE stream', () => {
-    expect(() => extractLatestUserTextForTest({
-      messages: [
-        {
-          role: 'user',
-          content: [{ type: 'image_url', image_url: { url: 'data:image/png;base64,abc' } }],
-        },
-      ],
-    })).toThrow('base64 data: URLs not allowed');
+    expect(() =>
+      extractLatestUserTextForTest({
+        messages: [
+          {
+            role: 'user',
+            content: [{ type: 'image_url', image_url: { url: 'data:image/png;base64,abc' } }],
+          },
+        ],
+      })
+    ).toThrow('base64 data: URLs not allowed');
   });
 
   it('formats anonymous OpenAI data chunks and never ai-sdk stream lines', () => {

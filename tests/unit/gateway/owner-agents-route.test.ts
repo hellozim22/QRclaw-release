@@ -80,8 +80,9 @@ describe('owner agents route handlers', () => {
     expect(mocks.getOwnerByUserId).toHaveBeenCalledWith(USER_ID);
     expect(mocks.ensureDefaultAgents).toHaveBeenCalledWith(OWNER_ID);
     expect(mocks.listOwnerAgents).toHaveBeenCalledWith(OWNER_ID);
-    expect(mocks.ensureDefaultAgents.mock.invocationCallOrder[0])
-      .toBeLessThan(mocks.listOwnerAgents.mock.invocationCallOrder[0]);
+    expect(mocks.ensureDefaultAgents.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.listOwnerAgents.mock.invocationCallOrder[0]
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       data: [

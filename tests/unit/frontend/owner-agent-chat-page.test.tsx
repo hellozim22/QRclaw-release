@@ -105,7 +105,7 @@ describe('dashboard owner chat page', () => {
         canSend: true,
         isRunning: false,
         messages: mockStoreState.messagesByAgent['agent-a'],
-      }),
+      })
     );
   });
 

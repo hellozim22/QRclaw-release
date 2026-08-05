@@ -199,17 +199,19 @@ export const ensureDefaultAgents = async (
     const runtime = runtimesByType.get(runtimeType) ?? null;
     const apiKeyHash = buildDefaultAgentApiKeyHash(ownerId, runtimeType);
     const existing = existingAgents.find((agent) => {
-      return agent.apiKeyHash === apiKeyHash || Boolean(runtime?.id && agent.runtimeId === runtime.id);
+      return (
+        agent.apiKeyHash === apiKeyHash || Boolean(runtime?.id && agent.runtimeId === runtime.id)
+      );
     });
     const config = DEFAULT_AGENT_CONFIGS[runtimeType];
 
     if (existing) {
       let agent = existing;
       if (runtime?.id) {
-        const linked = agent.runtimeId ? runtimesById.get(agent.runtimeId) ?? null : null;
+        const linked = agent.runtimeId ? (runtimesById.get(agent.runtimeId) ?? null) : null;
         const shouldRelink =
-          agent.runtimeId !== runtime.id
-          || (linked?.runtimeStatus !== 'online' && runtime.runtimeStatus === 'online');
+          agent.runtimeId !== runtime.id ||
+          (linked?.runtimeStatus !== 'online' && runtime.runtimeStatus === 'online');
         if (shouldRelink) {
           agent = await deps.updateDefaultOwnerAgentRuntime({
             agentId: existing.id,

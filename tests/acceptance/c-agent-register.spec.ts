@@ -170,7 +170,7 @@ test.describe.serial('Module C: Agent Register', () => {
     } else {
       const { data: created, error: createErr } = await adminClient.auth.admin.createUser({
         email: SECOND_EMAIL,
-        password: process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD',
+        password: 'TestPass456ABC',
         email_confirm: true,
       });
       if (createErr) throw new Error(`Failed to create second test user: ${createErr.message}`);

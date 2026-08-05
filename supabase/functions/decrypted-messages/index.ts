@@ -200,7 +200,9 @@ async function parseBody(req: Request): Promise<ParsedBody> {
     if (raw.after_seq !== undefined) {
       const asNum = Number(raw.after_seq);
       if (!Number.isInteger(asNum) || asNum < 0) {
-        return { error: { code: 'invalid_request', message: 'after_seq must be a non-negative integer' } };
+        return {
+          error: { code: 'invalid_request', message: 'after_seq must be a non-negative integer' },
+        };
       }
       afterSeq = asNum;
     }
@@ -546,7 +548,10 @@ async function fetchAndDecryptOwnerAgentChat(
     const encryptedDekString = byteaToUtf8String(encKey.key_data_encrypted);
     dekBytes = await decryptDek(encryptedDekString, kekBytes);
   } catch (err) {
-    console.error('Failed to unwrap owner agent DEK:', err instanceof Error ? err.message : String(err));
+    console.error(
+      'Failed to unwrap owner agent DEK:',
+      err instanceof Error ? err.message : String(err)
+    );
     return errorResponse('encryption_error', 'Failed to decrypt messages', 500);
   }
 
@@ -735,7 +740,10 @@ async function decryptPayload(
       dekBytes
     );
   } catch (err) {
-    console.error(`Failed to decrypt payload ${rowId}:`, err instanceof Error ? err.message : String(err));
+    console.error(
+      `Failed to decrypt payload ${rowId}:`,
+      err instanceof Error ? err.message : String(err)
+    );
     return DECRYPTION_FAILED_SENTINEL;
   }
 }

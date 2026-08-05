@@ -108,23 +108,31 @@ export const handleListOwnerAgentMessages = async (req: Request, res: Response):
         res.json({ data: [] });
         return;
       }
-      console.error('[OwnerAgentMessages] History read failed:', result.error.code, result.error.message);
-      res.status(502).json({ error: { code: 'history_unavailable', message: 'Failed to load messages' } });
+      console.error(
+        '[OwnerAgentMessages] History read failed:',
+        result.error.code,
+        result.error.message
+      );
+      res
+        .status(502)
+        .json({ error: { code: 'history_unavailable', message: 'Failed to load messages' } });
       return;
     }
 
     const messages = result.data.data
       .slice()
       .reverse()
-      .map((message): OwnerAgentHistoryMessage => ({
-        id: message.id,
-        sender_type: message.sender_type as OwnerAgentHistoryMessage['sender_type'],
-        content: message.content,
-        status: message.status === 'failed' ? 'failed' : 'sent',
-        run_id: message.run_id ?? null,
-        run_status: message.sender_type === 'agent' ? 'completed' : undefined,
-        created_at: message.persisted_at,
-      }));
+      .map(
+        (message): OwnerAgentHistoryMessage => ({
+          id: message.id,
+          sender_type: message.sender_type as OwnerAgentHistoryMessage['sender_type'],
+          content: message.content,
+          status: message.status === 'failed' ? 'failed' : 'sent',
+          run_id: message.run_id ?? null,
+          run_status: message.sender_type === 'agent' ? 'completed' : undefined,
+          created_at: message.persisted_at,
+        })
+      );
 
     res.json({ data: messages });
   } catch (err) {
@@ -155,9 +163,10 @@ const handleOwnerAgentMessage = async (
     }
 
     const body = req.body as OwnerAgentSendMessageRequest;
-    const response = mode === 'resend'
-      ? await resendOwnerAgentMessage(owner.id, agentId, requiredRunId(req), body)
-      : await sendOwnerAgentMessage(owner.id, agentId, body);
+    const response =
+      mode === 'resend'
+        ? await resendOwnerAgentMessage(owner.id, agentId, requiredRunId(req), body)
+        : await sendOwnerAgentMessage(owner.id, agentId, body);
 
     res.status(201).json(response);
   } catch (err) {

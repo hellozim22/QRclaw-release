@@ -53,7 +53,7 @@ export async function startGoHost(opts: StartGoHostOptions): Promise<GoHostHandl
     opts.binaryPath ?? path.join(repoRoot, 'qrclaw-agent-host', 'qrclaw-agent-host');
   if (!existsSync(binaryPath)) {
     throw new Error(
-      `go-host binary not found at ${binaryPath}; build it first (make -C qrclaw-agent-host build)`,
+      `go-host binary not found at ${binaryPath}; build it first (make -C qrclaw-agent-host build)`
     );
   }
 
@@ -94,7 +94,7 @@ export async function startGoHost(opts: StartGoHostOptions): Promise<GoHostHandl
   writeSanitized(
     logStream,
     `$ ${path.basename(binaryPath)} run --name ${name} --host-id ${hostId} --display-name ${displayName} (QRCLAW_WS_URL=${wsURL})\n`,
-    opts.token,
+    opts.token
   );
   const proc = spawn(
     binaryPath,
@@ -102,7 +102,7 @@ export async function startGoHost(opts: StartGoHostOptions): Promise<GoHostHandl
     {
       env: runEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
-    },
+    }
   );
 
   let buffered = '';
@@ -122,14 +122,14 @@ export async function startGoHost(opts: StartGoHostOptions): Promise<GoHostHandl
       while (Date.now() < deadline) {
         if (proc.exitCode !== null) {
           throw new Error(
-            `go-host exited with code ${proc.exitCode} before registering (see ${logPath})`,
+            `go-host exited with code ${proc.exitCode} before registering (see ${logPath})`
           );
         }
         if (REGISTERED_RE.test(buffered)) return;
         await delay(100);
       }
       throw new Error(
-        `timed out waiting for "registered host …" in go-host log after ${timeoutMs}ms (see ${logPath})`,
+        `timed out waiting for "registered host …" in go-host log after ${timeoutMs}ms (see ${logPath})`
       );
     },
     async stop(graceMs = 5_000) {

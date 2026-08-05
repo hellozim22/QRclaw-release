@@ -14,7 +14,11 @@ import { AgentListItem } from './AgentListItem';
 const PROVIDERS: OwnerAgentProvider[] = ['openclaw', 'claude', 'cursor', 'codex', 'pi'];
 
 const summarizeRole = (value: string): string | null => {
-  const firstLine = value.trim().split('\n').find((line) => line.trim().length > 0)?.trim();
+  const firstLine = value
+    .trim()
+    .split('\n')
+    .find((line) => line.trim().length > 0)
+    ?.trim();
   return firstLine ? firstLine.slice(0, 160) : null;
 };
 
@@ -55,7 +59,7 @@ export function AgentsPage() {
         setConnectMessage(
           result.onlineRuntimeCount > 0
             ? `已连接 ${result.onlineRuntimeCount} 个本机助手`
-            : '本机助手已就绪',
+            : '本机助手已就绪'
         );
       } else {
         setConnectMessage(result.message ?? '连接失败，请重试');
@@ -66,11 +70,12 @@ export function AgentsPage() {
   };
 
   const onlineCount = useMemo(
-    () => agents.filter((agent) => {
-      const status = statusByAgent[agent.id];
-      return status === 'online' || status === 'running' || agent.runtime_status === 'online';
-    }).length,
-    [agents, statusByAgent],
+    () =>
+      agents.filter((agent) => {
+        const status = statusByAgent[agent.id];
+        return status === 'online' || status === 'running' || agent.runtime_status === 'online';
+      }).length,
+    [agents, statusByAgent]
   );
   const showConnectHint = (localHostOnlineCount ?? onlineCount) === 0;
 
@@ -98,7 +103,7 @@ export function AgentsPage() {
   }, [selectedId, visibleAgents]);
 
   const selectedAgent = selectedId
-    ? visibleAgents.find((agent) => agent.id === selectedId) ?? null
+    ? (visibleAgents.find((agent) => agent.id === selectedId) ?? null)
     : null;
 
   const submitCreate = async () => {
@@ -149,7 +154,14 @@ export function AgentsPage() {
           overflowY: 'auto',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-3)' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 'var(--space-3)',
+          }}
+        >
           <h1 style={{ margin: 0, color: 'var(--color-gray-800)', fontSize: 'var(--text-2xl)' }}>
             Agents
           </h1>
@@ -206,7 +218,7 @@ export function AgentsPage() {
               lineHeight: 1.5,
             }}
           >
-            {connectMessage ?? (showConnectHint ? localHostConnectUi?.agents_hint ?? '' : '')}
+            {connectMessage ?? (showConnectHint ? (localHostConnectUi?.agents_hint ?? '') : '')}
           </p>
         )}
 
@@ -249,24 +261,42 @@ export function AgentsPage() {
             <select
               value={providerDraft}
               onChange={(event) => setProviderDraft(event.target.value as OwnerAgentProvider)}
-              style={{ height: 34, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-gray-border)' }}
+              style={{
+                height: 34,
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--color-gray-border)',
+              }}
             >
               {PROVIDERS.map((provider) => (
-                <option key={provider} value={provider}>{provider}</option>
+                <option key={provider} value={provider}>
+                  {provider}
+                </option>
               ))}
             </select>
             <details>
-              <summary style={{ color: 'var(--color-gray-600)', cursor: 'pointer' }}>高级选项</summary>
+              <summary style={{ color: 'var(--color-gray-600)', cursor: 'pointer' }}>
+                高级选项
+              </summary>
               <select
                 value={executionModeDraft}
-                onChange={(event) => setExecutionModeDraft(event.target.value as OwnerAgentExecutionMode)}
-                style={{ marginTop: 8, width: '100%', height: 34, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-gray-border)' }}
+                onChange={(event) =>
+                  setExecutionModeDraft(event.target.value as OwnerAgentExecutionMode)
+                }
+                style={{
+                  marginTop: 8,
+                  width: '100%',
+                  height: 34,
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-gray-border)',
+                }}
               >
                 <option value="standard">Standard</option>
                 <option value="full_access">Full Access</option>
               </select>
             </details>
-            {error && <div style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>{error}</div>}
+            {error && (
+              <div style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>{error}</div>
+            )}
             <button
               type="button"
               onClick={submitCreate}

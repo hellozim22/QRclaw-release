@@ -46,8 +46,7 @@ export const getOwnerAgentE2EEnv = (): { env: OwnerAgentE2EEnv | null; missing: 
     apiBase: process.env.E2E_API_BASE,
     wsBase: process.env.E2E_WS_BASE,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.E2E_SUPABASE_URL,
-    supabaseAnonKey:
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.E2E_SUPABASE_ANON_KEY,
+    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.E2E_SUPABASE_ANON_KEY,
   };
   const missing = Object.entries(values)
     .filter(([, value]) => !value)
@@ -66,9 +65,8 @@ export const writeFakeOpenClaw = (opts: { replyText: string; delaySeconds?: numb
   const binaryPath = path.join(dir, `openclaw-${randomUUID()}`);
   const payload = JSON.stringify({ payloads: [{ text: opts.replyText }] });
   const quotedPayload = JSON.stringify(payload);
-  const delay = opts.delaySeconds && opts.delaySeconds > 0
-    ? `sleep ${Math.ceil(opts.delaySeconds)}`
-    : ':';
+  const delay =
+    opts.delaySeconds && opts.delaySeconds > 0 ? `sleep ${Math.ceil(opts.delaySeconds)}` : ':';
 
   writeFileSync(
     binaryPath,
@@ -82,7 +80,7 @@ export const writeFakeOpenClaw = (opts: { replyText: string; delaySeconds?: numb
       `printf '%s\\n' ${quotedPayload}`,
       '',
     ].join('\n'),
-    { mode: 0o755 },
+    { mode: 0o755 }
   );
   return binaryPath;
 };
@@ -96,7 +94,7 @@ export async function createOwnerAgentHarness(
     tokenLabel: string;
     replyText: string;
     fakeDelaySeconds?: number;
-  },
+  }
 ): Promise<OwnerAgentHarness> {
   await loginAsOwner(page, { email: env.email, password: env.password });
   const ownerJWT = await getOwnerJWT(page);
@@ -164,7 +162,7 @@ export async function createOwnerAgentHarness(
 export async function resolveOwnerId(
   request: APIRequestContext,
   ownerJWT: string,
-  env: OwnerAgentE2EEnv,
+  env: OwnerAgentE2EEnv
 ): Promise<string> {
   const ownerRes = await request.get(`${env.supabaseUrl}/rest/v1/owners?select=id&limit=1`, {
     headers: supabaseHeaders(ownerJWT, env),
@@ -179,7 +177,7 @@ export async function findAgentByName(
   request: APIRequestContext,
   apiBase: string,
   ownerJWT: string,
-  agentName: string,
+  agentName: string
 ): Promise<{ id: string; name: string } | null> {
   const listRes = await request.get(`${apiBase}/api/owner/agents`, {
     headers: { Authorization: `Bearer ${ownerJWT}` },
@@ -193,11 +191,11 @@ export async function getOwnerAgentConversation(
   request: APIRequestContext,
   env: OwnerAgentE2EEnv,
   ownerJWT: string,
-  agentId: string,
+  agentId: string
 ): Promise<OwnerAgentConversationRow> {
   const res = await request.get(
     `${env.supabaseUrl}/rest/v1/owner_agent_conversations?select=id,owner_id,agent_id,provider_session_id,provider_work_dir&agent_id=eq.${agentId}&status=eq.active&limit=1`,
-    { headers: supabaseHeaders(ownerJWT, env) },
+    { headers: supabaseHeaders(ownerJWT, env) }
   );
   expect(res.ok(), `conversation REST returned ${res.status()}`).toBeTruthy();
   const rows = (await res.json()) as OwnerAgentConversationRow[];
@@ -210,14 +208,14 @@ export async function updateConversationRuntime(
   env: OwnerAgentE2EEnv,
   ownerJWT: string,
   conversationId: string,
-  patch: { provider_session_id: string | null; provider_work_dir: string | null },
+  patch: { provider_session_id: string | null; provider_work_dir: string | null }
 ): Promise<void> {
   const res = await request.patch(
     `${env.supabaseUrl}/rest/v1/owner_agent_conversations?id=eq.${conversationId}`,
     {
       headers: { ...supabaseHeaders(ownerJWT, env), Prefer: 'return=minimal' },
       data: patch,
-    },
+    }
   );
   expect(res.ok(), `conversation PATCH returned ${res.status()}`).toBeTruthy();
 }
@@ -228,7 +226,7 @@ async function insertHostPlaceholder(
   ownerJWT: string,
   ownerId: string,
   hostId: string,
-  displayName: string,
+  displayName: string
 ): Promise<void> {
   const res = await request.post(`${env.supabaseUrl}/rest/v1/agent_hosts`, {
     headers: { ...supabaseHeaders(ownerJWT, env), Prefer: 'return=minimal' },

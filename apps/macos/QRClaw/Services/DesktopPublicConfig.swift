@@ -10,7 +10,7 @@ struct DesktopPublicConfig: Sendable {
     let cloudGatewayUrl: String
 
     static let defaultLocalDevEmail = "local-dev@localhost"
-    static let defaultLocalDevPassword = "CHANGE_ME_LOCAL_DEV_PASSWORD"
+    static let defaultLocalDevPassword = "LocalDev-Only-9x!"
     static let defaultCloudGateway = "https://gateway-test.qrclaw.ai"
 
     var hasSupabasePublic: Bool {

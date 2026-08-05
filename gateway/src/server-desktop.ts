@@ -44,7 +44,11 @@ const validateDesktopEnv = (): void => {
   if (!process.env.DESKTOP_LOCAL_TICKET_KEY?.trim() && process.env.WS_TICKET_SECRET?.trim()) {
     process.env.DESKTOP_LOCAL_TICKET_KEY = process.env.WS_TICKET_SECRET;
   }
-  for (const key of ['DESKTOP_LOCAL_TICKET_KEY', 'DESKTOP_RUNTIME_TOKEN', 'DESKTOP_CLOUD_GATEWAY_URL']) {
+  for (const key of [
+    'DESKTOP_LOCAL_TICKET_KEY',
+    'DESKTOP_RUNTIME_TOKEN',
+    'DESKTOP_CLOUD_GATEWAY_URL',
+  ]) {
     if (!process.env[key]?.trim()) {
       console.error(`[DesktopGateway] FATAL: missing ${key}`);
       process.exit(1);

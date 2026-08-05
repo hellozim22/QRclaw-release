@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
+import { expect, test } from '@playwright/test';
+import { createRealClaudeHarness } from '../../../helpers/wave10-harness';
 
 /**
  * OAC-W10-E2E-02 · Onboarding · P0
@@ -12,14 +12,12 @@ import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
  *   - 点击 claude card → 右栏 assistant-ui Thread 出现
  *   - composer 输入框启用 (placeholder = "输入消息...", 不是 "runtime 离线")
  */
-test.describe("E2E-02 default agent click opens chat", () => {
+test.describe('E2E-02 default agent click opens chat', () => {
   test.setTimeout(120_000);
 
-  test("clicking claude default agent opens the chat composer", async ({
-    browser,
-  }) => {
+  test('clicking claude default agent opens the chat composer', async ({ browser }) => {
     const harness = await createRealClaudeHarness(browser, {
-      runtime: "claude",
+      runtime: 'claude',
       requireRealCli: true,
     });
     try {
@@ -30,7 +28,10 @@ test.describe("E2E-02 default agent click opens chat", () => {
       await expect(rail).toBeVisible();
 
       // Click the first agent row whose text contains "Claude" (the default agent).
-      const claudeItem = rail.locator('[data-testid^="agent-list-item-"]').filter({ hasText: /Claude/i }).first();
+      const claudeItem = rail
+        .locator('[data-testid^="agent-list-item-"]')
+        .filter({ hasText: /Claude/i })
+        .first();
       await expect(claudeItem).toBeVisible({ timeout: 15_000 });
       await claudeItem.click();
 
@@ -39,10 +40,10 @@ test.describe("E2E-02 default agent click opens chat", () => {
       await expect(thread).toBeVisible({ timeout: 10_000 });
 
       // Composer placeholder = "输入消息..." when online.
-      const composer = thread.locator("textarea, input").first();
+      const composer = thread.locator('textarea, input').first();
       await expect(composer).toBeVisible({ timeout: 10_000 });
-      const placeholder = await composer.getAttribute("placeholder");
-      expect(placeholder ?? "").toContain("输入消息");
+      const placeholder = await composer.getAttribute('placeholder');
+      expect(placeholder ?? '').toContain('输入消息');
     } finally {
       await harness.stop();
     }

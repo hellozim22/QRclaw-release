@@ -33,9 +33,10 @@ test.describe('Owner Agent Chat - reload during stream', () => {
       fakeDelaySeconds: 4,
     });
 
-    const sendResponse = page.waitForResponse((response) =>
-      response.url().includes(`/api/owner/agents/${harness!.agentId}/messages`)
-      && response.request().method() === 'POST',
+    const sendResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/api/owner/agents/${harness!.agentId}/messages`) &&
+        response.request().method() === 'POST'
     );
     await sendChatMessage(page, prompt);
     const response = await sendResponse;

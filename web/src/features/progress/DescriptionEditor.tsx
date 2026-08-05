@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MarkdownRenderer from '@/components/chat/MarkdownRenderer';
 import { normalizeProgressMarkdownText } from '@/lib/progress-markdown';
 
@@ -14,12 +14,16 @@ export function DescriptionEditor({
   const normalizedValue = normalizeProgressMarkdownText(value);
   const [editing, setEditing] = useState(!normalizedValue.trim());
   const [draft, setDraft] = useState(normalizedValue);
-
-  useEffect(() => {
+  // React-recommended "adjust state when a prop changes" pattern: reset the
+  // editable draft whenever the persisted description changes externally
+  // (task switch, save from another tab) without an effect.
+  const [prevValue, setPrevValue] = useState(value);
+  if (prevValue !== value) {
+    setPrevValue(value);
     const next = normalizeProgressMarkdownText(value);
     setDraft(next);
     setEditing(!next.trim());
-  }, [value]);
+  }
 
   const save = () => {
     const normalizedDraft = normalizeProgressMarkdownText(draft);

@@ -13,11 +13,7 @@ export const handleRescanOwnerRuntimes = async (req: Request, res: Response): Pr
   await handleOwnerRuntimes(req, res, true);
 };
 
-const handleOwnerRuntimes = async (
-  req: Request,
-  res: Response,
-  rescan: boolean
-): Promise<void> => {
+const handleOwnerRuntimes = async (req: Request, res: Response, rescan: boolean): Promise<void> => {
   try {
     const user = (req as Request & { user: AuthUser }).user;
     const owner = await getOwnerByUserId(user.id);
@@ -38,4 +34,8 @@ const handleOwnerRuntimes = async (
 
 export const ownerRuntimesRouter = Router();
 ownerRuntimesRouter.get('/api/owner/runtimes', jwtAuthMiddleware, handleListOwnerRuntimes);
-ownerRuntimesRouter.post('/api/owner/runtimes/rescan', jwtAuthMiddleware, handleRescanOwnerRuntimes);
+ownerRuntimesRouter.post(
+  '/api/owner/runtimes/rescan',
+  jwtAuthMiddleware,
+  handleRescanOwnerRuntimes
+);

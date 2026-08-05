@@ -3,10 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AgentAvatar } from '@/components/agent/AgentAvatar';
 import { createClient } from '@/lib/supabase/browser';
-import {
-  getAgentDisplayName,
-  isSystemDefaultAgent,
-} from '@/lib/agent-display';
+import { getAgentDisplayName, isSystemDefaultAgent } from '@/lib/agent-display';
 import {
   useOwnerAgentChatStore,
   type AgentConnectionStatus,
@@ -17,7 +14,11 @@ const isOnline = (status: AgentConnectionStatus | undefined) =>
   status === 'online' || status === 'running';
 
 const summarizeRole = (value: string): string | null => {
-  const firstLine = value.trim().split('\n').find((line) => line.trim().length > 0)?.trim();
+  const firstLine = value
+    .trim()
+    .split('\n')
+    .find((line) => line.trim().length > 0)
+    ?.trim();
   return firstLine ? firstLine.slice(0, 160) : null;
 };
 
@@ -48,9 +49,10 @@ export function AgentDetail({
     setConfigLoaded(false);
     setLoadError(false);
     setSaveState('idle');
-    if (!agent) return () => {
-      cancelled = true;
-    };
+    if (!agent)
+      return () => {
+        cancelled = true;
+      };
 
     const loadAgentConfig = async () => {
       try {
@@ -65,7 +67,9 @@ export function AgentDetail({
           setLoadError(true);
           return;
         }
-        setNameDraft(isSystemDefaultAgent(agent) ? getAgentDisplayName(agent) : (data.name ?? agent.name));
+        setNameDraft(
+          isSystemDefaultAgent(agent) ? getAgentDisplayName(agent) : (data.name ?? agent.name)
+        );
         setRoleDraft(data.instructions ?? data.description ?? '');
         setConfigLoaded(true);
       } catch {
@@ -131,97 +135,100 @@ export function AgentDetail({
         </div>
       </header>
 
-        <section style={{ marginTop: 28, display: 'grid', gap: 'var(--space-4)', maxWidth: 680 }}>
-          <h2 style={{ margin: 0, color: 'var(--color-gray-800)', fontSize: 'var(--text-xl)' }}>
-            Agent 配置
-          </h2>
-          <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
-            显示名称
-            <input
-              value={nameDraft}
-              readOnly={defaultAgent}
-              onChange={(event) => setNameDraft(event.target.value)}
-              style={{
-                height: 38,
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-gray-border)',
-                background: defaultAgent ? 'var(--color-gray-100)' : 'var(--color-white)',
-                color: 'var(--color-gray-800)',
-                padding: '0 var(--space-3)',
-                fontFamily: 'var(--font-primary)',
-              }}
-            />
-          </label>
-          <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
-            模型型号
-            <input
-              value={modelLabel(agent)}
-              readOnly
-              style={{
-                height: 38,
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-gray-border)',
-                background: 'var(--color-gray-100)',
-                color: 'var(--color-gray-800)',
-                padding: '0 var(--space-3)',
-                fontFamily: 'var(--font-primary)',
-              }}
-            />
-          </label>
-          <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
-            角色说明
-            <textarea
-              value={roleDraft}
-              onChange={(event) => setRoleDraft(event.target.value)}
-              placeholder="像 CLAUDE.md 一样，描述这个 Agent 的职责、边界、工具使用方式和输出偏好。"
-              rows={10}
-              style={{
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-gray-border)',
-                background: 'var(--color-white)',
-                color: 'var(--color-gray-800)',
-                padding: 'var(--space-3)',
-                fontFamily: 'var(--font-primary)',
-                lineHeight: 1.6,
-              }}
-            />
-          </label>
-          {loadError && (
-            <div role="alert" style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>
-              配置加载失败，暂时不能保存，避免覆盖已有内容。
-            </div>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-            <button
-              type="button"
-              onClick={saveConfig}
-              disabled={!configLoaded || saveState === 'saving'}
-              style={{
-                height: 36,
-                padding: '0 var(--space-4)',
-                border: 'none',
-                borderRadius: 'var(--radius-md)',
-                background: configLoaded ? 'var(--color-red)' : 'var(--color-gray-200)',
-                color: configLoaded ? 'var(--color-white)' : 'var(--color-gray-500)',
-                cursor: !configLoaded ? 'not-allowed' : saveState === 'saving' ? 'wait' : 'pointer',
-                fontFamily: 'var(--font-primary)',
-                fontWeight: 'var(--font-semibold)',
-              }}
-            >
-              {saveState === 'saving' ? '保存中…' : '保存配置'}
-            </button>
-            {saveState === 'saved' && (
-              <span role="status" style={{ color: 'var(--color-green-text)', fontSize: 'var(--text-sm)' }}>
-                已保存
-              </span>
-            )}
-            {saveState === 'error' && (
-              <span role="alert" style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>
-                保存失败，请稍后重试
-              </span>
-            )}
+      <section style={{ marginTop: 28, display: 'grid', gap: 'var(--space-4)', maxWidth: 680 }}>
+        <h2 style={{ margin: 0, color: 'var(--color-gray-800)', fontSize: 'var(--text-xl)' }}>
+          Agent 配置
+        </h2>
+        <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
+          显示名称
+          <input
+            value={nameDraft}
+            readOnly={defaultAgent}
+            onChange={(event) => setNameDraft(event.target.value)}
+            style={{
+              height: 38,
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-gray-border)',
+              background: defaultAgent ? 'var(--color-gray-100)' : 'var(--color-white)',
+              color: 'var(--color-gray-800)',
+              padding: '0 var(--space-3)',
+              fontFamily: 'var(--font-primary)',
+            }}
+          />
+        </label>
+        <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
+          模型型号
+          <input
+            value={modelLabel(agent)}
+            readOnly
+            style={{
+              height: 38,
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-gray-border)',
+              background: 'var(--color-gray-100)',
+              color: 'var(--color-gray-800)',
+              padding: '0 var(--space-3)',
+              fontFamily: 'var(--font-primary)',
+            }}
+          />
+        </label>
+        <label style={{ display: 'grid', gap: 8, color: 'var(--color-gray-700)' }}>
+          角色说明
+          <textarea
+            value={roleDraft}
+            onChange={(event) => setRoleDraft(event.target.value)}
+            placeholder="像 CLAUDE.md 一样，描述这个 Agent 的职责、边界、工具使用方式和输出偏好。"
+            rows={10}
+            style={{
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-gray-border)',
+              background: 'var(--color-white)',
+              color: 'var(--color-gray-800)',
+              padding: 'var(--space-3)',
+              fontFamily: 'var(--font-primary)',
+              lineHeight: 1.6,
+            }}
+          />
+        </label>
+        {loadError && (
+          <div role="alert" style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>
+            配置加载失败，暂时不能保存，避免覆盖已有内容。
           </div>
-        </section>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <button
+            type="button"
+            onClick={saveConfig}
+            disabled={!configLoaded || saveState === 'saving'}
+            style={{
+              height: 36,
+              padding: '0 var(--space-4)',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              background: configLoaded ? 'var(--color-red)' : 'var(--color-gray-200)',
+              color: configLoaded ? 'var(--color-white)' : 'var(--color-gray-500)',
+              cursor: !configLoaded ? 'not-allowed' : saveState === 'saving' ? 'wait' : 'pointer',
+              fontFamily: 'var(--font-primary)',
+              fontWeight: 'var(--font-semibold)',
+            }}
+          >
+            {saveState === 'saving' ? '保存中…' : '保存配置'}
+          </button>
+          {saveState === 'saved' && (
+            <span
+              role="status"
+              style={{ color: 'var(--color-green-text)', fontSize: 'var(--text-sm)' }}
+            >
+              已保存
+            </span>
+          )}
+          {saveState === 'error' && (
+            <span role="alert" style={{ color: 'var(--color-red)', fontSize: 'var(--text-sm)' }}>
+              保存失败，请稍后重试
+            </span>
+          )}
+        </div>
+      </section>
     </main>
   );
 }

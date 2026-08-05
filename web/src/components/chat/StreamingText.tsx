@@ -99,11 +99,7 @@ const StreamingText = memo(function StreamingText({
       data-testid="streaming-text"
       data-streaming="false"
     >
-      {asMarkdown ? (
-        <MarkdownRenderer content={text} />
-      ) : (
-        <div style={textStyle}>{text}</div>
-      )}
+      {asMarkdown ? <MarkdownRenderer content={text} /> : <div style={textStyle}>{text}</div>}
     </div>
   );
 });

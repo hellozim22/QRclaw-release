@@ -2,10 +2,7 @@
 // Web MUST NOT import this file — it pulls in zod.
 
 import { z } from 'zod';
-import {
-  OWNER_RUNTIME_STATUSES,
-  OWNER_RUNTIME_TYPES,
-} from './types.js';
+import { OWNER_RUNTIME_STATUSES, OWNER_RUNTIME_TYPES } from './types.js';
 
 const uuidSchema = z.string().uuid();
 const isoTimestampSchema = z.string().min(1).max(64);

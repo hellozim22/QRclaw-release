@@ -36,17 +36,23 @@ function isLocalhost(req: Request): boolean {
 
 router.get('/api/desktop/local-session', (req: Request, res: Response) => {
   if (!isDesktopLocalMode()) {
-    res.status(404).json({ error: { code: 'not_desktop_mode', message: 'Not in desktop local mode' } });
+    res
+      .status(404)
+      .json({ error: { code: 'not_desktop_mode', message: 'Not in desktop local mode' } });
     return;
   }
 
   if (!isLocalhost(req)) {
-    res.status(403).json({ error: { code: 'forbidden', message: 'Local session only available on localhost' } });
+    res
+      .status(403)
+      .json({ error: { code: 'forbidden', message: 'Local session only available on localhost' } });
     return;
   }
 
   if (!cachedSession) {
-    res.status(401).json({ error: { code: 'no_session', message: 'No desktop session configured' } });
+    res
+      .status(401)
+      .json({ error: { code: 'no_session', message: 'No desktop session configured' } });
     return;
   }
 

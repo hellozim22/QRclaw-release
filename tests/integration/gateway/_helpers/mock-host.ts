@@ -22,13 +22,7 @@ export type HostToGatewayFrame =
 
 export type GatewayToHostFrame = OwnerAgentRunRequestFrame | OwnerAgentRunCancelFrame;
 
-export type MockHostMode =
-  | 'online'
-  | 'offline'
-  | 'cancel'
-  | 'reset'
-  | 'seq-gap'
-  | 'backpressure';
+export type MockHostMode = 'online' | 'offline' | 'cancel' | 'reset' | 'seq-gap' | 'backpressure';
 
 export interface MockHostOptions {
   mode?: MockHostMode;
@@ -206,7 +200,10 @@ export class MockOwnerAgentHost {
 
     const accepted = this.createAcceptedFrame(request);
 
-    if (this.options.mode === 'backpressure' && this.options.eventCount > this.options.backpressureLimit) {
+    if (
+      this.options.mode === 'backpressure' &&
+      this.options.eventCount > this.options.backpressureLimit
+    ) {
       return [
         accepted,
         this.createFailedFrame(request, {
@@ -220,11 +217,7 @@ export class MockOwnerAgentHost {
     const events = this.createEventFrames(request);
     const lastEventSeq = events.at(-1)?.payload.seq ?? 0;
 
-    return [
-      accepted,
-      ...events,
-      this.createCompletedFrame(request, lastEventSeq + 1),
-    ];
+    return [accepted, ...events, this.createCompletedFrame(request, lastEventSeq + 1)];
   }
 
   async connect(gatewayWsUrl: string): Promise<void> {
@@ -262,9 +255,10 @@ export class MockOwnerAgentHost {
   private createEventFrames(request: OwnerAgentRunRequestFrame): OwnerAgentRunEventFrame[] {
     return Array.from({ length: this.options.eventCount }, (_, index) => {
       const naturalSeq = index + 1;
-      const seq = this.options.mode === 'seq-gap' && naturalSeq > this.options.seqGapAfter
-        ? naturalSeq + 1
-        : naturalSeq;
+      const seq =
+        this.options.mode === 'seq-gap' && naturalSeq > this.options.seqGapAfter
+          ? naturalSeq + 1
+          : naturalSeq;
 
       return {
         type: 'owner_agent_run_event',
