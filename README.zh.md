@@ -5,7 +5,7 @@
 <h1 align="center">QRClaw</h1>
 
 <p align="center">
-  统一管理多个 AI 智能体、对话与任务的桌面工作台。
+  统一管理多个 AI 智能体、对话与任务的 macOS 桌面工作台。
 </p>
 
 <p align="center">
@@ -43,7 +43,7 @@
 
 ## 产品简介
 
-QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code、OpenClaw、Pi 等——汇聚到一个桌面应用中。像切换联系人一样切换智能体，进行多轮私聊，自动跟踪任务，并在会话之间保留完整上下文。
+QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code、OpenClaw、Pi 等——汇聚到一个 macOS 桌面应用中。像切换联系人一样切换智能体，进行多轮私聊，自动跟踪任务，并在会话之间保留完整上下文。
 
 ## 功能特性
 
@@ -69,15 +69,11 @@ QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code�
 
 ![任务看板](./docs/assets/screenshots/02-progress-board.png)
 
-![任务详情](./docs/assets/screenshots/03-progress-task-detail.png)
-
 ### 3. 智能体管理
 
 - 查看本机已安装的 Agent 运行时（Codex、Cursor、Claude Code、OpenClaw、Pi 等）。
 - 在界面上管理其展示名称与角色，明确分工。
 - 查看运行时在线状态。
-
-![智能体管理](./docs/assets/screenshots/04-agents.png)
 
 ### 4. 对话与任务联动
 

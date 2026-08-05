@@ -5,7 +5,7 @@
 <h1 align="center">QRClaw</h1>
 
 <p align="center">
-  A unified desktop workspace for managing multiple AI agents, conversations, and tasks in one place.
+  A unified macOS desktop workspace for managing multiple AI agents, conversations, and tasks in one place.
 </p>
 
 <p align="center">
@@ -43,7 +43,7 @@
 
 ## Overview
 
-QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi, and more — into a single desktop application. Switch between agents like switching contacts, run multi-turn conversations, automatically track tasks, and keep full context history across sessions.
+QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi, and more — into a single macOS desktop application. Switch between agents like switching contacts, run multi-turn conversations, automatically track tasks, and keep full context history across sessions.
 
 ## Features
 
@@ -69,15 +69,11 @@ QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi,
 
 ![Task Board](./docs/assets/screenshots/02-progress-board.png)
 
-![Task Detail](./docs/assets/screenshots/03-progress-task-detail.png)
-
 ### 3. Agent Management
 
 - View locally installed agent runtimes (Codex, Cursor, Claude Code, OpenClaw, Pi, etc.).
 - Manage display names and roles for each agent to clarify responsibilities.
 - View real-time online status of each runtime.
-
-![Agent Management](./docs/assets/screenshots/04-agents.png)
 
 ### 4. Conversation-Task Linkage
 
