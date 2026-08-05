@@ -56,7 +56,7 @@ QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code�
 - **历史搜索：** 在搜索框输入关键词，按会话与消息匹配并定位。
 - **异常处理：** 运行时离线时提示；网络中断重连后回放断线消息；执行失败标记时间线。
 
-![Chat 对话界面](./docs/assets/screenshots/01-chat-openclaw.png)
+![Chat 对话界面](./docs/assets/screenshots/01-chat.png)
 
 ### 2. 任务看板
 
@@ -67,7 +67,7 @@ QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code�
 - 任务状态流转：待处理 → 进行中 → 待验证 → 已完成。
 - 遇到阻塞可以标记「阻塞」并填写原因。
 
-![任务看板](./docs/assets/screenshots/02-progress-board.png)
+![任务看板](./docs/assets/screenshots/02-progress.png)
 
 ### 3. 智能体管理
 

@@ -56,7 +56,7 @@ QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi,
 - **History search:** Enter keywords in the search box to match and locate across conversations and messages.
 - **Exception handling:** Prompts when a runtime goes offline; replays missed messages after network reconnection; marks failed steps on the execution timeline.
 
-![Chat Interface](./docs/assets/screenshots/01-chat-openclaw.png)
+![Chat Interface](./docs/assets/screenshots/01-chat.png)
 
 ### 2. Task Board
 
@@ -67,7 +67,7 @@ QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi,
 - Task status flow: To Do → In Progress → To Verify → Done.
 - Mark a task as "Blocked" with a reason when obstacles arise.
 
-![Task Board](./docs/assets/screenshots/02-progress-board.png)
+![Progress Board](./docs/assets/screenshots/02-progress.png)
 
 ### 3. Agent Management
 
