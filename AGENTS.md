@@ -26,7 +26,7 @@ Standard dev commands are documented in `CLAUDE.md` under "常用命令". **New 
 - **Edge Function runtime secret**: `decrypted-messages` Edge Function 需独立的 `QRCLAW_KEK_V1` secret（和 gateway 端同值）。**MCP `deploy_edge_function` 不自动同步 secret**，必须用 CLI 写一次：
   ```bash
   SUPABASE_ACCESS_TOKEN=sbp_... npx supabase secrets set \
-    --project-ref your-project-ref \
+    --project-ref zyxqadubhwrnsoujiyir \
     QRCLAW_KEK_V1=<64-hex>
   ```
   否则 Edge Function 对所有 actor 返回 `500 Encryption configuration error`（2026-04-21 BUG-2）。
@@ -62,13 +62,13 @@ cd plugins/openclaw && npx vitest run # OpenClaw plugin suite (113 / 113 pass)
 - The four workspace directories (`web/`, `gateway/`, `tests/`, `plugins/openclaw/`) each carry an independent `package.json` + `package-lock.json`; each needs its own `npm install`.
 - The `gateway/.env` and `web/.env.local` files are gitignored — you must create them on each fresh VM.
 - Gateway health check: `curl http://localhost:3001/health` returns `{"status":"ok",...,"redis":"connected"}`.
-- Supabase is cloud-hosted (`your-project-ref.supabase.co`); no local Supabase setup needed. Auth/data features require real Supabase keys (provided as secrets).
+- Supabase is cloud-hosted (`zyxqadubhwrnsoujiyir.supabase.co`); no local Supabase setup needed. Auth/data features require real Supabase keys (provided as secrets).
 - **Without Supabase secrets**: The UI renders fully and Gateway starts + connects to Redis. Features that hit Supabase (login, signup, subscribe, message persistence) will return errors — this is expected. UI development, styling, and routing work fine with placeholder keys.
 - **`QRCLAW_KEK_V1` generation**: Use `openssl rand -hex 32` to produce a valid 64-char hex key for `gateway/.env`. Mirror the same value into the Supabase Edge Function secrets (`decrypted-messages`) so the read path can unwrap DEKs written by the gateway.
 - **WS URL must include `/ws`**: `NEXT_PUBLIC_GATEWAY_WS_URL` must be `ws://localhost:3001/ws` (not just `ws://localhost:3001`). The Gateway WS endpoint is at `/ws` path. Agent SDK also expects the full path.
 - **JWT verification**: Gateway uses `supabase.auth.getUser(token)` for JWT verification (Supabase now issues ES256 tokens, not HS256). The old `jwt.verify()` approach no longer works.
 - **CORS multi-port dev**: If Next.js starts on a non-default port (3002/3003/3004), add it to `CORS_ORIGIN` in `gateway/.env` as a comma-separated list.
-- **Edge Functions deployed**: All 8 Edge Functions are deployed to Supabase. Use `SUPABASE_ACCESS_TOKEN` env var + `npx supabase functions deploy <name> --project-ref your-project-ref` to redeploy.
+- **Edge Functions deployed**: All 8 Edge Functions are deployed to Supabase. Use `SUPABASE_ACCESS_TOKEN` env var + `npx supabase functions deploy <name> --project-ref zyxqadubhwrnsoujiyir` to redeploy.
 - **Create QR Code**: The wizard calls Gateway `POST /api/create-qrcode` first (JWT in `Authorization`). If the request fails (network/TLS/unreachable Gateway), it **falls back** to inserting the row via the Supabase client (`qrcodes_insert_own` RLS). Avatar upload to Storage still requires Gateway/service role; see `web/src/lib/create-qrcode-direct.ts`. TLS for public Gateway hosts is documented in `gateway/TLS.md`.
 - **OpenClaw plugin（M4 起）**: `plugins/openclaw/` 是 QRClaw 作为 OpenClaw 通道的插件实现。本地开发 `cd plugins/openclaw && npm install && npm run dev`；单测 `npx vitest run`（113 tests）；对 OpenClaw 主仓的依赖以 `file:../../openclaw-main` 形式引入。消息回放、cross-agent 可见性（`agents.visibility_scope`）、cold-start history sync 均由该目录承担。
 
@@ -85,12 +85,12 @@ cd plugins/openclaw && npx vitest run # OpenClaw plugin suite (113 / 113 pass)
 
 | Service | How to deploy |
 |---------|--------------|
-| Frontend (Vercel) | `vercel deploy --prod --yes --token $DEPLOY_TOKEN` or push to main |
-| Gateway (Tencent Cloud) | SCP files → `sudo docker-compose build && sudo docker-compose up -d` on `user@your-gateway-host` |
-| Edge Functions | `npx supabase functions deploy <name> --project-ref your-project-ref` |
+| Frontend (Vercel) | Internal deployment credentials are provided separately by maintainers |
+| Gateway | Internal production host details are omitted from this colleague export |
+| Edge Functions | Use the project ref and access token provided separately by maintainers |
 
 ### Agent SDK (scripts/agent-sdk/)
 
 - Echo Agent: `npm run echo-agent` — echoes visitor messages
 - OpenClaw Agent: `npm run openclaw-agent` — forwards to OpenClaw AI (Luckygg)
-- Config: `.env` needs `AGENT_API_KEY`, `GATEWAY_WS_URL=ws://localhost:3001/ws`, `OPENCLAW_API_URL=http://your-gateway-host:33476`
+- Config: `.env` needs `AGENT_API_KEY`, `GATEWAY_WS_URL=ws://localhost:3001/ws`, `OPENCLAW_API_URL=<provided separately>`

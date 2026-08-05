@@ -15,7 +15,7 @@
 ### Environment
 - macOS (arm64), default Chinese pinyin IME (系统自带「拼音」).
 - Chrome / Safari against `http://localhost:3001/chat` (Next.js dev).
-- Owner logged in (zeze-test@qrclaw.test), host daemon online (4/4), at least one successful Claude round-trip has already been done.
+- Owner logged in (test-owner@example.invalid), host daemon online (4/4), at least one successful Claude round-trip has already been done.
 
 ### Observed behaviour
 

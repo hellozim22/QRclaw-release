@@ -16,7 +16,7 @@
 
 ## #1 🟡 登录态显示异常
 - **页面**：`/login`
-- **现象**：输对测试账号密码（`zeze-test@qrclaw.test` / `QRClaw-Test-Aa1!`），页面下方显示 "Invalid login credentials" 红字；但实际上会话已建立，`/chat` 可访问。
+- **现象**：输对测试账号密码（`test-owner@example.invalid` / `CHANGE_ME_TEST_PASSWORD`），页面下方显示 "Invalid login credentials" 红字；但实际上会话已建立，`/chat` 可访问。
 - **期望**：登录成功应直接跳转 `/chat`，不展示错误提示。
 - **推测**：前端 error state 没在成功响应后清空，或登录成功后没跳转只是隐式设了 session。
 - **复现**：11:16 截图（已发）。

@@ -45,7 +45,7 @@
 - **改法**：4 行 DEFAULT_AGENT_CONFIGS 改动——**过于乐观**。
   - 已验证 `gateway/src/services/default-owner-agents.ts:60-91` 确实只填 `avatarUrl: null`，改起来是 4 行。
   - **但是**：现有用户的 DB 里 `agents.avatar_url` 已经是 `null`——`ensureDefaultAgents` 的 "existing" 分支（L170-183）**不会**回填 avatar_url。方案完全没提 backfill。
-- **遗漏**：需要补一条 migration（或在 existing 分支里 `updateDefaultOwnerAgentRuntime` 扩展也更新 avatar）。否则现有账号（包括验收人本人的 `zeze-test@qrclaw.test`）永远看不到头像。
+- **遗漏**：需要补一条 migration（或在 existing 分支里 `updateDefaultOwnerAgentRuntime` 扩展也更新 avatar）。否则现有账号（包括验收人本人的 `test-owner@example.invalid`）永远看不到头像。
 - **行数修正**：4 → **~15 行**（含 backfill 逻辑）。
 
 ---
