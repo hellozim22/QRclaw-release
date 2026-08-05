@@ -14,7 +14,7 @@ export interface WSFrame {
   payload?: Record<string, unknown>;
 }
 
-export const OWNER_AGENT_WS_PROVIDERS = ['openclaw', 'claude', 'cursor', 'codex'] as const;
+export const OWNER_AGENT_WS_PROVIDERS = ['openclaw', 'claude', 'cursor', 'codex', 'pi'] as const;
 export type OwnerAgentWsProvider = (typeof OWNER_AGENT_WS_PROVIDERS)[number];
 
 export const OWNER_AGENT_WS_RUN_EVENT_TYPES = [
@@ -275,6 +275,7 @@ export interface HostProviderCapability {
   provider: OwnerAgentWsProvider;
   version: string | null;
   status: OwnerAgentWsProviderStatus;
+  binary_path?: string | null;
   capabilities: {
     streaming: boolean;
     full_access: boolean;

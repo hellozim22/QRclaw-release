@@ -100,10 +100,7 @@ const textareaStyle: React.CSSProperties = {
   padding: '6px 0',
 };
 
-const sendBtnStyle = (
-  disabled: boolean,
-  stopMode: boolean,
-): React.CSSProperties => ({
+const sendBtnStyle = (disabled: boolean, stopMode: boolean): React.CSSProperties => ({
   width: 36,
   height: 36,
   borderRadius: stopMode ? 'var(--radius-sm)' : '50%',
@@ -175,7 +172,7 @@ function ChatComposer({
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
       },
     }),
-    [],
+    []
   );
 
   const trimmed = value.trim();

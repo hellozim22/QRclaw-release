@@ -103,10 +103,8 @@ export default function RuntimeInstallHint({
         >
           {status === 'not_installed' &&
             `After installation, QRClaw Host will auto-detect it. No need to recreate agents.`}
-          {status === 'needs_login' &&
-            `Host 找到了 ${displayName}，但 CLI 当前没有有效登录态。`}
-          {status === 'offline' &&
-            `Host 最近一次心跳超过 90 秒，请检查 Host 是否在运行。`}
+          {status === 'needs_login' && `Host 找到了 ${displayName}，但 CLI 当前没有有效登录态。`}
+          {status === 'offline' && `Host 最近一次心跳超过 90 秒，请检查 Host 是否在运行。`}
           {status === 'updating' && `${displayName} is updating, please wait.`}
           {status === 'error' && `可能是版本过旧或命令超时。`}
         </p>

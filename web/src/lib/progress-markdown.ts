@@ -29,12 +29,11 @@ export function normalizeProgressMarkdownText(value: unknown): string {
       inInlineCode = !inInlineCode;
     }
 
-    const escapedBreak =
-      value.startsWith('\\r\\n', index)
-        ? '\\r\\n'
-        : value.startsWith('\\n', index)
-          ? '\\n'
-          : null;
+    const escapedBreak = value.startsWith('\\r\\n', index)
+      ? '\\r\\n'
+      : value.startsWith('\\n', index)
+        ? '\\n'
+        : null;
 
     const nextAfterBreak = escapedBreak ? value.slice(index + escapedBreak.length) : '';
     const fenceBoundaryBreak =

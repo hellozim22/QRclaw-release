@@ -43,7 +43,7 @@ async function probeDaemonHealth(): Promise<Record<string, unknown> | null> {
 
 async function gatewayOnlineForSession(
   gatewayBase: string,
-  accessToken: string,
+  accessToken: string
 ): Promise<{ online: number; connected: boolean } | null> {
   try {
     const statusRes = await fetch(`${gatewayBase}/api/owner/local-host/status`, {
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'not_available' }, { status: 404 });
   }
 
-  let cookieResponse = NextResponse.next();
+  const cookieResponse = NextResponse.next();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
           });
         },
       },
-    },
+    }
   );
 
   const {
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       if (gw && (gw.online > 0 || gw.connected)) {
         return jsonWithCookies(
           { ok: true, already: true, health, online_runtime_count: gw.online },
-          cookieResponse,
+          cookieResponse
         );
       }
     } else if (agentCount > 0) {
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
               health: polled,
               online_runtime_count: gw.online,
             },
-            cookieResponse,
+            cookieResponse
           );
         }
       } else if (polled?.status === 'running') {
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
         message: '本机助手尚未连接，请稍后重试。',
       },
       cookieResponse,
-      503,
+      503
     );
   }
 
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
     return jsonWithCookies(
       { ok: false, error: 'setup_failed', message: String(err) },
       cookieResponse,
-      500,
+      500
     );
   }
 
@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
 function jsonWithCookies(
   body: Record<string, unknown>,
   cookieSource: NextResponse,
-  status = 200,
+  status = 200
 ): NextResponse {
   const res = NextResponse.json(body, { status });
   cookieSource.cookies.getAll().forEach(({ name, value }) => {

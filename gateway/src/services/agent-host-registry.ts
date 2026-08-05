@@ -79,7 +79,8 @@ export const unregisterHostConnectionByConnectionId = (connectionId: string): st
 
 export const hasHostConnection = (hostId: string): boolean => hostConnections.has(hostId);
 
-export const getHostConnection = (hostId: string): HostConnection | undefined => hostConnections.get(hostId);
+export const getHostConnection = (hostId: string): HostConnection | undefined =>
+  hostConnections.get(hostId);
 
 const isHostSocketOpen = (connection: HostConnection): boolean =>
   connection.ws.readyState === connection.ws.OPEN;
@@ -105,9 +106,7 @@ export const getLiveProviderStatusForOwner = (
     }
     for (const provider of connection.providers) {
       const live =
-        provider.status === 'available' || provider.status === 'online'
-          ? 'online'
-          : 'offline';
+        provider.status === 'available' || provider.status === 'online' ? 'online' : 'offline';
       if (live === 'online') {
         providers.set(provider.provider, 'online');
       } else if (!providers.has(provider.provider)) {
@@ -181,7 +180,9 @@ export const dispatchRunFrame = (
     return 'queued';
   }
 
-  const result = sendFrame(connection.ws as never, frame, { connectionId: connection.connectionId });
+  const result = sendFrame(connection.ws as never, frame, {
+    connectionId: connection.connectionId,
+  });
   if (result === 'sent') {
     trackActiveRun(hostId, frame);
     return result;
@@ -292,9 +293,8 @@ export const markHostOffline = (hostId: string): void => {
     });
 };
 
-export const getPendingDispatchCountForTest = (hostId: string): number => (
-  pendingDispatches.get(hostId)?.length ?? 0
-);
+export const getPendingDispatchCountForTest = (hostId: string): number =>
+  pendingDispatches.get(hostId)?.length ?? 0;
 
 export const clearHostConnectionsForTest = (): void => {
   hostConnections.clear();

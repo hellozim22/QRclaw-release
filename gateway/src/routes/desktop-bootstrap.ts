@@ -69,12 +69,16 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
         .maybeSingle();
 
       if (inviteErr || !invite) {
-        res.status(401).json({ error: { code: 'invalid_invite', message: 'Invalid or expired invite code' } });
+        res
+          .status(401)
+          .json({ error: { code: 'invalid_invite', message: 'Invalid or expired invite code' } });
         return;
       }
 
       if (invite.used_count >= invite.max_uses) {
-        res.status(401).json({ error: { code: 'expired_invite', message: 'Invite code has been fully used' } });
+        res
+          .status(401)
+          .json({ error: { code: 'expired_invite', message: 'Invite code has been fully used' } });
         return;
       }
 
@@ -87,7 +91,9 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
     }
 
     if (!ownerEmail) {
-      res.status(400).json({ error: { code: 'invalid_request', message: 'Could not resolve owner email' } });
+      res
+        .status(400)
+        .json({ error: { code: 'invalid_request', message: 'Could not resolve owner email' } });
       return;
     }
 
@@ -103,7 +109,9 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
         email_confirm: true,
       });
       if (createErr || !created.user) {
-        res.status(500).json({ error: { code: 'owner_create_failed', message: 'Could not create owner' } });
+        res
+          .status(500)
+          .json({ error: { code: 'owner_create_failed', message: 'Could not create owner' } });
         return;
       }
       userId = created.user.id;
@@ -123,7 +131,9 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
         .select('id')
         .single();
       if (ownerErr || !inserted) {
-        res.status(500).json({ error: { code: 'owner_create_failed', message: 'Could not create owner record' } });
+        res.status(500).json({
+          error: { code: 'owner_create_failed', message: 'Could not create owner record' },
+        });
         return;
       }
       ownerId = inserted.id;
@@ -145,7 +155,9 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
       .single();
 
     if (deviceErr || !device) {
-      res.status(500).json({ error: { code: 'device_register_failed', message: 'Could not register device' } });
+      res
+        .status(500)
+        .json({ error: { code: 'device_register_failed', message: 'Could not register device' } });
       return;
     }
 
@@ -156,15 +168,19 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
     });
 
     if (linkErr || !linkData) {
-      res.status(500).json({ error: { code: 'session_failed', message: 'Could not generate session' } });
+      res
+        .status(500)
+        .json({ error: { code: 'session_failed', message: 'Could not generate session' } });
       return;
     }
 
     // Sign in to get tokens
-    const { data: sessionData, error: sessionErr } = await supabase.auth.signInWithPassword({
-      email: ownerEmail,
-      password: linkData.properties?.hashed_token ?? '',
-    }).catch(() => ({ data: null, error: { message: 'fallback' } }));
+    const { data: sessionData, error: sessionErr } = await supabase.auth
+      .signInWithPassword({
+        email: ownerEmail,
+        password: linkData.properties?.hashed_token ?? '',
+      })
+      .catch(() => ({ data: null, error: { message: 'fallback' } }));
 
     // Fallback: use OTP verification
     let accessToken = sessionData?.session?.access_token;
@@ -182,7 +198,9 @@ router.post('/api/desktop/bootstrap/exchange', async (req: Request, res: Respons
     }
 
     if (!accessToken || !refreshToken) {
-      res.status(500).json({ error: { code: 'session_failed', message: 'Could not establish Supabase session' } });
+      res.status(500).json({
+        error: { code: 'session_failed', message: 'Could not establish Supabase session' },
+      });
       return;
     }
 

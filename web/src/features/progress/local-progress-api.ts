@@ -17,14 +17,30 @@ type LocalProgressAction =
   | {
       action: 'update_task';
       taskId: string;
-      patch: Partial<Pick<ProgressTask, 'title' | 'description' | 'status' | 'priority' | 'position' | 'agentId' | 'agentName' | 'projectId'>>;
+      patch: Partial<
+        Pick<
+          ProgressTask,
+          | 'title'
+          | 'description'
+          | 'status'
+          | 'priority'
+          | 'position'
+          | 'agentId'
+          | 'agentName'
+          | 'projectId'
+        >
+      >;
       actorName?: string;
       actorType?: 'owner' | 'agent' | 'system';
       recordActivity?: boolean;
     }
   | { action: 'delete_task'; taskId: string }
   | { action: 'add_comment'; taskId: string; content: string; authorName?: string }
-  | { action: 'append_activity'; taskId: string; activity: Omit<ProgressTask['activity'][number], 'id' | 'at'> & { at?: string } }
+  | {
+      action: 'append_activity';
+      taskId: string;
+      activity: Omit<ProgressTask['activity'][number], 'id' | 'at'> & { at?: string };
+    }
   | { action: 'create_project'; input: Partial<ProgressProject> & { title: string } };
 
 const API_PATH = '/api/local/progress';

@@ -19,7 +19,7 @@ function outputMime(file: File): 'image/png' | 'image/jpeg' | 'image/webp' {
 export function resizeProfileAvatarToDataUrl(
   file: File,
   quality = 0.88,
-  options: ResizeProfileAvatarOptions = {},
+  options: ResizeProfileAvatarOptions = {}
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (

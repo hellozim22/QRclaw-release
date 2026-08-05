@@ -49,8 +49,18 @@ function OpenClawMark({ size }: { size: number }) {
       />
       <path d="M3.5 5.5C2 5 1 6 1.5 7s2 .5 2.2-.7" fill="var(--color-red-light)" />
       <path d="M12.5 5.5c1.5-.5 2.5.5 2 1.5s-2 .5-2.2-.7" fill="var(--color-red-light)" />
-      <path d="M6.5 3Q5 1.2 4.3 1.5" stroke="var(--color-red-light)" strokeWidth="0.8" strokeLinecap="round" />
-      <path d="M9.5 3Q11 1.2 11.7 1.5" stroke="var(--color-red-light)" strokeWidth="0.8" strokeLinecap="round" />
+      <path
+        d="M6.5 3Q5 1.2 4.3 1.5"
+        stroke="var(--color-red-light)"
+        strokeWidth="0.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.5 3Q11 1.2 11.7 1.5"
+        stroke="var(--color-red-light)"
+        strokeWidth="0.8"
+        strokeLinecap="round"
+      />
       <circle cx="6.2" cy="5.2" r="0.9" fill="var(--color-gray-900)" />
       <circle cx="9.8" cy="5.2" r="0.9" fill="var(--color-gray-900)" />
     </svg>

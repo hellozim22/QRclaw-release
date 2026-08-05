@@ -26,10 +26,7 @@ export { default as RuntimeInstallHint } from './RuntimeInstallHint';
 export { default as SessionList } from './SessionList';
 
 export type { AgentCardProps, RuntimeStatus } from './AgentCard';
-export type {
-  AgentRuntimeRailProps,
-  RuntimeSlot,
-} from './AgentRuntimeRail';
+export type { AgentRuntimeRailProps, RuntimeSlot } from './AgentRuntimeRail';
 export type {
   OnboardingEmptyStateProps,
   OnboardingRuntimeRow,

@@ -59,7 +59,12 @@ export const routeHostMessage = async (
   connection: ConnectionInfo
 ): Promise<void> => {
   if (connection.role !== 'host') {
-    sendError(ws, 'forbidden', 'Only Host connections can send Host frames', connection.connectionId);
+    sendError(
+      ws,
+      'forbidden',
+      'Only Host connections can send Host frames',
+      connection.connectionId
+    );
     return;
   }
 
@@ -86,7 +91,12 @@ export const routeHostMessage = async (
       await handleRunFailed(ws, frame as OwnerAgentRunFailedFrame, connection);
       return;
     default:
-      sendError(ws, 'forbidden', `Host cannot send '${frame.type}' frames`, connection.connectionId);
+      sendError(
+        ws,
+        'forbidden',
+        `Host cannot send '${frame.type}' frames`,
+        connection.connectionId
+      );
   }
 };
 
@@ -206,11 +216,23 @@ const handleRunEvent = async (
   connection: ConnectionInfo
 ): Promise<void> => {
   if (inFlightEvents >= limits.maxInFlightEvents) {
-    await failRunFromGateway(ws, frame.payload, connection, 'backpressure', 'Gateway Host event backpressure');
+    await failRunFromGateway(
+      ws,
+      frame.payload,
+      connection,
+      'backpressure',
+      'Gateway Host event backpressure'
+    );
     return;
   }
   if (!isNextSeq(frame.payload.run_id, frame.payload.seq)) {
-    await failRunFromGateway(ws, frame.payload, connection, 'seq_gap', 'Host run event sequence gap');
+    await failRunFromGateway(
+      ws,
+      frame.payload,
+      connection,
+      'seq_gap',
+      'Host run event sequence gap'
+    );
     return;
   }
 
@@ -239,7 +261,7 @@ const handleRunEvent = async (
 
 const persistRunEvent = async (
   run: OwnerAgentRunRecord,
-  frame: OwnerAgentRunEventFrame,
+  frame: OwnerAgentRunEventFrame
 ): Promise<void> => {
   const encrypted = await encryptOptionalRunContent(run.conversationId, frame.payload.content);
   await insertOwnerAgentRunEventRecord({
@@ -260,7 +282,13 @@ const handleRunCompleted = async (
   connection: ConnectionInfo
 ): Promise<void> => {
   if (!isNextSeq(frame.payload.run_id, frame.payload.seq)) {
-    await failRunFromGateway(ws, frame.payload, connection, 'seq_gap', 'Host run completion sequence gap');
+    await failRunFromGateway(
+      ws,
+      frame.payload,
+      connection,
+      'seq_gap',
+      'Host run completion sequence gap'
+    );
     return;
   }
 
@@ -285,10 +313,13 @@ const handleRunCompleted = async (
 
 const persistRunCompletion = async (
   run: OwnerAgentRunRecord,
-  frame: OwnerAgentRunCompletedFrame,
+  frame: OwnerAgentRunCompletedFrame
 ): Promise<void> => {
   if (frame.payload.final_message) {
-    const encrypted = await encryptOptionalRunContent(run.conversationId, frame.payload.final_message);
+    const encrypted = await encryptOptionalRunContent(
+      run.conversationId,
+      frame.payload.final_message
+    );
     await insertOwnerAgentRunEventRecord({
       runId: run.id,
       ownerId: run.ownerId,
@@ -352,9 +383,12 @@ const handleRunFailed = async (
 
 const persistRunFailure = async (
   run: OwnerAgentRunRecord,
-  frame: OwnerAgentRunFailedFrame,
+  frame: OwnerAgentRunFailedFrame
 ): Promise<void> => {
-  const encrypted = await encryptOptionalRunContent(run.conversationId, frame.payload.error_message);
+  const encrypted = await encryptOptionalRunContent(
+    run.conversationId,
+    frame.payload.error_message
+  );
   await insertOwnerAgentRunEventRecord({
     runId: run.id,
     ownerId: run.ownerId,

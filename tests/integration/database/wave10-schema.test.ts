@@ -305,7 +305,10 @@ describe('Wave 10 runtime/session schema', () => {
 
     const runtime = await createRuntime(ownerA.ownerId, 'fk');
     const agent = await createAgent(ownerA.ownerId, runtime, 'fk');
-    const { error: deleteError } = await adminClient.from('agent_runtimes').delete().eq('id', runtime);
+    const { error: deleteError } = await adminClient
+      .from('agent_runtimes')
+      .delete()
+      .eq('id', runtime);
     expect(deleteError).toBeNull();
 
     const { data: updatedAgent, error: agentError } = await adminClient

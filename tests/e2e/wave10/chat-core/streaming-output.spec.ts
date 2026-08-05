@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
+import { expect, test } from '@playwright/test';
+import { createRealClaudeHarness } from '../../../helpers/wave10-harness';
 
 /**
  * OAC-W10-E2E-05 · Chat Core · P0
@@ -15,19 +15,17 @@ import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
  *
  * TODO(sprint-1-cu3): unskip after SSE replay helper lands in harness.
  */
-test.describe("E2E-05 streaming output token by token", () => {
-  test.skip("first token < 10s and content grows monotonically", async ({
-    browser,
-  }) => {
+test.describe('E2E-05 streaming output token by token', () => {
+  test.skip('first token < 10s and content grows monotonically', async ({ browser }) => {
     const harness = await createRealClaudeHarness(browser, {
-      runtime: "claude",
+      runtime: 'claude',
       requireRealCli: true,
     });
     try {
       await harness.page.goto(`/chat/${harness.sessionId}`);
 
       const start = Date.now();
-      await harness.sendMessage("请分 5 段回答, 每段用 Markdown 一级标题.");
+      await harness.sendMessage('请分 5 段回答, 每段用 Markdown 一级标题.');
 
       // TODO: MutationObserver sampling pattern — 5 checkpoints, monotonic grow
       // const samples: string[] = [];

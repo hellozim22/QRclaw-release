@@ -13,16 +13,10 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import { useOwnerAgentChatStore } from '@/stores/owner-agent-chat-store';
 import type { OwnerAgentSummary } from '@shared/contracts/http/owner-agent-chat/types';
-import {
-  createProgressTask,
-  moveProgressTask,
-} from './task-store';
+import { createProgressTask, moveProgressTask } from './task-store';
 import { DEFAULT_PROJECT_ID } from './project-types';
 import {
   createProgressProject,
@@ -34,12 +28,7 @@ import {
 import { ProgressBoardHeader } from './ProgressBoardHeader';
 import { VISIBLE_TASKS_PER_ROW, visibleTasksForRow } from './row-visibility';
 import { DragCard, TaskCard } from './TaskCard';
-import {
-  STATUS_META,
-  TASK_STATUSES,
-  type ProgressTask,
-  type TaskStatus,
-} from './types';
+import { STATUS_META, TASK_STATUSES, type ProgressTask, type TaskStatus } from './types';
 
 const CARD_WIDTH = 200;
 
@@ -53,7 +42,7 @@ function computeNextPosition(tasks: ProgressTask[], status: TaskStatus): number 
 function filterTasksByProject(
   tasks: ProgressTask[],
   projectFilter: string[],
-  includeNoProject: boolean,
+  includeNoProject: boolean
 ): ProgressTask[] {
   if (projectFilter.length === 0 && !includeNoProject) return tasks;
   return tasks.filter((task) => {
@@ -120,7 +109,10 @@ function StatusRow({
           gap: 'var(--space-2)',
         }}
       >
-        <SortableContext items={visible.map((task) => task.id)} strategy={horizontalListSortingStrategy}>
+        <SortableContext
+          items={visible.map((task) => task.id)}
+          strategy={horizontalListSortingStrategy}
+        >
           <div
             style={{
               display: 'flex',
@@ -200,7 +192,7 @@ export function ProgressBoard({
 
   const filteredTasks = useMemo(
     () => filterTasksByProject(tasks, projectFilter, includeNoProject),
-    [tasks, projectFilter, includeNoProject],
+    [tasks, projectFilter, includeNoProject]
   );
 
   const tasksByStatus = useMemo(() => {
@@ -208,12 +200,12 @@ export function ProgressBoard({
       TASK_STATUSES.map((status) => [
         status,
         filteredTasks.filter((task) => task.status === status).sort(byPosition),
-      ]),
+      ])
     ) as Record<TaskStatus, ProgressTask[]>;
   }, [filteredTasks]);
 
   const getAgent = (agentId: string | null): OwnerAgentSummary | null =>
-    agentId ? agents.find((agent) => agent.id === agentId) ?? null : null;
+    agentId ? (agents.find((agent) => agent.id === agentId) ?? null) : null;
 
   const isAgentOnline = (agentId: string | null): boolean => {
     if (!agentId) return false;
@@ -225,7 +217,7 @@ export function ProgressBoard({
     setProjectFilter((current) =>
       current.includes(projectId)
         ? current.filter((id) => id !== projectId)
-        : [...current, projectId],
+        : [...current, projectId]
     );
   };
 
@@ -251,14 +243,17 @@ export function ProgressBoard({
     const nextStatus = (targetTask?.status ?? overId) as TaskStatus;
     if (!TASK_STATUSES.includes(nextStatus)) return;
 
-    moveProgressTask(task.id, nextStatus, targetTask?.position ?? computeNextPosition(tasks, nextStatus));
+    moveProgressTask(
+      task.id,
+      nextStatus,
+      targetTask?.position ?? computeNextPosition(tasks, nextStatus)
+    );
     onTasksChange();
   };
 
   const createTask = () => {
-    const projectId = projectFilter.length === 1 && !includeNoProject
-      ? projectFilter[0]
-      : DEFAULT_PROJECT_ID;
+    const projectId =
+      projectFilter.length === 1 && !includeNoProject ? projectFilter[0] : DEFAULT_PROJECT_ID;
     const task = createProgressTask({
       title: '新任务',
       description: '',

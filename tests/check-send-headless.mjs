@@ -16,19 +16,62 @@ await page.waitForTimeout(6000);
 await page.evaluate(() => {
   const now = new Date().toISOString();
   const id = '8bbbaf88-3ccc-472c-ad70-7f7546f26a87';
-  const agents = [{ id, name: 'OpenClaw Assistant', avatar_url: '/avatars/openclaw-color.png', description: 'd', instructions: '', suggested_prompts: [], backend_provider: 'openclaw', backend_source: 'cloud', execution_mode: 'standard', status: 'active', runtime_id: 'rt', runtime_status: 'online', is_default: true, source: 'system_default', last_active_at: now, created_at: now }];
+  const agents = [
+    {
+      id,
+      name: 'OpenClaw Assistant',
+      avatar_url: '/avatars/openclaw-color.png',
+      description: 'd',
+      instructions: '',
+      suggested_prompts: [],
+      backend_provider: 'openclaw',
+      backend_source: 'cloud',
+      execution_mode: 'standard',
+      status: 'active',
+      runtime_id: 'rt',
+      runtime_status: 'online',
+      is_default: true,
+      source: 'system_default',
+      last_active_at: now,
+      created_at: now,
+    },
+  ];
   const store = window.__OWNER_AGENT_STORE__;
   store.setState({
-    agents, loading: false, error: null, selectedAgentId: id,
-    statusByAgent: { [id]: 'online' }, messagesByAgent: { [id]: [] },
+    agents,
+    loading: false,
+    error: null,
+    selectedAgentId: id,
+    statusByAgent: { [id]: 'online' },
+    messagesByAgent: { [id]: [] },
     sendMessage: (agentId, content) => {
       const s = store.getState();
       const ts = new Date().toISOString();
-      store.setState({ messagesByAgent: { ...s.messagesByAgent, [agentId]: [
-        ...(s.messagesByAgent[agentId] ?? []),
-        { id: 'u-'+Date.now(), client_id: 'u-'+Date.now(), sender_type: 'owner', content, status: 'sent', created_at: ts },
-        { id: 'a-'+Date.now(), client_id: 'a-'+Date.now(), sender_type: 'agent', content: '收到：'+content, status: 'sent', run_status: 'completed', created_at: ts },
-      ] } });
+      store.setState({
+        messagesByAgent: {
+          ...s.messagesByAgent,
+          [agentId]: [
+            ...(s.messagesByAgent[agentId] ?? []),
+            {
+              id: 'u-' + Date.now(),
+              client_id: 'u-' + Date.now(),
+              sender_type: 'owner',
+              content,
+              status: 'sent',
+              created_at: ts,
+            },
+            {
+              id: 'a-' + Date.now(),
+              client_id: 'a-' + Date.now(),
+              sender_type: 'agent',
+              content: '收到：' + content,
+              status: 'sent',
+              run_status: 'completed',
+              created_at: ts,
+            },
+          ],
+        },
+      });
     },
   });
 });

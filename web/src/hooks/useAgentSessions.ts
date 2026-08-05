@@ -61,12 +61,10 @@ export function useAgentSessions({
   activeAgentName,
   restoredSessions = [],
 }: UseAgentSessionsInput): UseAgentSessionsApi {
-  const [sessionsByAgent, setSessionsByAgent] = useState<
-    Record<string, AgentSession[]>
-  >({});
-  const [activeSessionByAgent, setActiveSessionByAgent] = useState<
-    Record<string, string | null>
-  >({});
+  const [sessionsByAgent, setSessionsByAgent] = useState<Record<string, AgentSession[]>>({});
+  const [activeSessionByAgent, setActiveSessionByAgent] = useState<Record<string, string | null>>(
+    {}
+  );
 
   const allSessions = useMemo(() => {
     const flat = Object.values(sessionsByAgent).flat();
@@ -79,12 +77,11 @@ export function useAgentSessions({
     return [...list].sort((a, b) => b.updatedAt - a.updatedAt);
   }, [activeAgentId, sessionsByAgent]);
 
-  const activeSessionId = activeAgentId
-    ? activeSessionByAgent[activeAgentId] ?? null
-    : null;
+  const activeSessionId = activeAgentId ? (activeSessionByAgent[activeAgentId] ?? null) : null;
 
   useEffect(() => {
     if (restoredSessions.length === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- merge externally restored sessions into state once per restore batch; functional updaters no-op when nothing changed, so no cascading render.
     setSessionsByAgent((prev) => {
       let changed = false;
       const next: Record<string, AgentSession[]> = { ...prev };
@@ -99,7 +96,7 @@ export function useAgentSessions({
             continue;
           }
           next[session.agentId] = (next[session.agentId] ?? []).map((item) =>
-            item.id === session.id ? { ...item, ...session } : item,
+            item.id === session.id ? { ...item, ...session } : item
           );
         } else {
           next[session.agentId] = [session, ...(next[session.agentId] ?? [])];
@@ -123,9 +120,7 @@ export function useAgentSessions({
   const ensureSession = useCallback(
     (opts?: { id?: string; title?: string }): AgentSession | null => {
       if (!activeAgentId || !activeAgentName) return null;
-      const id =
-        opts?.id ??
-        `sess-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const id = opts?.id ?? `sess-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       const session: AgentSession = {
         id,
         agentId: activeAgentId,
@@ -148,7 +143,7 @@ export function useAgentSessions({
       });
       return ensured;
     },
-    [activeAgentId, activeAgentName],
+    [activeAgentId, activeAgentName]
   );
 
   const createSession = useCallback(
@@ -159,25 +154,22 @@ export function useAgentSessions({
       }
       return session;
     },
-    [activeAgentId, ensureSession],
+    [activeAgentId, ensureSession]
   );
 
-  const renameSession = useCallback(
-    (sessionId: string, nextTitle: string) => {
-      const title = nextTitle.trim();
-      if (!title) return;
-      setSessionsByAgent((prev) => {
-        const next: Record<string, AgentSession[]> = {};
-        for (const [aid, list] of Object.entries(prev)) {
-          next[aid] = list.map((s) =>
-            s.id === sessionId ? { ...s, title, updatedAt: Date.now() } : s,
-          );
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const renameSession = useCallback((sessionId: string, nextTitle: string) => {
+    const title = nextTitle.trim();
+    if (!title) return;
+    setSessionsByAgent((prev) => {
+      const next: Record<string, AgentSession[]> = {};
+      for (const [aid, list] of Object.entries(prev)) {
+        next[aid] = list.map((s) =>
+          s.id === sessionId ? { ...s, title, updatedAt: Date.now() } : s
+        );
+      }
+      return next;
+    });
+  }, []);
 
   const archiveSession = useCallback((sessionId: string) => {
     setSessionsByAgent((prev) => {
@@ -207,15 +199,12 @@ export function useAgentSessions({
         [session.agentId]: sessionId,
       }));
     },
-    [sessionsByAgent],
+    [sessionsByAgent]
   );
 
-  const setActiveSession = useCallback(
-    (agentId: string, sessionId: string | null) => {
-      setActiveSessionByAgent((prev) => ({ ...prev, [agentId]: sessionId }));
-    },
-    [],
-  );
+  const setActiveSession = useCallback((agentId: string, sessionId: string | null) => {
+    setActiveSessionByAgent((prev) => ({ ...prev, [agentId]: sessionId }));
+  }, []);
 
   return {
     allSessions,

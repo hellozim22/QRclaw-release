@@ -30,15 +30,18 @@ interface LocalHostStatusResponse {
 }
 
 export const mapLocalHostStatusToRuntimeRows = (
-  response: LocalHostStatusResponse,
+  response: LocalHostStatusResponse
 ): LocalHostStatus => {
   const providers = response.data?.providers?.length
     ? response.data.providers
     : DEFAULT_RUNTIME_ROWS;
   return {
     providers,
-    onlineRuntimeCount: response.data?.online_runtime_count ?? providers.filter((row) => row.status === 'online').length,
-    hostConnected: response.data?.host_connected ?? providers.some((row) => row.status === 'online'),
+    onlineRuntimeCount:
+      response.data?.online_runtime_count ??
+      providers.filter((row) => row.status === 'online').length,
+    hostConnected:
+      response.data?.host_connected ?? providers.some((row) => row.status === 'online'),
     installHint: response.data?.install_hint ?? null,
   };
 };

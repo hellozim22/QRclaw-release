@@ -41,7 +41,7 @@ describe('progress task store', () => {
     const updated = updateProgressTask(
       task.id,
       { description: '## 任务解决进度\\n\\n- 已创建' },
-      { recordActivity: false },
+      { recordActivity: false }
     );
 
     expect(updated?.description).toBe('## 任务解决进度\n\n- 已创建');

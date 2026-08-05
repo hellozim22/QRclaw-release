@@ -117,7 +117,9 @@ export const ensureDefaultProject = (): ProgressProject => {
   return defaultProject;
 };
 
-export const getProgressProject = (projectId: string | null | undefined): ProgressProject | null => {
+export const getProgressProject = (
+  projectId: string | null | undefined
+): ProgressProject | null => {
   if (!projectId) return null;
   const projects = listProgressProjects();
   return projects.find((project) => project.id === projectId) ?? null;
@@ -146,7 +148,7 @@ export const createProgressProject = (input: {
 
 export const updateProgressProject = (
   projectId: string,
-  patch: Partial<Pick<ProgressProject, 'title' | 'icon' | 'description'>>,
+  patch: Partial<Pick<ProgressProject, 'title' | 'icon' | 'description'>>
 ): ProgressProject | null => {
   const projects = listProgressProjects();
   let updated: ProgressProject | null = null;
@@ -157,7 +159,8 @@ export const updateProgressProject = (
       ...patch,
       title: patch.title?.trim() || project.title,
       icon: patch.icon === undefined ? project.icon : patch.icon?.trim() || DEFAULT_PROJECT_ICON,
-      description: patch.description === undefined ? project.description : patch.description?.trim() || null,
+      description:
+        patch.description === undefined ? project.description : patch.description?.trim() || null,
       updatedAt: nowIso(),
     };
     return updated;

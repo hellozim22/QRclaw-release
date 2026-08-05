@@ -6,11 +6,7 @@ import {
   listProgressProjects,
   updateProgressProject,
 } from './project-store';
-import {
-  DEFAULT_PROJECT_ICON,
-  DEFAULT_PROJECT_ID,
-  DEFAULT_PROJECT_TITLE,
-} from './project-types';
+import { DEFAULT_PROJECT_ICON, DEFAULT_PROJECT_ID, DEFAULT_PROJECT_TITLE } from './project-types';
 
 describe('progress project store', () => {
   beforeEach(() => {

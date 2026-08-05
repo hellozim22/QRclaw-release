@@ -198,16 +198,13 @@ export default function AgentSessionDrawer({
                         alignItems: 'center',
                         gap: 'var(--space-2)',
                         padding: 'var(--space-2) var(--space-4)',
-                        borderLeft: active
-                          ? '3px solid var(--color-red)'
-                          : '3px solid transparent',
+                        borderLeft: active ? '3px solid var(--color-red)' : '3px solid transparent',
                         background: active ? 'var(--color-red-bg)' : 'transparent',
                         cursor: 'pointer',
                       }}
                       onMouseEnter={(e) => {
                         if (active) return;
-                        e.currentTarget.style.background =
-                          'var(--color-gray-100)';
+                        e.currentTarget.style.background = 'var(--color-gray-100)';
                       }}
                       onMouseLeave={(e) => {
                         if (active) return;
@@ -236,9 +233,7 @@ export default function AgentSessionDrawer({
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
-                          fontWeight: active
-                            ? 'var(--font-medium)'
-                            : 'var(--font-normal)',
+                          fontWeight: active ? 'var(--font-medium)' : 'var(--font-normal)',
                         }}
                       >
                         {s.title}
@@ -273,11 +268,7 @@ export default function AgentSessionDrawer({
                         data-testid={`agent-session-drawer-archive-${s.id}`}
                         onClick={(event) => {
                           event.stopPropagation();
-                          if (
-                            window.confirm(
-                              '归档此会话？历史消息保留，可从归档恢复。',
-                            )
-                          ) {
+                          if (window.confirm('归档此会话？历史消息保留，可从归档恢复。')) {
                             onArchive(s.id);
                           }
                         }}

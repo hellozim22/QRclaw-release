@@ -46,15 +46,34 @@ export type LocalProgressAction =
   | {
       action: 'update_task';
       taskId: string;
-      patch: Partial<Pick<ProgressTask, 'title' | 'description' | 'status' | 'priority' | 'position' | 'agentId' | 'agentName' | 'projectId'>>;
+      patch: Partial<
+        Pick<
+          ProgressTask,
+          | 'title'
+          | 'description'
+          | 'status'
+          | 'priority'
+          | 'position'
+          | 'agentId'
+          | 'agentName'
+          | 'projectId'
+        >
+      >;
       actorName?: string;
       actorType?: 'owner' | 'agent' | 'system';
       recordActivity?: boolean;
     }
   | { action: 'delete_task'; taskId: string }
   | { action: 'add_comment'; taskId: string; content: string; authorName?: string }
-  | { action: 'append_activity'; taskId: string; activity: Omit<ProgressActivity, 'id' | 'at'> & { at?: string } }
-  | { action: 'create_project'; input: { title: string; icon?: string | null; description?: string | null } };
+  | {
+      action: 'append_activity';
+      taskId: string;
+      activity: Omit<ProgressActivity, 'id' | 'at'> & { at?: string };
+    }
+  | {
+      action: 'create_project';
+      input: { title: string; icon?: string | null; description?: string | null };
+    };
 
 const PRIORITIES: TaskPriority[] = ['urgent', 'high', 'medium', 'low', 'none'];
 
@@ -101,7 +120,9 @@ const normalizeActivity = (activity: Partial<ProgressActivity>): ProgressActivit
   at: typeof activity.at === 'string' && activity.at ? activity.at : nowIso(),
   text: typeof activity.text === 'string' ? activity.text : '任务已更新',
   actorType:
-    activity.actorType === 'owner' || activity.actorType === 'agent' || activity.actorType === 'system'
+    activity.actorType === 'owner' ||
+    activity.actorType === 'agent' ||
+    activity.actorType === 'system'
       ? activity.actorType
       : 'system',
   actorName: typeof activity.actorName === 'string' ? activity.actorName : null,
@@ -112,17 +133,28 @@ const normalizeActivity = (activity: Partial<ProgressActivity>): ProgressActivit
 const normalizeComment = (comment: Partial<ProgressComment>): ProgressComment => ({
   id: typeof comment.id === 'string' && comment.id ? comment.id : makeId(),
   at: typeof comment.at === 'string' && comment.at ? comment.at : nowIso(),
-  authorName: typeof comment.authorName === 'string' && comment.authorName ? comment.authorName : 'You',
-  content: typeof comment.content === 'string' ? normalizeProgressMarkdownText(comment.content) : '',
+  authorName:
+    typeof comment.authorName === 'string' && comment.authorName ? comment.authorName : 'You',
+  content:
+    typeof comment.content === 'string' ? normalizeProgressMarkdownText(comment.content) : '',
 });
 
 const normalizeProject = (project: Partial<ProgressProject>): ProgressProject => {
   const timestamp = nowIso();
   return {
     id: typeof project.id === 'string' && project.id ? project.id : makeId(),
-    title: typeof project.title === 'string' && project.title.trim() ? project.title.trim() : DEFAULT_PROJECT_TITLE,
-    icon: typeof project.icon === 'string' && project.icon.trim() ? project.icon.trim() : DEFAULT_PROJECT_ICON,
-    description: typeof project.description === 'string' && project.description.trim() ? project.description.trim() : null,
+    title:
+      typeof project.title === 'string' && project.title.trim()
+        ? project.title.trim()
+        : DEFAULT_PROJECT_TITLE,
+    icon:
+      typeof project.icon === 'string' && project.icon.trim()
+        ? project.icon.trim()
+        : DEFAULT_PROJECT_ICON,
+    description:
+      typeof project.description === 'string' && project.description.trim()
+        ? project.description.trim()
+        : null,
     createdAt: typeof project.createdAt === 'string' ? project.createdAt : timestamp,
     updatedAt: typeof project.updatedAt === 'string' ? project.updatedAt : timestamp,
   };
@@ -141,18 +173,30 @@ const normalizeTask = (task: Partial<ProgressTask>): ProgressTask => {
   const title = typeof task.title === 'string' && task.title.trim() ? task.title.trim() : '新任务';
   return {
     id: typeof task.id === 'string' && task.id ? task.id : makeId(),
-    identifier: typeof task.identifier === 'string' && task.identifier ? task.identifier : 'TASK-000',
+    identifier:
+      typeof task.identifier === 'string' && task.identifier ? task.identifier : 'TASK-000',
     title: compactTitle(title),
-    description: typeof task.description === 'string' ? normalizeProgressMarkdownText(task.description) : '',
+    description:
+      typeof task.description === 'string' ? normalizeProgressMarkdownText(task.description) : '',
     status: normalizeStatus(task.status),
     priority: normalizePriority(task.priority),
-    position: typeof task.position === 'number' && Number.isFinite(task.position) ? task.position : 1,
-    projectId: task.projectId === null || typeof task.projectId === 'string' ? task.projectId : DEFAULT_PROJECT_ID,
+    position:
+      typeof task.position === 'number' && Number.isFinite(task.position) ? task.position : 1,
+    projectId:
+      task.projectId === null || typeof task.projectId === 'string'
+        ? task.projectId
+        : DEFAULT_PROJECT_ID,
     agentId: task.agentId === null || typeof task.agentId === 'string' ? task.agentId : null,
-    agentName: task.agentName === null || typeof task.agentName === 'string' ? task.agentName : null,
-    sourceMessage: task.sourceMessage === null || typeof task.sourceMessage === 'string' ? task.sourceMessage : null,
+    agentName:
+      task.agentName === null || typeof task.agentName === 'string' ? task.agentName : null,
+    sourceMessage:
+      task.sourceMessage === null || typeof task.sourceMessage === 'string'
+        ? task.sourceMessage
+        : null,
     activity: Array.isArray(task.activity) ? task.activity.map(normalizeActivity) : [],
-    comments: Array.isArray(task.comments) ? task.comments.map(normalizeComment).filter((item) => item.content.trim()) : [],
+    comments: Array.isArray(task.comments)
+      ? task.comments.map(normalizeComment).filter((item) => item.content.trim())
+      : [],
     createdAt: typeof task.createdAt === 'string' ? task.createdAt : timestamp,
     updatedAt: typeof task.updatedAt === 'string' ? task.updatedAt : timestamp,
   };
@@ -180,7 +224,9 @@ const normalizePositions = (tasks: ProgressTask[]): ProgressTask[] => {
 
 const normalizeState = (input: Partial<LocalProgressState>): LocalProgressState => ({
   tasks: normalizePositions(Array.isArray(input.tasks) ? input.tasks.map(normalizeTask) : []),
-  projects: ensureDefaultProject(Array.isArray(input.projects) ? input.projects.map(normalizeProject) : []),
+  projects: ensureDefaultProject(
+    Array.isArray(input.projects) ? input.projects.map(normalizeProject) : []
+  ),
   updatedAt: typeof input.updatedAt === 'string' ? input.updatedAt : nowIso(),
 });
 
@@ -201,7 +247,10 @@ async function writeLocalProgressState(state: LocalProgressState): Promise<Local
   return normalized;
 }
 
-const describePatch = (task: ProgressTask, patch: LocalProgressAction & { action: 'update_task' }) => {
+const describePatch = (
+  task: ProgressTask,
+  patch: LocalProgressAction & { action: 'update_task' }
+) => {
   if (patch.patch.status && patch.patch.status !== task.status) {
     return { action: 'status_changed', text: `状态更新为 ${patch.patch.status}` };
   }
@@ -209,7 +258,10 @@ const describePatch = (task: ProgressTask, patch: LocalProgressAction & { action
     return { action: 'priority_changed', text: `优先级更新为 ${patch.patch.priority}` };
   }
   if ('agentId' in patch.patch || 'agentName' in patch.patch) {
-    return { action: 'assigned', text: patch.patch.agentName ? `分配给 ${patch.patch.agentName}` : '取消分配' };
+    return {
+      action: 'assigned',
+      text: patch.patch.agentName ? `分配给 ${patch.patch.agentName}` : '取消分配',
+    };
   }
   if ('projectId' in patch.patch && patch.patch.projectId !== task.projectId) {
     return { action: 'project_changed', text: '任务项目已更新' };
@@ -266,7 +318,10 @@ async function applyLocalProgressActionNow(action: LocalProgressAction): Promise
       createdAt: timestamp,
       updatedAt: timestamp,
     });
-    const state = await writeLocalProgressState({ ...current, projects: [...current.projects, project] });
+    const state = await writeLocalProgressState({
+      ...current,
+      projects: [...current.projects, project],
+    });
     return { state, project };
   }
   if (action.action === 'create_task') {
@@ -276,10 +331,16 @@ async function applyLocalProgressActionNow(action: LocalProgressAction): Promise
       id: action.input.id ?? makeId(),
       identifier: action.input.identifier ?? nextIdentifier(current.tasks),
       title,
-      description: normalizeProgressMarkdownText(action.input.description ?? action.input.sourceMessage ?? ''),
+      description: normalizeProgressMarkdownText(
+        action.input.description ?? action.input.sourceMessage ?? ''
+      ),
       status,
       priority: action.input.priority ?? 'medium',
-      position: Math.max(0, ...current.tasks.filter((item) => item.status === status).map((item) => item.position)) + 1,
+      position:
+        Math.max(
+          0,
+          ...current.tasks.filter((item) => item.status === status).map((item) => item.position)
+        ) + 1,
       projectId: action.input.projectId ?? DEFAULT_PROJECT_ID,
       agentId: action.input.agentId ?? null,
       agentName: action.input.agentName ?? null,

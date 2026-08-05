@@ -42,11 +42,7 @@ export async function proxyToCloud(options: CloudProxyOptions): Promise<Response
 }
 
 export const getLocalWsTicketSecret = (): string => {
-  return (
-    process.env.DESKTOP_LOCAL_TICKET_KEY?.trim() ||
-    process.env.WS_TICKET_SECRET?.trim() ||
-    ''
-  );
+  return process.env.DESKTOP_LOCAL_TICKET_KEY?.trim() || process.env.WS_TICKET_SECRET?.trim() || '';
 };
 
 export const desktopEnvSummary = (): Record<string, string> => ({

@@ -327,7 +327,10 @@ export const revokeHostTokenRecord = async (
   };
 };
 
-export const verifyHostToken = async (tokenHash: string, now = new Date()): Promise<HostTokenRecord | null> => {
+export const verifyHostToken = async (
+  tokenHash: string,
+  now = new Date()
+): Promise<HostTokenRecord | null> => {
   if (!isSupabaseConfigured()) {
     throw new Error('Database not configured');
   }
@@ -376,7 +379,9 @@ export const listOwnerAgentRecords = async (ownerId: string): Promise<OwnerAgent
   return ((data ?? []) as OwnerAgentRow[]).map(mapOwnerAgentRow);
 };
 
-export const listDefaultOwnerAgentRecords = async (ownerId: string): Promise<OwnerAgentRecord[]> => {
+export const listDefaultOwnerAgentRecords = async (
+  ownerId: string
+): Promise<OwnerAgentRecord[]> => {
   if (!isSupabaseConfigured()) {
     throw new Error('Database not configured');
   }
@@ -505,10 +510,7 @@ export const updateAgentHostProvidersRecord = async (
     throw new Error(`Failed to clear agent host providers: ${deleteError.message}`);
   }
 
-  const { data, error, status } = await supabase
-    .from('agent_host_providers')
-    .insert(rows)
-    .select();
+  const { data, error, status } = await supabase.from('agent_host_providers').insert(rows).select();
 
   if (error) {
     console.error('[DB] updateAgentHostProvidersRecord error', { status, error });
@@ -653,19 +655,17 @@ export const upsertAgentHostProviders = async (
     return;
   }
 
-  const { error } = await supabase
-    .from('agent_host_providers')
-    .upsert(
-      providers.map((provider) => ({
-        host_id: hostId,
-        provider: provider.provider,
-        version: provider.version,
-        status: provider.status,
-        capabilities: provider.capabilities,
-        last_checked_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }))
-    );
+  const { error } = await supabase.from('agent_host_providers').upsert(
+    providers.map((provider) => ({
+      host_id: hostId,
+      provider: provider.provider,
+      version: provider.version,
+      status: provider.status,
+      capabilities: provider.capabilities,
+      last_checked_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }))
+  );
 
   if (error) {
     throw new Error('Failed to upsert agent host providers');
@@ -743,7 +743,9 @@ export const getOrCreateOwnerAgentConversation = async (
 
   const { data: existing, error: selectError } = await supabase
     .from('owner_agent_conversations')
-    .select('id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at')
+    .select(
+      'id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at'
+    )
     .eq('owner_id', ownerId)
     .eq('agent_id', agentId)
     .eq('status', 'active')
@@ -765,7 +767,9 @@ export const getOrCreateOwnerAgentConversation = async (
       status: 'active',
       last_active_at: now,
     })
-    .select('id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at')
+    .select(
+      'id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at'
+    )
     .single();
 
   if (createError || !created) {
@@ -785,7 +789,9 @@ export const getOwnerAgentConversation = async (
 
   const { data, error } = await supabase
     .from('owner_agent_conversations')
-    .select('id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at')
+    .select(
+      'id, owner_id, agent_id, provider_session_id, provider_work_dir, status, last_active_at, created_at'
+    )
     .eq('owner_id', ownerId)
     .eq('agent_id', agentId)
     .eq('status', 'active')
@@ -1157,8 +1163,9 @@ export const markExpiredPendingOwnerAgentMessages = async (
     throw new Error('Failed to load stale pending owner agent messages');
   }
 
-  const staleRows = ((data ?? []) as Array<{ id: string; created_at: string }>)
-    .filter((row) => row.created_at <= olderThanIso);
+  const staleRows = ((data ?? []) as Array<{ id: string; created_at: string }>).filter(
+    (row) => row.created_at <= olderThanIso
+  );
 
   for (const row of staleRows) {
     await updateOwnerAgentMessageStatus(row.id, ownerId, 'expired');
@@ -1242,11 +1249,11 @@ const mapOwnerAgentRunRow = (row: OwnerAgentRunRow): OwnerAgentRunRecord => ({
 
 const mapOwnerAgentProvider = (provider: string): OwnerAgentBindingRecord['provider'] => {
   if (
-    provider === 'openclaw'
-    || provider === 'claude'
-    || provider === 'cursor'
-    || provider === 'codex'
-    || provider === 'pi'
+    provider === 'openclaw' ||
+    provider === 'claude' ||
+    provider === 'cursor' ||
+    provider === 'codex' ||
+    provider === 'pi'
   ) {
     return provider;
   }

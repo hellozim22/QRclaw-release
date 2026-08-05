@@ -2,21 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { ProgressBoard } from '@/features/progress/ProgressBoard';
-import {
-  listProgressTasks,
-  subscribeProgressTasks,
-} from '@/features/progress/task-store';
+import { listProgressTasks, subscribeProgressTasks } from '@/features/progress/task-store';
 import type { ProgressTask } from '@/features/progress/types';
 
 export default function ProgressPage() {
-  const [tasks, setTasks] = useState<ProgressTask[]>([]);
+  // Lazy snapshot of the local task store; subscription below handles later changes.
+  const [tasks, setTasks] = useState<ProgressTask[]>(() => listProgressTasks());
 
-  const reload = () => setTasks(listProgressTasks());
-
-  useEffect(() => {
-    reload();
-    return subscribeProgressTasks(reload);
-  }, []);
+  useEffect(() => subscribeProgressTasks(() => setTasks(listProgressTasks())), []);
 
   return (
     <section

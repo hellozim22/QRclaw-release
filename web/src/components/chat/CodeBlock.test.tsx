@@ -28,9 +28,7 @@ describe('CodeBlock', () => {
     render(<CodeBlock code="hello()" language="ts" />);
     await user.click(screen.getByTestId('code-block-copy'));
     expect(writeText).toHaveBeenCalledWith('hello()');
-    await waitFor(() =>
-      expect(screen.getByLabelText('已复制')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByLabelText('已复制')).toBeInTheDocument());
   });
 
   it('does not throw if clipboard API rejects', async () => {

@@ -114,9 +114,7 @@ export async function connectLocalHost(options?: {
       };
 
       if (res.ok && body.ok) {
-        const online =
-          body.online_runtime_count ??
-          (token ? await fetchOnlineCount(token) : 0);
+        const online = body.online_runtime_count ?? (token ? await fetchOnlineCount(token) : 0);
         return {
           ok: true,
           onlineRuntimeCount: online,

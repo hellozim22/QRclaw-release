@@ -61,13 +61,15 @@ describe('dashboard agents page token onboarding', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create Agent' }));
 
     await waitFor(() => {
-      expect(mockCreateAgent).toHaveBeenCalledWith(expect.objectContaining({
-        name: '产品助手',
-        backend_provider: 'openclaw',
-        backend_source: 'local',
-        description: '负责分析商品价格。',
-        instructions: '负责分析商品价格。\n输出要简洁。',
-      }));
+      expect(mockCreateAgent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: '产品助手',
+          backend_provider: 'openclaw',
+          backend_source: 'local',
+          description: '负责分析商品价格。',
+          instructions: '负责分析商品价格。\n输出要简洁。',
+        })
+      );
     });
 
     expect(mockCreateHostToken).not.toHaveBeenCalled();

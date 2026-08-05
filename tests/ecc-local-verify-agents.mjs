@@ -17,7 +17,11 @@ function step(name, ok, detail = {}) {
 }
 
 async function main() {
-  const browser = await chromium.launch({ headless: true, channel: 'chrome', args: ['--no-first-run'] });
+  const browser = await chromium.launch({
+    headless: true,
+    channel: 'chrome',
+    args: ['--no-first-run'],
+  });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await context.request.post(`${BASE}/api/dev/bootstrap`);
   const page = await context.newPage();
@@ -32,20 +36,37 @@ async function main() {
   await page.getByTestId('agents-page').waitFor({ timeout: 15_000 });
   step('agents page visible', await page.getByTestId('agents-page').isVisible());
 
-  await page.locator('[data-testid^="agent-avatar-"]').first().waitFor({ timeout: 20_000 }).catch(() => undefined);
+  await page
+    .locator('[data-testid^="agent-avatar-"]')
+    .first()
+    .waitFor({ timeout: 20_000 })
+    .catch(() => undefined);
   const avatarCount = await page.locator('[data-testid^="agent-avatar-"]').count();
   step('agent avatars visible', avatarCount > 0, { avatarCount });
 
-  const runtimeStatusVisible = await page.getByText('本机运行状态', { exact: true }).isVisible().catch(() => false);
+  const runtimeStatusVisible = await page
+    .getByText('本机运行状态', { exact: true })
+    .isVisible()
+    .catch(() => false);
   step('agents page hides runtime status module', !runtimeStatusVisible);
-  const configVisible = await page.getByText('Agent 配置', { exact: true }).isVisible().catch(() => false);
+  const configVisible = await page
+    .getByText('Agent 配置', { exact: true })
+    .isVisible()
+    .catch(() => false);
   step('agent settings are merged into one panel', configVisible);
-  const roleFieldVisible = await page.getByText(/角色说明/).first().isVisible().catch(() => false);
+  const roleFieldVisible = await page
+    .getByText(/角色说明/)
+    .first()
+    .isVisible()
+    .catch(() => false);
   step('agent role field replaces description/instructions split', roleFieldVisible);
   const hiddenTabCount = await page.locator('[data-testid^="agent-tab-"]').count();
   step('agent detail tabs are hidden', hiddenTabCount === 0, { hiddenTabCount });
 
-  step('no console errors', consoleErrors.length === 0, { count: consoleErrors.length, sample: consoleErrors.slice(0, 3) });
+  step('no console errors', consoleErrors.length === 0, {
+    count: consoleErrors.length,
+    sample: consoleErrors.slice(0, 3),
+  });
   report.pass = report.steps.every((s) => s.ok);
   writeFileSync(path.join(OUT_DIR, 'agents-report.json'), JSON.stringify(report, null, 2));
   await browser.close();

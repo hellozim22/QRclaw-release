@@ -30,7 +30,9 @@ desktopProxyRouter.use(async (req: Request, res: Response, next: NextFunction) =
       method: req.method,
       path: req.originalUrl,
       headers: {
-        ...(req.headers.authorization ? { Authorization: req.headers.authorization as string } : {}),
+        ...(req.headers.authorization
+          ? { Authorization: req.headers.authorization as string }
+          : {}),
       },
       body: ['POST', 'PUT', 'PATCH'].includes(req.method) ? req.body : undefined,
     });

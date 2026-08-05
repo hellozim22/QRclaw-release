@@ -228,9 +228,7 @@ export default function SessionList({
                         alignItems: 'center',
                         gap: 'var(--space-2)',
                         padding: 'var(--space-2) var(--space-4)',
-                        borderLeft: active
-                          ? '3px solid var(--color-red)'
-                          : '3px solid transparent',
+                        borderLeft: active ? '3px solid var(--color-red)' : '3px solid transparent',
                         background: active ? 'var(--color-red-bg)' : 'transparent',
                         cursor: isEditing ? 'text' : 'pointer',
                         outline: 'none',
@@ -302,9 +300,7 @@ export default function SessionList({
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            fontWeight: active
-                              ? 'var(--font-medium)'
-                              : 'var(--font-normal)',
+                            fontWeight: active ? 'var(--font-medium)' : 'var(--font-normal)',
                           }}
                         >
                           {session.title}
@@ -352,11 +348,7 @@ export default function SessionList({
                             type="button"
                             onClick={(event) => {
                               event.stopPropagation();
-                              if (
-                                window.confirm(
-                                  '归档此 session？历史消息保留，可从归档恢复。',
-                                )
-                              ) {
+                              if (window.confirm('归档此 session？历史消息保留，可从归档恢复。')) {
                                 onArchive(session.id);
                               }
                             }}

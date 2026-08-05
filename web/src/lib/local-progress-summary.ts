@@ -1,7 +1,11 @@
 'use client';
 
 import type { OwnerAgentSummary } from '@shared/contracts/http/owner-agent-chat/types';
-import { createProgressTask, getProgressTask, updateProgressTask } from '@/features/progress/task-store';
+import {
+  createProgressTask,
+  getProgressTask,
+  updateProgressTask,
+} from '@/features/progress/task-store';
 import type { ChatMessage } from '@/stores/owner-agent-chat-store';
 import { getAgentDisplayName } from './agent-display';
 
@@ -47,11 +51,17 @@ const contextLimitChars = (): number => {
 const messageText = (messages: ChatMessage[]): string =>
   messages
     .filter((message) => message.sender_type !== 'system' && message.content.trim())
-    .map((message) => `${message.sender_type === 'owner' ? 'Owner' : 'Agent'}: ${message.content.trim()}`)
+    .map(
+      (message) =>
+        `${message.sender_type === 'owner' ? 'Owner' : 'Agent'}: ${message.content.trim()}`
+    )
     .join('\n\n');
 
 const latestOwnerMessage = (messages: ChatMessage[]): string =>
-  [...messages].reverse().find((message) => message.sender_type === 'owner')?.content.trim() ?? '';
+  [...messages]
+    .reverse()
+    .find((message) => message.sender_type === 'owner')
+    ?.content.trim() ?? '';
 
 const deriveTitle = (messages: ChatMessage[]): string => {
   const latest = latestOwnerMessage(messages).replace(/\s+/g, ' ').trim();
@@ -84,14 +94,14 @@ const buildDescription = (agentName: string, messages: ChatMessage[]): string =>
 
 export function maybeSummarizeConversationToProgress(
   agent: OwnerAgentSummary | null | undefined,
-  messages: ChatMessage[],
+  messages: ChatMessage[]
 ): void {
   if (!agent || messages.length < 2) return;
   const relevantMessages = messages.filter(
     (message) =>
       message.sender_type !== 'system' &&
       message.status !== 'failed' &&
-      message.content.trim().length > 0,
+      message.content.trim().length > 0
   );
   const charCount = messageText(relevantMessages).length;
   const limit = contextLimitChars();
@@ -118,7 +128,7 @@ export function maybeSummarizeConversationToProgress(
           agentId: agent.id,
           agentName,
         },
-        { recordActivity: true },
+        { recordActivity: true }
       )
     : createProgressTask({
         title: deriveTitle(relevantMessages),

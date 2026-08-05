@@ -42,16 +42,17 @@ test.describe('Owner Agent Chat - reset context', () => {
       request,
       env!,
       harness.ownerJWT,
-      harness.agentId,
+      harness.agentId
     );
     await updateConversationRuntime(request, env!, harness.ownerJWT, conversation.id, {
       provider_session_id: `e2e-session-${Date.now()}`,
       provider_work_dir: `/tmp/qrclaw-e2e-${Date.now()}`,
     });
 
-    const resetResponse = page.waitForResponse((response) =>
-      response.url().includes(`/api/owner/agents/${harness!.agentId}/conversation/reset`)
-      && response.request().method() === 'POST',
+    const resetResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/api/owner/agents/${harness!.agentId}/conversation/reset`) &&
+        response.request().method() === 'POST'
     );
     await page.getByRole('button', { name: /Reset context|重置上下文/i }).click();
     const response = await resetResponse;
@@ -64,7 +65,7 @@ test.describe('Owner Agent Chat - reset context', () => {
       request,
       env!,
       harness.ownerJWT,
-      harness.agentId,
+      harness.agentId
     );
     expect(resetConversation.provider_session_id).toBeNull();
     expect(resetConversation.provider_work_dir).toBeNull();
@@ -77,7 +78,7 @@ test.describe('Owner Agent Chat - reset context', () => {
       request,
       env!,
       harness.ownerJWT,
-      harness.agentId,
+      harness.agentId
     );
     expect(finalConversation.provider_session_id).toBeNull();
     expect(finalConversation.provider_work_dir).toBeNull();

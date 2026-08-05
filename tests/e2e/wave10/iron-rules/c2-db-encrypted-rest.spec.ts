@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
+import { expect, test } from '@playwright/test';
+import { createRealClaudeHarness } from '../../../helpers/wave10-harness';
 
 /**
  * OAC-W10-E2E-39 · Iron Rule C2 · Core
@@ -15,12 +15,10 @@ import { createRealClaudeHarness } from "../../../helpers/wave10-harness";
  *
  * 直连 Supabase service role 读, 绕开 RLS, 看"写到磁盘上到底是什么".
  */
-test.describe("E2E-39 C2 DB encrypted at rest", () => {
-  test.skip("owner_agent_messages row stores ciphertext only", async ({
-    browser,
-  }) => {
+test.describe('E2E-39 C2 DB encrypted at rest', () => {
+  test.skip('owner_agent_messages row stores ciphertext only', async ({ browser }) => {
     const harness = await createRealClaudeHarness(browser, {
-      runtime: "claude",
+      runtime: 'claude',
       requireRealCli: true,
     });
     try {

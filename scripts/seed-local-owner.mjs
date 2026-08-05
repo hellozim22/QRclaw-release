@@ -63,9 +63,7 @@ async function supabaseAdmin(pathname, init = {}) {
 }
 
 async function ensureAuthUser() {
-  const list = await supabaseAdmin(
-    `/auth/v1/admin/users?email=${encodeURIComponent(EMAIL)}`,
-  );
+  const list = await supabaseAdmin(`/auth/v1/admin/users?email=${encodeURIComponent(EMAIL)}`);
   const existing = (list.users || []).find((u) => u.email === EMAIL);
   if (existing) {
     await supabaseAdmin(`/auth/v1/admin/users/${existing.id}`, {

@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { OwnerAgentSummary } from '@shared/contracts/http/owner-agent-chat/types';
-import {
-  getAgentDisplayName,
-  getProviderDisplayName,
-} from './agent-display';
+import { getAgentDisplayName, getProviderDisplayName } from './agent-display';
 
 const makeAgent = (patch: Partial<OwnerAgentSummary>): OwnerAgentSummary => ({
   id: 'agent-1',

@@ -25,9 +25,7 @@ export interface OwnerAssistantThreadProps {
   onStop: () => void;
 }
 
-const toAssistantRole = (
-  senderType: ChatMessage['sender_type'],
-): ThreadMessageLike['role'] => {
+const toAssistantRole = (senderType: ChatMessage['sender_type']): ThreadMessageLike['role'] => {
   if (senderType === 'owner') return 'user';
   if (senderType === 'agent') return 'assistant';
   return 'system';
@@ -48,9 +46,7 @@ const toAssistantStatus = (message: ChatMessage): MessageStatus | undefined => {
   return { type: 'complete', reason: 'stop' };
 };
 
-export const toAssistantThreadMessage = (
-  message: ChatMessage,
-): ThreadMessageLike => ({
+export const toAssistantThreadMessage = (message: ChatMessage): ThreadMessageLike => ({
   id: message.id,
   role: toAssistantRole(message.sender_type),
   content: [{ type: 'text', text: message.content }],
@@ -66,9 +62,7 @@ export const toAssistantThreadMessage = (
 
 export const getAppendMessageText = (message: AppendMessage): string => {
   if (typeof message.content === 'string') return message.content;
-  return message.content
-    .map((part) => (part.type === 'text' ? part.text : ''))
-    .join('');
+  return message.content.map((part) => (part.type === 'text' ? part.text : '')).join('');
 };
 
 export const createOwnerAssistantAdapter = ({
@@ -223,7 +217,13 @@ FlatUserMessage.displayName = 'OwnerFlatUserMessage';
  * This hook does a shallow tuple comparison per message and returns the
  * previous array ref if nothing changed. Cheap: O(n) in message count, runs
  * at most once per parent render.
+ *
+ * Reading prevRef.current during render is deliberate here: the whole point
+ * is to hand the adapter a stable array reference synchronously in the same
+ * render (an effect-based rewrite would return the stale array for one frame
+ * and re-trigger the adapter churn this hook exists to prevent).
  */
+/* eslint-disable react-hooks/refs -- deliberate synchronous memoization of the previous messages array ref; rationale in the JSDoc above. */
 function useStableMessages(messages: ChatMessage[]): ChatMessage[] {
   const prevRef = useRef<ChatMessage[]>(messages);
   const prev = prevRef.current;
@@ -248,6 +248,7 @@ function useStableMessages(messages: ChatMessage[]): ChatMessage[] {
   prevRef.current = messages;
   return messages;
 }
+/* eslint-enable react-hooks/refs */
 
 function OwnerAssistantThread({
   agentId,
@@ -269,7 +270,7 @@ function OwnerAssistantThread({
         onSend,
         onStop,
       }),
-    [canSend, isRunning, stableMessages, onSend, onStop],
+    [canSend, isRunning, stableMessages, onSend, onStop]
   );
   const runtime = useExternalStoreRuntime(adapter);
 
@@ -286,10 +287,17 @@ function OwnerAssistantThread({
       }}
     >
       <AssistantRuntimeProvider runtime={runtime}>
-        <ThreadPrimitive.Root style={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}>
+        <ThreadPrimitive.Root
+          style={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}
+        >
           <ThreadPrimitive.Viewport
             autoScroll
-            style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 'var(--space-4) var(--space-6)' }}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              padding: 'var(--space-4) var(--space-6)',
+            }}
           >
             {!hasMessages && (
               <div

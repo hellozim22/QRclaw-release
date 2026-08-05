@@ -20,7 +20,9 @@ describe('owner-runtimes HTTP contracts — type parity', () => {
   });
 
   it('response schema matches interface', () => {
-    expectTypeOf<z.infer<typeof ownerRuntimesResponseSchema>>().toEqualTypeOf<OwnerRuntimesResponse>();
+    expectTypeOf<
+      z.infer<typeof ownerRuntimesResponseSchema>
+    >().toEqualTypeOf<OwnerRuntimesResponse>();
   });
 });
 

@@ -48,7 +48,10 @@ async function createNewSession(page) {
     // overlay stops intercepting clicks on the composer.
     const close = page.getByTestId('agent-session-drawer-close');
     if (await close.count()) {
-      await close.first().click().catch(() => {});
+      await close
+        .first()
+        .click()
+        .catch(() => {});
     }
     await page.keyboard.press('Escape').catch(() => {});
     await page
@@ -87,26 +90,26 @@ async function seedProgressTasks(page) {
     const mk = (title, status, offsetMs, priority = 'medium') => {
       seq += 1;
       return {
-      id: `demo-${status}-${seq}-${now}`,
-      identifier: `TASK-${String(seq).padStart(3, '0')}`,
-      title,
-      description:
-        status === 'in_progress'
-          ? '支持列间拖拽、自动同步任务状态，并与对话侧联动。'
-          : status === 'blocked'
-            ? '等待产品排期与接口确认。'
-            : `任务说明：${title}。包含目标与验收标准。`,
-      status,
-      priority,
-      position: seq,
-      projectId: 'default',
-      agentId: null,
-      agentName: null,
-      sourceMessage: null,
-      activity: [],
-      comments: [],
-      createdAt: new Date(now - offsetMs).toISOString(),
-      updatedAt: new Date(now - offsetMs / 8).toISOString(),
+        id: `demo-${status}-${seq}-${now}`,
+        identifier: `TASK-${String(seq).padStart(3, '0')}`,
+        title,
+        description:
+          status === 'in_progress'
+            ? '支持列间拖拽、自动同步任务状态，并与对话侧联动。'
+            : status === 'blocked'
+              ? '等待产品排期与接口确认。'
+              : `任务说明：${title}。包含目标与验收标准。`,
+        status,
+        priority,
+        position: seq,
+        projectId: 'default',
+        agentId: null,
+        agentName: null,
+        sourceMessage: null,
+        activity: [],
+        comments: [],
+        createdAt: new Date(now - offsetMs).toISOString(),
+        updatedAt: new Date(now - offsetMs / 8).toISOString(),
       };
     };
     const tasks = [
@@ -151,9 +154,7 @@ async function main() {
     console.log('→ OpenClaw 对话…');
     await selectOpenClaw(page);
     // Single clean exchange: one user message, one agent reply.
-    await sendMessages(page, [
-      '请用一句话介绍 QRClaw 多智能体管理平台。',
-    ]);
+    await sendMessages(page, ['请用一句话介绍 QRClaw 多智能体管理平台。']);
     await page.waitForTimeout(2000);
     await page.screenshot({ path: path.join(OUT_DIR, '01-chat-openclaw.png') });
     console.log('✓ 01-chat-openclaw.png');
@@ -161,8 +162,10 @@ async function main() {
 
   console.log('→ 看板…');
   await seedProgressTasks(page);
-  await page.getByRole('navigation', { name: 'Dashboard primary navigation' })
-    .getByRole('link', { name: /progress/i }).click();
+  await page
+    .getByRole('navigation', { name: 'Dashboard primary navigation' })
+    .getByRole('link', { name: /progress/i })
+    .click();
   await page.waitForURL(/\/progress/, { timeout: 10_000 });
   await page.waitForTimeout(1200);
   await scrollProgressBoardEnd(page);
@@ -176,8 +179,10 @@ async function main() {
   console.log('✓ 03-progress-task-detail.png');
 
   console.log('→ 智能体…');
-  await page.getByRole('navigation', { name: 'Dashboard primary navigation' })
-    .getByRole('link', { name: /^agents$/i }).click();
+  await page
+    .getByRole('navigation', { name: 'Dashboard primary navigation' })
+    .getByRole('link', { name: /^agents$/i })
+    .click();
   await page.waitForURL(/\/agents/, { timeout: 10_000 });
   await page.waitForTimeout(2000);
   await page.screenshot({ path: path.join(OUT_DIR, '04-agents.png') });

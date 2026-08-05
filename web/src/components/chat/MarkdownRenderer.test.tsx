@@ -17,17 +17,13 @@ describe('MarkdownRenderer', () => {
   });
 
   it('strips dangerous raw HTML (skipHtml)', () => {
-    render(
-      <MarkdownRenderer content={'before<script>alert(1)</script>after'} />,
-    );
+    render(<MarkdownRenderer content={'before<script>alert(1)</script>after'} />);
     const root = screen.getByTestId('markdown-root');
     expect(root.querySelector('script')).toBeNull();
   });
 
   it('blocks non-http(s) link URLs via urlTransform allowlist', () => {
-    render(
-      <MarkdownRenderer content={'[click](javascript:alert(1))'} />,
-    );
+    render(<MarkdownRenderer content={'[click](javascript:alert(1))'} />);
     const anchor = screen.getByText('click').closest('a');
     // urlTransform('javascript:…') returns '' — react-markdown yields empty href.
     expect(anchor?.getAttribute('href') || '').toBe('');

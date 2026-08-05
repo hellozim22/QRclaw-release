@@ -17,7 +17,11 @@ function step(name, ok, detail = {}) {
 }
 
 async function main() {
-  const browser = await chromium.launch({ headless: true, channel: 'chrome', args: ['--no-first-run'] });
+  const browser = await chromium.launch({
+    headless: true,
+    channel: 'chrome',
+    args: ['--no-first-run'],
+  });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const bootstrap = await context.request.post(`${BASE}/api/dev/bootstrap`);
   const bootstrapBody = await bootstrap.json().catch(() => ({}));
@@ -50,10 +54,16 @@ async function main() {
   step('new task uses selected project', selectValue.length > 0, { selectValue });
 
   await page.goto(`${BASE}/progress`, { waitUntil: 'domcontentloaded', timeout: 30_000 });
-  const projectBadge = await page.locator('[data-testid^="progress-task-card-project-"]').first().innerText();
+  const projectBadge = await page
+    .locator('[data-testid^="progress-task-card-project-"]')
+    .first()
+    .innerText();
   step('card shows project name', /ECC测试项目/.test(projectBadge), { projectBadge });
 
-  step('no console errors', consoleErrors.length === 0, { count: consoleErrors.length, sample: consoleErrors.slice(0, 3) });
+  step('no console errors', consoleErrors.length === 0, {
+    count: consoleErrors.length,
+    sample: consoleErrors.slice(0, 3),
+  });
   report.pass = report.steps.every((s) => s.ok);
   writeFileSync(path.join(OUT_DIR, 'projects-report.json'), JSON.stringify(report, null, 2));
   await browser.close();

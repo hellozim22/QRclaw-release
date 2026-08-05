@@ -1,8 +1,5 @@
-import { expect, test } from "@playwright/test";
-import {
-  createRealClaudeHarness,
-  readGatewayLog,
-} from "../../../helpers/wave10-harness";
+import { expect, test } from '@playwright/test';
+import { createRealClaudeHarness, readGatewayLog } from '../../../helpers/wave10-harness';
 
 /**
  * OAC-W10-E2E-38 · Iron Rule C2 · Core
@@ -18,10 +15,10 @@ import {
  *   - 检查 prompt、reply、attachment、host token、owner JWT 五类 secret
  *   - log path 不硬编码 /tmp — 通过 WAVE10_GATEWAY_LOG env 或 harness.log.path
  */
-test.describe("E2E-38 C2 gateway logs no plaintext", () => {
-  test.skip("sent nonce never appears in gateway.log", async ({ browser }) => {
+test.describe('E2E-38 C2 gateway logs no plaintext', () => {
+  test.skip('sent nonce never appears in gateway.log', async ({ browser }) => {
     const harness = await createRealClaudeHarness(browser, {
-      runtime: "claude",
+      runtime: 'claude',
       requireRealCli: true,
     });
     try {

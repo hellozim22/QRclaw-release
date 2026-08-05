@@ -178,9 +178,11 @@ describe('owner-agent-chat-store', () => {
         source: 'system_default',
       },
     ];
-    useOwnerAgentChatStore.getState()._setClient(makeClient({
-      listAgents: vi.fn(async () => defaults),
-    }));
+    useOwnerAgentChatStore.getState()._setClient(
+      makeClient({
+        listAgents: vi.fn(async () => defaults),
+      })
+    );
 
     await useOwnerAgentChatStore.getState().loadAgents();
 

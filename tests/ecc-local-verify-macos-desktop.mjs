@@ -60,14 +60,16 @@ check('apps/macos/QRClaw/Package.swift exists', () => {
 check('no invite-code gate in ServiceOrchestrator', () => {
   const src = fs.readFileSync(
     path.join(REPO_ROOT, 'apps/macos/QRClaw/Services/ServiceOrchestrator.swift'),
-    'utf8',
+    'utf8'
   );
   if (src.includes('needsLogin')) throw new Error('needsLogin phase still present');
   if (src.includes('DesktopLoginView')) throw new Error('login view still referenced');
 });
 
 check('DesktopSecretsLoader exists', () => {
-  if (!fs.existsSync(path.join(REPO_ROOT, 'apps/macos/QRClaw/Services/DesktopSecretsLoader.swift'))) {
+  if (
+    !fs.existsSync(path.join(REPO_ROOT, 'apps/macos/QRClaw/Services/DesktopSecretsLoader.swift'))
+  ) {
     throw new Error('missing');
   }
 });
@@ -75,12 +77,9 @@ check('DesktopSecretsLoader exists', () => {
 check('desktop bootstrap wired (isDesktopBootstrap)', () => {
   const bootstrap = fs.readFileSync(
     path.join(REPO_ROOT, 'web/src/app/api/dev/bootstrap/route.ts'),
-    'utf8',
+    'utf8'
   );
-  const shell = fs.readFileSync(
-    path.join(REPO_ROOT, 'web/src/lib/local-app-shell.ts'),
-    'utf8',
-  );
+  const shell = fs.readFileSync(path.join(REPO_ROOT, 'web/src/lib/local-app-shell.ts'), 'utf8');
   if (!bootstrap.includes('isDesktopBootstrap')) {
     throw new Error('bootstrap route missing isDesktopBootstrap');
   }
@@ -101,7 +100,7 @@ check('dist/QRClaw.app bundle', () => {
 check('Info.plist NSAllowsLocalNetworking', () => {
   const plist = fs.readFileSync(
     path.join(REPO_ROOT, 'dist/QRClaw.app/Contents/Info.plist'),
-    'utf8',
+    'utf8'
   );
   if (!plist.includes('NSAllowsLocalNetworking')) throw new Error('missing ATS');
 });
@@ -109,15 +108,15 @@ check('Info.plist NSAllowsLocalNetworking', () => {
 check('desktop update check sources wired', () => {
   const updateService = fs.readFileSync(
     path.join(REPO_ROOT, 'apps/macos/QRClaw/Services/UpdateService.swift'),
-    'utf8',
+    'utf8'
   );
   const bridge = fs.readFileSync(
     path.join(REPO_ROOT, 'apps/macos/QRClaw/Services/WebViewBridge.swift'),
-    'utf8',
+    'utf8'
   );
   const settings = fs.readFileSync(
     path.join(REPO_ROOT, 'web/src/app/(dashboard)/settings/page.tsx'),
-    'utf8',
+    'utf8'
   );
   const buildScript = fs.readFileSync(path.join(REPO_ROOT, 'script/build_and_run.sh'), 'utf8');
   if (!updateService.includes('SPUStandardUpdaterController')) {
@@ -182,7 +181,10 @@ if (runE2E) {
       });
       if (!boot.ok) throw new Error(`bootstrap failed ${boot.status}`);
 
-      await page.screenshot({ path: path.join(OUT_DIR, 'desktop-chat-verify.png'), fullPage: true });
+      await page.screenshot({
+        path: path.join(OUT_DIR, 'desktop-chat-verify.png'),
+        fullPage: true,
+      });
       await browser.close();
     });
   } catch (err) {
@@ -204,7 +206,10 @@ const report = {
   total: checks.length,
   issues,
 };
-fs.writeFileSync(path.join(OUT_DIR, 'macos-desktop-e2e-report.json'), JSON.stringify(report, null, 2));
+fs.writeFileSync(
+  path.join(OUT_DIR, 'macos-desktop-e2e-report.json'),
+  JSON.stringify(report, null, 2)
+);
 
 console.log(`\n${checks.length - failed}/${checks.length} checks passed`);
 if (issues.length) {

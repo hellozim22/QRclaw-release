@@ -16,7 +16,9 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: buildPermissionsPolicy() },
   ...(isDesktopShell
     ? []
-    : [{ key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' }]),
+    : [
+        { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+      ]),
 ];
 
 const nextConfig: NextConfig = {

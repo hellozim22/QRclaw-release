@@ -23,7 +23,7 @@ type CachedDek = { rawDek: Buffer; dekId: string; cachedAt: number };
 const ownerAgentDekCache = new Map<string, CachedDek>();
 
 const loadPersistedOwnerAgentDek = async (
-  conversationId: string,
+  conversationId: string
 ): Promise<{ rawDek: Buffer; dekId: string; encryptedDek: string } | null> => {
   if (!isSupabaseConfigured()) {
     return null;
@@ -53,14 +53,14 @@ const loadPersistedOwnerAgentDek = async (
   } catch (err) {
     console.error(
       '[owner-agent-dek] Failed to unwrap persisted DEK:',
-      err instanceof Error ? err.message : String(err),
+      err instanceof Error ? err.message : String(err)
     );
     return null;
   }
 };
 
 export const getOwnerAgentDEK = async (
-  conversationId: string,
+  conversationId: string
 ): Promise<{ rawDek: Buffer; dekId: string; info: DEKInfo }> => {
   const cached = ownerAgentDekCache.get(conversationId);
   if (cached && Date.now() - cached.cachedAt < DEK_TTL_MS) {

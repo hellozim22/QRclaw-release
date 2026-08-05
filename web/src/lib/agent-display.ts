@@ -18,6 +18,4 @@ export const isSystemDefaultAgent = (agent: OwnerAgentSummary): boolean =>
   agent.is_default || agent.source === 'system_default';
 
 export const getAgentDisplayName = (agent: OwnerAgentSummary): string =>
-  isSystemDefaultAgent(agent)
-    ? getProviderDisplayName(agent.backend_provider)
-    : agent.name;
+  isSystemDefaultAgent(agent) ? getProviderDisplayName(agent.backend_provider) : agent.name;

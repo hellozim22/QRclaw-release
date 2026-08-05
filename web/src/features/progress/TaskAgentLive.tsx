@@ -20,21 +20,22 @@ export function TaskAgentLive({ task }: { task: ProgressTask }) {
   const [now, setNow] = useState(() => Date.now());
 
   const agent = useMemo(
-    () => (task.agentId ? agents.find((item) => item.id === task.agentId) ?? null : null),
-    [agents, task.agentId],
+    () => (task.agentId ? (agents.find((item) => item.id === task.agentId) ?? null) : null),
+    [agents, task.agentId]
   );
 
   const hasStreamingMessage = Boolean(
     task.agentId &&
-      (messagesByAgent[task.agentId] ?? []).some((message) =>
+    (messagesByAgent[task.agentId] ?? []).some(
+      (message) =>
         message.sender_type === 'agent' &&
         (message.status === 'streaming' || message.run_status === 'running')
-      ),
+    )
   );
   const isRunning = Boolean(
     task.agentId &&
-      task.status === 'in_progress' &&
-      (statusByAgent[task.agentId] === 'running' || hasStreamingMessage),
+    task.status === 'in_progress' &&
+    (statusByAgent[task.agentId] === 'running' || hasStreamingMessage)
   );
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export function TaskAgentLive({ task }: { task: ProgressTask }) {
   if (!isRunning) return null;
 
   const elapsed = Math.max(0, Math.floor((now - Date.parse(task.updatedAt)) / 1000));
-  const agentName = agent ? getAgentDisplayName(agent) : task.agentName ?? 'Agent';
+  const agentName = agent ? getAgentDisplayName(agent) : (task.agentName ?? 'Agent');
 
   return (
     <aside

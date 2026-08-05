@@ -92,17 +92,15 @@ export async function getTestAuth(): Promise<{ token: string; userId: string; em
  * predate the trigger, and so re-runs are idempotent.
  */
 async function ensureOwnerRecord(userId: string, email: string): Promise<void> {
-  await adminClient
-    .from('owners')
-    .upsert(
-      {
-        user_id: userId,
-        email,
-        display_name: 'Test Owner',
-        plan: 'free',
-      },
-      { onConflict: 'user_id', ignoreDuplicates: true },
-    );
+  await adminClient.from('owners').upsert(
+    {
+      user_id: userId,
+      email,
+      display_name: 'Test Owner',
+      plan: 'free',
+    },
+    { onConflict: 'user_id', ignoreDuplicates: true }
+  );
 }
 
 // ─── Agent Seeding ─────────────────────────────────────────────

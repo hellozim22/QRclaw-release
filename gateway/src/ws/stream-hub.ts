@@ -36,6 +36,5 @@ export const subscribeRunFrames = (
   };
 };
 
-export const getRunFrameListenerCount = (runId: string): number => (
-  emitter.listenerCount(channelFor(runId))
-);
+export const getRunFrameListenerCount = (runId: string): number =>
+  emitter.listenerCount(channelFor(runId));

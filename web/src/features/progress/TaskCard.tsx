@@ -2,9 +2,7 @@
 
 'use client';
 
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AgentAvatar } from '@/components/agent/AgentAvatar';
 import type { OwnerAgentSummary } from '@shared/contracts/http/owner-agent-chat/types';
@@ -212,14 +210,9 @@ export function TaskCard({
   agentOnline: boolean;
   onClick: () => void;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  });
 
   return (
     <button

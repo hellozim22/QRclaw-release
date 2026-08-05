@@ -20,7 +20,11 @@ describe('formatActivity', () => {
   });
 
   it('preserves explicit assignment and project text', () => {
-    expect(formatActivity(activity({ action: 'assigned', text: '分配给 Cursor' }))).toBe('分配给 Cursor');
-    expect(formatActivity(activity({ action: 'project_changed', text: '移动到项目「Demo」' }))).toBe('移动到项目「Demo」');
+    expect(formatActivity(activity({ action: 'assigned', text: '分配给 Cursor' }))).toBe(
+      '分配给 Cursor'
+    );
+    expect(
+      formatActivity(activity({ action: 'project_changed', text: '移动到项目「Demo」' }))
+    ).toBe('移动到项目「Demo」');
   });
 });

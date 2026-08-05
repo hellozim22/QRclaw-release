@@ -55,7 +55,8 @@ export function RuntimeDetail({
       >
         <h3 style={{ margin: 0, color: 'var(--color-gray-800)' }}>Connection</h3>
         <p style={{ color: 'var(--color-gray-600)', lineHeight: 1.6 }}>
-          当前状态：<strong style={{ color: online ? 'var(--color-green-text)' : 'var(--color-gray-800)' }}>
+          当前状态：
+          <strong style={{ color: online ? 'var(--color-green-text)' : 'var(--color-gray-800)' }}>
             {online ? 'Online' : 'Offline'}
           </strong>
         </p>

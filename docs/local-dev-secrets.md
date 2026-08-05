@@ -27,10 +27,10 @@ chmod 700 ~/.config/qrclaw
 cat > ~/.config/qrclaw/secrets.env <<'EOF'
 # Supabase — account level
 export SUPABASE_ACCESS_TOKEN=sbp_xxxxxxxx              # Dashboard → Account → Access Tokens
-export SUPABASE_PROJECT_ID=zyxqadubhwrnsoujiyir
+export SUPABASE_PROJECT_ID=your-project-id
 
 # Supabase — project level
-export SUPABASE_URL=https://zyxqadubhwrnsoujiyir.supabase.co
+export SUPABASE_URL=https://your-project-id.supabase.co
 export SUPABASE_ANON_KEY=eyJhbGciOi...                 # Dashboard → Settings → API
 export SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...         # Dashboard → Settings → API（敏感）
 export SUPABASE_DB_PASSWORD=xxxxxxxx                   # Dashboard → Settings → Database

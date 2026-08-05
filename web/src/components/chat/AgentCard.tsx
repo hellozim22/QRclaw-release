@@ -100,9 +100,7 @@ export default function AgentCard({
           width: 48,
           height: 48,
           borderRadius: 'var(--radius-lg)',
-          border: selected
-            ? '2px solid var(--color-red)'
-            : '1px solid var(--color-gray-border)',
+          border: selected ? '2px solid var(--color-red)' : '1px solid var(--color-gray-border)',
           background: selected ? 'var(--color-red-bg)' : 'var(--color-white)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.55 : 1,
@@ -173,9 +171,7 @@ export default function AgentCard({
         gap: 'var(--space-3)',
         padding: 'var(--space-3) var(--space-4)',
         border: 'none',
-        borderLeft: selected
-          ? '3px solid var(--color-red)'
-          : '3px solid transparent',
+        borderLeft: selected ? '3px solid var(--color-red)' : '3px solid transparent',
         background: selected ? 'var(--color-red-bg)' : 'transparent',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,

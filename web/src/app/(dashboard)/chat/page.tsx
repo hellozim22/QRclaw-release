@@ -92,7 +92,7 @@ const providerMeta = (provider: OwnerAgentProvider) =>
 
 const deriveRuntimeStatus = (
   agentConnStatus: AgentConnectionStatus | undefined,
-  hasAgent: boolean,
+  hasAgent: boolean
 ): RuntimeStatus => {
   if (!hasAgent) return 'not_installed';
   switch (agentConnStatus) {
@@ -145,8 +145,7 @@ export default function ChatPage() {
   const { user, loading: authLoading } = useAuth();
   const isLocalDev = process.env.NEXT_PUBLIC_LOCAL_DEV === '1';
 
-  const [installHintProvider, setInstallHintProvider] =
-    useState<OwnerAgentProvider | null>(null);
+  const [installHintProvider, setInstallHintProvider] = useState<OwnerAgentProvider | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatSearchQuery, setChatSearchQuery] = useState('');
   const [reconnecting, setReconnecting] = useState(false);
@@ -167,8 +166,7 @@ export default function ChatPage() {
         /* reconnect scheduled inside store */
       });
     }, 30_000);
-    const pollMs =
-      localHostOnlineCount === 0 || localHostOnlineCount === null ? 15_000 : 30_000;
+    const pollMs = localHostOnlineCount === 0 || localHostOnlineCount === null ? 15_000 : 30_000;
     const interval = setInterval(() => {
       void loadAgents();
     }, pollMs);
@@ -180,15 +178,17 @@ export default function ChatPage() {
 
   const visibleAgents = useMemo(
     () => agents.filter((agent) => agent.status === 'active'),
-    [agents],
+    [agents]
   );
   const defaultAgents = useMemo(
-    () => agents.filter((agent) =>
-      agent.status === 'active' &&
-      isSystemDefaultAgent(agent) &&
-      DEFAULT_AGENT_PROVIDERS.has(agent.backend_provider)
-    ),
-    [agents],
+    () =>
+      agents.filter(
+        (agent) =>
+          agent.status === 'active' &&
+          isSystemDefaultAgent(agent) &&
+          DEFAULT_AGENT_PROVIDERS.has(agent.backend_provider)
+      ),
+    [agents]
   );
 
   useEffect(() => {
@@ -215,11 +215,9 @@ export default function ChatPage() {
   }, [chatSearchQuery]);
 
   const selectedAgent = selectedAgentId
-    ? visibleAgents.find((a) => a.id === selectedAgentId) ?? null
+    ? (visibleAgents.find((a) => a.id === selectedAgentId) ?? null)
     : null;
-  const selectedAgentDisplayName = selectedAgent
-    ? getAgentDisplayName(selectedAgent)
-    : null;
+  const selectedAgentDisplayName = selectedAgent ? getAgentDisplayName(selectedAgent) : null;
 
   const restoredSessions: AgentSession[] = useMemo(() => {
     return visibleAgents.flatMap((agent) => {
@@ -228,14 +226,16 @@ export default function ChatPage() {
       const firstOwnerMessage = agentHistory.find((message) => message.sender_type === 'owner');
       const lastMessage = agentHistory[agentHistory.length - 1];
       const updatedAt = Date.parse(lastMessage.created_at) || Date.now();
-      return [{
-        id: `history-${agent.id}`,
-        agentId: agent.id,
-        agentName: getAgentDisplayName(agent),
-        title: firstOwnerMessage ? compactSessionTitle(firstOwnerMessage.content) : '历史会话',
-        updatedAt,
-        updatedLabel: formatUpdatedLabel(updatedAt),
-      }];
+      return [
+        {
+          id: `history-${agent.id}`,
+          agentId: agent.id,
+          agentName: getAgentDisplayName(agent),
+          title: firstOwnerMessage ? compactSessionTitle(firstOwnerMessage.content) : '历史会话',
+          updatedAt,
+          updatedLabel: formatUpdatedLabel(updatedAt),
+        },
+      ];
     });
   }, [messagesByAgent, visibleAgents]);
 
@@ -252,7 +252,7 @@ export default function ChatPage() {
       const agent = defaultAgents.find((a) => a.backend_provider === def.provider);
       const status = deriveRuntimeStatus(
         agent ? statusByAgent[agent.id] : undefined,
-        Boolean(agent),
+        Boolean(agent)
       );
       return {
         provider: def.provider,
@@ -272,9 +272,7 @@ export default function ChatPage() {
     return 'partial';
   }, [visibleAgents.length, onlineCount, totalCount]);
 
-  const agentMessages = selectedAgentId
-    ? messagesByAgent[selectedAgentId] ?? []
-    : [];
+  const agentMessages = selectedAgentId ? (messagesByAgent[selectedAgentId] ?? []) : [];
   const activeSessionId = sessions.activeSessionId;
   const isLocalDraftSession = activeSessionId?.startsWith('sess-') ?? false;
   const sessionMarker = activeSessionId ? `${activeSessionId}:` : null;
@@ -284,7 +282,7 @@ export default function ChatPage() {
     for (const message of agentMessages) {
       if (!message.run_id) continue;
       const hasLocalMarker = [message.id, message.client_id].some((value) =>
-        value?.includes(marker),
+        value?.includes(marker)
       );
       if (hasLocalMarker) {
         sessionIdByRunIdRef.current.set(`${selectedAgentId}:${message.run_id}`, activeSessionId);
@@ -292,14 +290,17 @@ export default function ChatPage() {
     }
   }, [activeSessionId, agentMessages, selectedAgentId]);
 
-  const messages = isLocalDraftSession && sessionMarker
-    ? agentMessages.filter((message) =>
-        [message.id, message.client_id].some((value) => value?.includes(sessionMarker)) ||
-        (message.run_id
-          ? sessionIdByRunIdRef.current.get(`${selectedAgentId}:${message.run_id}`) === activeSessionId
-          : false),
-      )
-    : agentMessages;
+  const messages =
+    isLocalDraftSession && sessionMarker
+      ? agentMessages.filter(
+          (message) =>
+            [message.id, message.client_id].some((value) => value?.includes(sessionMarker)) ||
+            (message.run_id
+              ? sessionIdByRunIdRef.current.get(`${selectedAgentId}:${message.run_id}`) ===
+                activeSessionId
+              : false)
+        )
+      : agentMessages;
 
   const handleSelectAgent = (agentId: string) => {
     selectAgent(agentId);
@@ -309,8 +310,7 @@ export default function ChatPage() {
 
   const handleStartFirstOnline = () => {
     const firstOnline = visibleAgents.find(
-      (a) =>
-        statusByAgent[a.id] === 'online' || statusByAgent[a.id] === 'running',
+      (a) => statusByAgent[a.id] === 'online' || statusByAgent[a.id] === 'running'
     );
     if (firstOnline) {
       selectAgent(firstOnline.id);
@@ -327,7 +327,7 @@ export default function ChatPage() {
       messages.some(
         (message) =>
           message.sender_type === 'agent' &&
-          (message.status === 'streaming' || message.run_status === 'running'),
+          (message.status === 'streaming' || message.run_status === 'running')
       )
     : false;
 
@@ -347,9 +347,10 @@ export default function ChatPage() {
 
   const handleSendMessage = (content: string) => {
     if (!selectedAgentId) return;
-    const clientMessageId = isLocalDraftSession && activeSessionId
-      ? `${activeSessionId}:${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-      : undefined;
+    const clientMessageId =
+      isLocalDraftSession && activeSessionId
+        ? `${activeSessionId}:${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+        : undefined;
     void sendMessage(selectedAgentId, content, clientMessageId);
   };
 
@@ -360,16 +361,14 @@ export default function ChatPage() {
     }
   };
 
-  const showChat =
-    selectedAgent &&
-    !installHintProvider;
+  const showChat = selectedAgent && !installHintProvider;
 
   const showLocalHostBanner =
-    !loading
-    && !reconnecting
-    && localHostOnlineCount === 0
-    && visibleAgents.length > 0
-    && Boolean(localHostConnectUi);
+    !loading &&
+    !reconnecting &&
+    localHostOnlineCount === 0 &&
+    visibleAgents.length > 0 &&
+    Boolean(localHostConnectUi);
 
   const handleReconnectHost = async () => {
     setReconnecting(true);
@@ -442,8 +441,8 @@ export default function ChatPage() {
               command={providerMeta(installHintProvider).command}
               docsUrl={providerMeta(installHintProvider).docsUrl}
               status={
-                (providerRows.find((r) => r.provider === installHintProvider)
-                  ?.status ?? 'not_installed') as Exclude<RuntimeStatus, 'online'>
+                (providerRows.find((r) => r.provider === installHintProvider)?.status ??
+                  'not_installed') as Exclude<RuntimeStatus, 'online'>
               }
               onRescan={() => {
                 void loadAgents();
@@ -655,10 +654,7 @@ export default function ChatPage() {
   );
 }
 
-const headerBtnStyle = (
-  active: boolean,
-  primary = false,
-): React.CSSProperties => ({
+const headerBtnStyle = (active: boolean, primary = false): React.CSSProperties => ({
   width: 36,
   height: 36,
   display: 'inline-flex',

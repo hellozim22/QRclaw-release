@@ -43,7 +43,7 @@ export async function generateHostToken(
     hostId?: string;
     allowedProviders?: OwnerAgentProvider[];
     apiBase?: string;
-  },
+  }
 ): Promise<string> {
   const scope: HostTokenScope = {
     owner_id: opts.ownerId,
@@ -66,9 +66,7 @@ export async function generateHostToken(
   });
   if (!res.ok()) {
     const text = await res.text();
-    throw new Error(
-      `generateHostToken failed: ${res.status()} ${text.slice(0, 200)}`,
-    );
+    throw new Error(`generateHostToken failed: ${res.status()} ${text.slice(0, 200)}`);
   }
   const json = (await res.json()) as OwnerAgentCreateHostTokenResponse;
   if (!json.token) {

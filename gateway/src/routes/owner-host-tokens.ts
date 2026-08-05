@@ -19,7 +19,8 @@ import { revokeHostConnection } from '../services/agent-host-registry.js';
 
 const HOST_TOKEN_PREFIX = 'qrclaw_host_';
 
-const generateHostToken = (): string => `${HOST_TOKEN_PREFIX}${randomBytes(32).toString('base64url')}`;
+const generateHostToken = (): string =>
+  `${HOST_TOKEN_PREFIX}${randomBytes(32).toString('base64url')}`;
 
 export const handleCreateHostToken = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -76,7 +77,9 @@ export const handleDeleteHostToken = async (req: Request, res: Response): Promis
 
     const rawTokenId = req.params.tokenId;
     if (typeof rawTokenId !== 'string' || rawTokenId.length === 0) {
-      res.status(400).json({ error: { code: 'invalid_request', message: 'Host token id is required' } });
+      res
+        .status(400)
+        .json({ error: { code: 'invalid_request', message: 'Host token id is required' } });
       return;
     }
 

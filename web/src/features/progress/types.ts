@@ -1,10 +1,4 @@
-export const TASK_STATUSES = [
-  'todo',
-  'in_progress',
-  'in_review',
-  'done',
-  'blocked',
-] as const;
+export const TASK_STATUSES = ['todo', 'in_progress', 'in_review', 'done', 'blocked'] as const;
 
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 

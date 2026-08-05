@@ -25,14 +25,13 @@ export default function SettingsPage() {
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [desktopVersion, setDesktopVersion] = useState<DesktopAppVersion | null>(null);
   const [updateResult, setUpdateResult] = useState<DesktopUpdateCheckResult | null>(null);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
-    null,
-  );
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const desktopMode = isDesktopMode();
 
   useEffect(() => {
     if (profile && !initialized) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- prefill-once pattern: seed form from profile the first time it loads; after that, user input wins.
       setDisplayName(profile.displayName);
       setAvatarUrl(profile.avatarUrl);
       setSavedDisplayName(profile.displayName);
@@ -380,10 +379,10 @@ export default function SettingsPage() {
           >
             {!desktopMode
               ? '更新检测仅在 QRClaw macOS 桌面应用中可用。'
-              : updateResult?.message ??
+              : (updateResult?.message ??
                 (desktopVersion?.configured === false
                   ? '当前构建尚未配置正式更新源。'
-                  : '点击后会通过 macOS 原生更新器检查新版本。')}
+                  : '点击后会通过 macOS 原生更新器检查新版本。'))}
           </p>
         </section>
       </div>

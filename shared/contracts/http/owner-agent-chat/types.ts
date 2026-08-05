@@ -52,7 +52,11 @@ export type OwnerAgentHostType = (typeof OWNER_AGENT_HOST_TYPES)[number];
 export const OWNER_AGENT_HOST_STATUSES = ['online', 'offline', 'revoked'] as const;
 export type OwnerAgentHostStatus = (typeof OWNER_AGENT_HOST_STATUSES)[number];
 
-export const OWNER_AGENT_PROVIDER_STATUSES = ['available', 'unavailable', 'version_unsupported'] as const;
+export const OWNER_AGENT_PROVIDER_STATUSES = [
+  'available',
+  'unavailable',
+  'version_unsupported',
+] as const;
 export type OwnerAgentProviderStatus = (typeof OWNER_AGENT_PROVIDER_STATUSES)[number];
 
 export const OWNER_AGENT_NAME_MAX = 128;

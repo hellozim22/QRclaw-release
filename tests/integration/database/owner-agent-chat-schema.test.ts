@@ -323,7 +323,10 @@ function expectDbErrorCode(error: { code?: string } | null, code: string) {
 describe('Owner Agent Chat schema', () => {
   afterAll(async () => {
     if (createdOwnerIds.size > 0) {
-      await adminClient.from('owners').delete().in('id', [...createdOwnerIds]);
+      await adminClient
+        .from('owners')
+        .delete()
+        .in('id', [...createdOwnerIds]);
     }
     await Promise.allSettled(
       [...createdUserIds].map((userId) => adminClient.auth.admin.deleteUser(userId))
@@ -387,7 +390,8 @@ describe('Owner Agent Chat schema', () => {
 
     expect(rows.map((row) => row.indexname)).toEqual([...REQUIRED_FK_INDEXES].sort());
     for (const row of rows) {
-      const expected = REQUIRED_FK_INDEX_BY_NAME[row.indexname as (typeof REQUIRED_FK_INDEXES)[number]];
+      const expected =
+        REQUIRED_FK_INDEX_BY_NAME[row.indexname as (typeof REQUIRED_FK_INDEXES)[number]];
       expect(row.tablename, `${row.indexname} table`).toBe(expected.table);
       expect(row.indexdef, `${row.indexname} column`).toContain(`(${expected.column})`);
     }

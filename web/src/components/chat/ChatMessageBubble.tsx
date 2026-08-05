@@ -64,8 +64,7 @@ function formatTime(iso?: string): string | null {
 const rootStyle = (role: ChatRole): React.CSSProperties => ({
   display: 'flex',
   flexDirection: 'column',
-  alignItems:
-    role === 'user' ? 'flex-end' : role === 'system' ? 'center' : 'flex-start',
+  alignItems: role === 'user' ? 'flex-end' : role === 'system' ? 'center' : 'flex-start',
   margin: 'var(--space-3) 0',
   maxWidth: '100%',
 });
@@ -197,7 +196,11 @@ function ChatMessageBubble({
         )}
       </div>
 
-      {hasError && <div style={errorStyle} role="alert">{errorMessage}</div>}
+      {hasError && (
+        <div style={errorStyle} role="alert">
+          {errorMessage}
+        </div>
+      )}
 
       {(effectiveShowCopy || onRegenerate) && !isStreaming && role !== 'system' && (
         <div style={actionsStyle}>

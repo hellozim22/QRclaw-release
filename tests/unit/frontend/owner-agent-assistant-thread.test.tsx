@@ -53,7 +53,10 @@ describe('OwnerAssistantThread', () => {
       sourceId: null,
       runConfig: undefined,
       role: 'user',
-      content: [{ type: 'text', text: 'Hi ' }, { type: 'text', text: 'there' }],
+      content: [
+        { type: 'text', text: 'Hi ' },
+        { type: 'text', text: 'there' },
+      ],
       attachments: [],
       metadata: { custom: {} },
       createdAt: new Date('2026-04-28T00:00:02Z'),

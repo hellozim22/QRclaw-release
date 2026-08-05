@@ -122,46 +122,48 @@ export const listOwnerAgents = async (ownerId: string): Promise<OwnerAgentRespon
     const runtime = binding
       ? pickPreferredRuntime(binding.provider, agent.runtimeId, runtimes)
       : agent.runtimeId
-        ? runtimes.find((entry) => entry.id === agent.runtimeId) ?? null
+        ? (runtimes.find((entry) => entry.id === agent.runtimeId) ?? null)
         : null;
     if (binding) {
-      return [mapOwnerAgentResponse(agent, {
-        backendProvider: binding.provider,
-        backendSource: binding.bindingKind === 'cloud_plugin' ? 'cloud' : 'local',
-        runtimeId: runtime?.id ?? agent.runtimeId,
-        runtimeStatus: runtime?.runtimeStatus ?? null,
-        runtimeVersion: runtime?.version ?? null,
-        runtimeModels: getRuntimeModels(runtime),
-      })];
+      return [
+        mapOwnerAgentResponse(agent, {
+          backendProvider: binding.provider,
+          backendSource: binding.bindingKind === 'cloud_plugin' ? 'cloud' : 'local',
+          runtimeId: runtime?.id ?? agent.runtimeId,
+          runtimeStatus: runtime?.runtimeStatus ?? null,
+          runtimeVersion: runtime?.version ?? null,
+          runtimeModels: getRuntimeModels(runtime),
+        }),
+      ];
     }
 
     const defaultRuntimeType = resolveDefaultAgentProvider(ownerId, agent, runtime);
     if (!defaultRuntimeType) {
       return [];
     }
-    return [mapOwnerAgentResponse(agent, {
-      backendProvider: defaultRuntimeType,
-      backendSource: 'local',
-      runtimeId: runtime?.id ?? agent.runtimeId,
-      runtimeStatus: runtime?.runtimeStatus ?? null,
-      runtimeVersion: runtime?.version ?? null,
-      runtimeModels: getRuntimeModels(runtime),
-    })];
+    return [
+      mapOwnerAgentResponse(agent, {
+        backendProvider: defaultRuntimeType,
+        backendSource: 'local',
+        runtimeId: runtime?.id ?? agent.runtimeId,
+        runtimeStatus: runtime?.runtimeStatus ?? null,
+        runtimeVersion: runtime?.version ?? null,
+        runtimeModels: getRuntimeModels(runtime),
+      }),
+    ];
   });
 };
 
 const pickPreferredRuntime = (
   provider: OwnerAgentProvider,
   linkedRuntimeId: string | null,
-  runtimes: Awaited<ReturnType<typeof listAgentRuntimes>>,
+  runtimes: Awaited<ReturnType<typeof listAgentRuntimes>>
 ): Awaited<ReturnType<typeof listAgentRuntimes>>[number] | null => {
   const forType = runtimes.filter((runtime) => runtime.runtimeType === provider);
   const online = forType
     .filter((runtime) => runtime.runtimeStatus === 'online')
     .sort(
-      (a, b) =>
-        Date.parse(b.lastSeenAt ?? b.updatedAt)
-        - Date.parse(a.lastSeenAt ?? a.updatedAt),
+      (a, b) => Date.parse(b.lastSeenAt ?? b.updatedAt) - Date.parse(a.lastSeenAt ?? a.updatedAt)
     );
   if (online.length > 0) {
     return online[0];
@@ -177,9 +179,9 @@ export const createOwnerAgent = async (
   request: OwnerAgentCreateAgentRequest
 ): Promise<OwnerAgentResponse> => {
   if (
-    request.execution_mode === 'full_access'
-    && HIGH_PERMISSION_PROVIDERS.has(request.backend_provider)
-    && !request.execution_mode_ack
+    request.execution_mode === 'full_access' &&
+    HIGH_PERMISSION_PROVIDERS.has(request.backend_provider) &&
+    !request.execution_mode_ack
   ) {
     throw new OwnerAgentChatServiceError(
       400,
@@ -520,9 +522,11 @@ const dispatchPreparedOwnerAgentRun = async (
     }).catch((err) => {
       console.error('[OwnerAgentChat] updateOwnerAgentRunStatus:', (err as Error).message);
     });
-    void updateOwnerAgentMessageStatus(prepared.messageId, prepared.ownerId, 'sent').catch((err) => {
-      console.error('[OwnerAgentChat] updateOwnerAgentMessageStatus:', (err as Error).message);
-    });
+    void updateOwnerAgentMessageStatus(prepared.messageId, prepared.ownerId, 'sent').catch(
+      (err) => {
+        console.error('[OwnerAgentChat] updateOwnerAgentMessageStatus:', (err as Error).message);
+      }
+    );
     return 'running';
   }
 
@@ -659,7 +663,9 @@ const mapOwnerAgentResponse = (
 const getRuntimeModels = (runtime: AgentRuntimeRecord | null): string[] => {
   const models = runtime?.capabilities.models;
   return Array.isArray(models)
-    ? models.filter((model): model is string => typeof model === 'string' && model.trim().length > 0)
+    ? models.filter(
+        (model): model is string => typeof model === 'string' && model.trim().length > 0
+      )
     : [];
 };
 

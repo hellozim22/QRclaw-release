@@ -45,7 +45,10 @@ test.describe('Owner Agent Chat - happy path', () => {
       }
     });
 
-    await test.info().attach('initial-setup', { body: JSON.stringify({ agentName: harness.agentName }, null, 2), contentType: 'application/json' });
+    await test.info().attach('initial-setup', {
+      body: JSON.stringify({ agentName: harness.agentName }, null, 2),
+      contentType: 'application/json',
+    });
     await sendChatMessage(page, prompt);
     // Wait specifically for the NEW reply (harness knows the exact text).
     await expect(page.getByText(harness.replyText)).toBeVisible({ timeout: 100_000 });
@@ -69,7 +72,7 @@ test.describe('Owner Agent Chat - happy path', () => {
           selectedAgentId: s.selectedAgentId,
           agents: s.agents?.map((a: any) => a.id) ?? [],
           messagesByAgent: Object.fromEntries(
-            Object.entries(s.messagesByAgent ?? {}).map(([k, v]: any) => [k, v.length]),
+            Object.entries(s.messagesByAgent ?? {}).map(([k, v]: any) => [k, v.length])
           ),
           error: s.error,
         };

@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [isNarrow, setIsNarrow] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot mounted gate for SSR/hydration safety; flips exactly once after mount.
     setMounted(true);
     const mq = window.matchMedia('(max-width: 768px)');
     const apply = () => setIsNarrow(mq.matches);

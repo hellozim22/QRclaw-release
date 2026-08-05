@@ -2,10 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  listProgressTasks,
-  subscribeProgressTasks,
-} from '@/features/progress/task-store';
+import { listProgressTasks, subscribeProgressTasks } from '@/features/progress/task-store';
 import {
   STATUS_META,
   TASK_STATUSES,
