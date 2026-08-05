@@ -106,7 +106,7 @@ QRClaw brings your local AI agents — Codex, Cursor, Claude Code, OpenClaw, Pi,
 
 ### macOS
 
-1. Download the installer: [`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)
+1. Download the installer: [`QRClaw-0.1.3.dmg`](https://github.com/hellozim22/QRclaw_release/releases/latest/download/QRClaw-0.1.3.dmg)
 2. Open the `.dmg` file and drag **QRClaw** into the **Applications** folder.
 3. On first launch, if macOS blocks the app because it is from an unidentified developer:
    - Open **System Settings → Privacy & Security**.

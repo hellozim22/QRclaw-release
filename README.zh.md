@@ -106,7 +106,7 @@ QRClaw 将本地运行的多个 AI 智能体——Codex、Cursor、Claude Code�
 
 ### macOS
 
-1. 下载安装包：[`QRClaw-0.1.1.dmg`](./download/QRClaw-0.1.1.dmg)
+1. 下载安装包：[`QRClaw-0.1.3.dmg`](https://github.com/hellozim22/QRclaw_release/releases/latest/download/QRClaw-0.1.3.dmg)
 2. 打开 `.dmg` 文件，将 **QRClaw** 拖入「应用程序」文件夹。
 3. 首次启动时，如果 macOS 提示来自未知开发者而阻止运行：
    - 打开「系统设置 → 隐私与安全性」。
