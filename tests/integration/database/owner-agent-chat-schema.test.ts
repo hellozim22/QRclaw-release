@@ -126,7 +126,7 @@ async function createOwner(label: string): Promise<OwnerFixture> {
   const email = `owner-agent-schema-${label}-${randomUUID()}@qrclaw.test`;
   const { data: userResult, error: userError } = await adminClient.auth.admin.createUser({
     email,
-    password: process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD',
+    password: 'OwnerAgentSchemaTest123!',
     email_confirm: true,
   });
   if (userError || !userResult.user) {

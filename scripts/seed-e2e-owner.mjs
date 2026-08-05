@@ -12,8 +12,8 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
-const EMAIL = process.argv[2] || 'e2e-owner@example.invalid';
-const PASSWORD = process.argv[3] || 'CHANGE_ME_E2E_PASSWORD';
+const EMAIL = process.argv[2] || 'e2e-owner@test.qrclaw.ai';
+const PASSWORD = process.argv[3] || 'E2E-HappyPath-9x!';
 
 function loadEnv(file) {
   try {

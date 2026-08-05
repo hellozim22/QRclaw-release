@@ -5,8 +5,8 @@ const page = await ctx.newPage();
 await page.goto('http://localhost:3000/login', { waitUntil: 'domcontentloaded' });
 await page.waitForTimeout(1000);
 if (await page.getByPlaceholder('Email address').count()) {
-  await page.getByPlaceholder('Email address').fill('test-owner@example.invalid');
-  await page.getByPlaceholder('Password').fill(process.env.E2E_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD');
+  await page.getByPlaceholder('Email address').fill('zeze-test@qrclaw.test');
+  await page.getByPlaceholder('Password').fill('QRClaw-Test-Aa1!');
   await page.getByRole('button', { name: /^sign\s*in/i }).click();
   await page.waitForTimeout(3000);
 }

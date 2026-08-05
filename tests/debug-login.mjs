@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
 const supabaseUrl=process.env.SUPABASE_URL, supabaseAnon=process.env.SUPABASE_ANON_KEY;
-const {data}=await createClient(supabaseUrl,supabaseAnon).auth.signInWithPassword({email:'test-owner@example.invalid',password:process.env.E2E_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD'});
+const {data}=await createClient(supabaseUrl,supabaseAnon).auth.signInWithPassword({email:'zeze-test@qrclaw.test',password:'QRClaw-Test-Aa1!'});
 const authKey=`sb-${new URL(supabaseUrl).host.split('.')[0]}-auth-token`;
 const browser=await chromium.launchPersistentContext('/Users/zeze/.openclaw/workspace/output/qrclaw-demo-chrome-profile',{headless:false,channel:'chrome'});
 const page=browser.pages()[0]??await browser.newPage();

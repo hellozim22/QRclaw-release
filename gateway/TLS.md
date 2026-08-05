@@ -1,6 +1,6 @@
 # Gateway HTTPS — `gateway-test.qrclaw.ai`
 
-The Gateway **Node.js process is HTTP-only** on port **3001**. Public HTTPS is terminated by **Nginx** on the internal production VM. Host details are intentionally omitted from this colleague export.
+The Gateway **Node.js process is HTTP-only** on port **3001**. Public HTTPS is terminated by **Nginx** on the Tencent VM (`ubuntu@1.14.190.126` per `AGENTS.md`).
 
 ## Live server state (applied 2026-03-30)
 

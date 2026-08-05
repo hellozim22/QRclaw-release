@@ -84,10 +84,12 @@ const defaultProject = (): ProgressProject => {
   };
 };
 
-const normalizeStatus = (value: unknown): TaskStatus =>
-  typeof value === 'string' && TASK_STATUSES.includes(value as TaskStatus)
+const normalizeStatus = (value: unknown): TaskStatus => {
+  if (value === 'backlog') return 'todo';
+  return typeof value === 'string' && TASK_STATUSES.includes(value as TaskStatus)
     ? (value as TaskStatus)
     : 'todo';
+};
 
 const normalizePriority = (value: unknown): TaskPriority =>
   typeof value === 'string' && PRIORITIES.includes(value as TaskPriority)

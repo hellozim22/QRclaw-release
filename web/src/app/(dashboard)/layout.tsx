@@ -13,41 +13,26 @@ interface NavItemProps {
   icon: ReactNode;
   label: string;
   isActive: boolean;
-  iconOnly?: boolean;
 }
 
-const NavItem = ({ href, icon, label, isActive, iconOnly = false }: NavItemProps) => (
+const NavItem = ({ href, icon, label, isActive }: NavItemProps) => (
   <Link
     href={href}
-    aria-label={iconOnly ? label || href : undefined}
-    title={iconOnly ? label || undefined : undefined}
+    aria-label={label || href}
+    title={label || undefined}
     style={{
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      width: 64,
-      height: iconOnly ? 48 : 56,
-      borderRadius: 12,
+      width: 40,
+      height: 40,
+      borderRadius: 10,
       background: isActive ? 'var(--color-red-bg)' : 'transparent',
       color: isActive ? 'var(--color-red)' : 'var(--color-gray-500)',
       textDecoration: 'none',
-      gap: iconOnly ? 0 : 2,
     }}
   >
     {icon}
-    {!iconOnly && (
-    <span
-      style={{
-        fontFamily: 'var(--font-primary)',
-        fontSize: 10,
-        fontWeight: 500,
-        color: isActive ? 'var(--color-red)' : 'var(--color-gray-500)',
-      }}
-    >
-      {label}
-    </span>
-    )}
   </Link>
 );
 
@@ -55,18 +40,13 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const primaryNavItems = [
-    { href: '/chat', icon: <MessagesSquare size={20} />, label: 'Chat' },
-    { href: '/agents', icon: <Bot size={20} />, label: 'Agents' },
-    { href: '/progress', icon: <KanbanSquare size={20} />, label: 'Progress' },
+    { href: '/chat', icon: <MessagesSquare size={22} strokeWidth={1.75} />, label: 'Chat' },
+    { href: '/agents', icon: <Bot size={22} strokeWidth={1.75} />, label: 'Agents' },
+    { href: '/progress', icon: <KanbanSquare size={22} strokeWidth={1.75} />, label: 'Progress' },
   ];
 
-  const secondaryNavItems: Array<{
-    href: string;
-    icon: ReactNode;
-    label: string;
-    iconOnly?: boolean;
-  }> = [
-    { href: '/settings', icon: <User size={20} />, label: '个人中心', iconOnly: true },
+  const secondaryNavItems = [
+    { href: '/settings', icon: <User size={20} strokeWidth={1.75} />, label: '个人中心' },
   ];
 
   return (
@@ -78,20 +58,19 @@ const Sidebar = () => {
         alignItems: 'center',
         background: 'var(--color-white)',
         borderRight: '1px solid var(--color-dashboard-divider)',
-        padding: '20px 0',
-        gap: 8,
+        padding: '16px 0 12px',
         flexShrink: 0,
       }}
     >
-      <Avatar src="/qrclaw-logo-icon.png" alt="QRClaw" size={40} variant="agent" />
-      <div style={{ height: 16 }} />
+      <Avatar src="/qrclaw-logo-icon.png" alt="QRClaw" size={36} variant="agent" />
       <nav
         aria-label="Dashboard primary navigation"
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 8,
+          marginTop: 14,
+          gap: 4,
         }}
       >
         {primaryNavItems.map((item) => (
@@ -111,7 +90,7 @@ const Sidebar = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 8,
+          gap: 4,
         }}
       >
         {secondaryNavItems.map((item) => (
@@ -121,7 +100,6 @@ const Sidebar = () => {
             icon={item.icon}
             label={item.label}
             isActive={pathname === item.href || pathname.startsWith(`${item.href}/`)}
-            iconOnly={item.iconOnly}
           />
         ))}
       </nav>

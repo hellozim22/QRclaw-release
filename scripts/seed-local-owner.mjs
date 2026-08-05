@@ -10,7 +10,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
 const EMAIL = process.env.LOCAL_DEV_EMAIL || 'local-dev@localhost';
-const PASSWORD = process.env.LOCAL_DEV_PASSWORD || 'CHANGE_ME_LOCAL_DEV_PASSWORD';
+const PASSWORD = process.env.LOCAL_DEV_PASSWORD || 'LocalDev-Only-9x!';
 const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const STATE_FILE = path.join(REPO_ROOT, '.local-dev-owner.json');
 

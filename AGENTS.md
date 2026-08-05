@@ -85,12 +85,12 @@ cd plugins/openclaw && npx vitest run # OpenClaw plugin suite (113 / 113 pass)
 
 | Service | How to deploy |
 |---------|--------------|
-| Frontend (Vercel) | Internal deployment credentials are provided separately by maintainers |
-| Gateway | Internal production host details are omitted from this colleague export |
-| Edge Functions | Use the project ref and access token provided separately by maintainers |
+| Frontend (Vercel) | `vercel deploy --prod --yes --token $VERCEL_TOKEN --scope hellozims-projects` or push to main |
+| Gateway (Tencent Cloud) | SCP files → `sudo docker-compose build && sudo docker-compose up -d` on `ubuntu@1.14.190.126` |
+| Edge Functions | `npx supabase functions deploy <name> --project-ref zyxqadubhwrnsoujiyir` |
 
 ### Agent SDK (scripts/agent-sdk/)
 
 - Echo Agent: `npm run echo-agent` — echoes visitor messages
 - OpenClaw Agent: `npm run openclaw-agent` — forwards to OpenClaw AI (Luckygg)
-- Config: `.env` needs `AGENT_API_KEY`, `GATEWAY_WS_URL=ws://localhost:3001/ws`, `OPENCLAW_API_URL=<provided separately>`
+- Config: `.env` needs `AGENT_API_KEY`, `GATEWAY_WS_URL=ws://localhost:3001/ws`, `OPENCLAW_API_URL=http://43.159.148.7:33476`

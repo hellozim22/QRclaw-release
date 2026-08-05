@@ -15,7 +15,7 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  verticalListSortingStrategy,
+  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useOwnerAgentChatStore } from '@/stores/owner-agent-chat-store';
 import type { OwnerAgentSummary } from '@shared/contracts/http/owner-agent-chat/types';
@@ -32,6 +32,7 @@ import {
   subscribeProgressProjects,
 } from './project-store';
 import { ProgressBoardHeader } from './ProgressBoardHeader';
+import { VISIBLE_TASKS_PER_ROW, visibleTasksForRow } from './row-visibility';
 import { DragCard, TaskCard } from './TaskCard';
 import {
   STATUS_META,
@@ -39,6 +40,8 @@ import {
   type ProgressTask,
   type TaskStatus,
 } from './types';
+
+const CARD_WIDTH = 200;
 
 const byPosition = (a: ProgressTask, b: ProgressTask) => a.position - b.position;
 
@@ -59,13 +62,14 @@ function filterTasksByProject(
   });
 }
 
-function Column({
+function StatusRow({
   status,
   tasks,
   getProject,
   getAgent,
   isAgentOnline,
   onSelectTask,
+  onOpenMore,
 }: {
   status: TaskStatus;
   tasks: ProgressTask[];
@@ -73,17 +77,18 @@ function Column({
   getAgent: (agentId: string | null) => OwnerAgentSummary | null;
   isAgentOnline: (agentId: string | null) => boolean;
   onSelectTask: (task: ProgressTask) => void;
+  onOpenMore: (status: TaskStatus) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
-  const meta = STATUS_META[status];
+  const visible = visibleTasksForRow(tasks);
+  const showMore = tasks.length > VISIBLE_TASKS_PER_ROW;
 
   return (
     <section
       ref={setNodeRef}
-      data-testid={`progress-column-${status}`}
+      data-testid={`progress-row-${status}`}
       style={{
-        minWidth: 264,
-        width: 264,
+        width: '100%',
         borderRadius: 'var(--radius-xl)',
         background: isOver ? 'var(--color-red-bg)' : 'var(--color-off-white)',
         border: '1px solid var(--color-gray-border)',
@@ -93,39 +98,77 @@ function Column({
         gap: 'var(--space-3)',
       }}
     >
-      <header>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            color: 'var(--color-gray-800)',
-            fontWeight: 'var(--font-semibold)',
-          }}
-        >
-          <span>{meta.title}</span>
-          <span style={{ color: 'var(--color-gray-500)', fontSize: 'var(--text-sm)' }}>
-            {tasks.length}
-          </span>
-        </div>
-        <div style={{ marginTop: 2, color: 'var(--color-gray-600)', fontSize: 'var(--text-sm)' }}>
-          {meta.hint}
-        </div>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          color: 'var(--color-gray-800)',
+          fontWeight: 'var(--font-semibold)',
+        }}
+      >
+        <span>{STATUS_META[status].title}</span>
+        <span style={{ color: 'var(--color-gray-500)', fontSize: 'var(--text-sm)' }}>
+          {tasks.length}
+        </span>
       </header>
-      <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          {tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              project={getProject(task.projectId)}
-              agent={getAgent(task.agentId)}
-              agentOnline={isAgentOnline(task.agentId)}
-              onClick={() => onSelectTask(task)}
-            />
-          ))}
-        </div>
-      </SortableContext>
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'stretch',
+          gap: 'var(--space-2)',
+        }}
+      >
+        <SortableContext items={visible.map((task) => task.id)} strategy={horizontalListSortingStrategy}>
+          <div
+            style={{
+              display: 'flex',
+              flex: 1,
+              minWidth: 0,
+              gap: 'var(--space-2)',
+              alignItems: 'stretch',
+            }}
+          >
+            {visible.map((task) => (
+              <div key={task.id} style={{ width: CARD_WIDTH, flex: '0 0 auto' }}>
+                <TaskCard
+                  task={task}
+                  project={getProject(task.projectId)}
+                  agent={getAgent(task.agentId)}
+                  agentOnline={isAgentOnline(task.agentId)}
+                  onClick={() => onSelectTask(task)}
+                />
+              </div>
+            ))}
+          </div>
+        </SortableContext>
+
+        {showMore ? (
+          <button
+            type="button"
+            data-testid={`progress-row-more-${status}`}
+            aria-label={`View more ${STATUS_META[status].title} tasks`}
+            onClick={() => onOpenMore(status)}
+            style={{
+              flex: '0 0 auto',
+              width: 36,
+              alignSelf: 'stretch',
+              display: 'grid',
+              placeItems: 'center',
+              border: '1px solid var(--color-gray-border)',
+              borderRadius: 'var(--radius-lg)',
+              background: 'var(--color-white)',
+              color: 'var(--color-gray-700)',
+              fontSize: 'var(--text-lg)',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-primary)',
+            }}
+          >
+            &gt;
+          </button>
+        ) : null}
+      </div>
     </section>
   );
 }
@@ -250,14 +293,15 @@ export function ProgressBoard({
             style={{
               flex: 1,
               minHeight: 0,
-              overflowX: 'auto',
+              overflowY: 'auto',
               padding: 'var(--space-4) var(--space-5) var(--space-5)',
               display: 'flex',
+              flexDirection: 'column',
               gap: 'var(--space-4)',
             }}
           >
             {TASK_STATUSES.map((status) => (
-              <Column
+              <StatusRow
                 key={status}
                 status={status}
                 tasks={tasksByStatus[status]}
@@ -265,12 +309,13 @@ export function ProgressBoard({
                 getAgent={getAgent}
                 isAgentOnline={isAgentOnline}
                 onSelectTask={(task) => router.push(`/progress/${task.id}`)}
+                onOpenMore={(next) => router.push(`/progress/status/${next}`)}
               />
             ))}
           </div>
           <DragOverlay>
             {activeTask ? (
-              <div style={{ width: 264 }}>
+              <div style={{ width: CARD_WIDTH }}>
                 <DragCard
                   task={activeTask}
                   project={getProgressProject(activeTask.projectId)}

@@ -44,18 +44,26 @@ const normalizeActivity = (activity: Partial<ProgressActivity>): ProgressActivit
   text: activity.text ?? '任务已更新',
 });
 
-const normalizeStoredTask = (task: ProgressTask & { projectId?: string | null }): ProgressTask => ({
-  ...task,
-  projectId: task.projectId === undefined ? DEFAULT_PROJECT_ID : task.projectId,
-  description: normalizeProgressMarkdownText(task.description ?? ''),
-  activity: Array.isArray(task.activity) ? task.activity.map(normalizeActivity) : [],
-  comments: Array.isArray(task.comments)
-    ? task.comments.map((comment) => ({
-        ...comment,
-        content: normalizeProgressMarkdownText(comment.content),
-      }))
-    : [],
-});
+const normalizeStoredTask = (
+  task: Omit<ProgressTask, 'status'> & { projectId?: string | null; status?: string },
+): ProgressTask => {
+  const rawStatus = typeof task.status === 'string' ? task.status : 'todo';
+  const status: TaskStatus = rawStatus === 'backlog' ? 'todo' : (rawStatus as TaskStatus);
+
+  return {
+    ...task,
+    status,
+    projectId: task.projectId === undefined ? DEFAULT_PROJECT_ID : task.projectId,
+    description: normalizeProgressMarkdownText(task.description ?? ''),
+    activity: Array.isArray(task.activity) ? task.activity.map(normalizeActivity) : [],
+    comments: Array.isArray(task.comments)
+      ? task.comments.map((comment) => ({
+          ...comment,
+          content: normalizeProgressMarkdownText(comment.content),
+        }))
+      : [],
+  };
+};
 
 const readTasksFromKey = (key: string): ProgressTask[] => {
   if (typeof window === 'undefined') return [];

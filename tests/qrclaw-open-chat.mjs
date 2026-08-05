@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
-const email = 'test-owner@example.invalid';
-const password = process.env.E2E_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD';
+const email = 'zeze-test@qrclaw.test';
+const password = 'QRClaw-Test-Aa1!';
 const browser = await chromium.launch({ headless: false, args: ['--no-first-run'] });
 const context = await browser.newContext({ viewport: { width: 1440, height: 950 } });
 const page = await context.newPage();

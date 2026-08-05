@@ -15,7 +15,7 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 const QRCLAW_KEK_V1 = process.env.QRCLAW_KEK_V1 ?? '';
 
-const OWNER_PASSWORD = process.env.TEST_OWNER_PASSWORD || 'CHANGE_ME_TEST_PASSWORD';
+const OWNER_PASSWORD = 'OwnerAgentEdgeTest123!';
 const OWNER_MESSAGE = `owner-private-history-${randomUUID()}`;
 const AGENT_MESSAGE = `agent-private-history-${randomUUID()}`;
 const EVENT_ONE = `owner-private-event-one-${randomUUID()}`;

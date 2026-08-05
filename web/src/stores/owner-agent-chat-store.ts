@@ -855,7 +855,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
         },
         statusByAgent: {
           ...s.statusByAgent,
-          [agentId]: assistantAfterStream?.content.trim() ? 'online' : 'failed',
+          [agentId]: 'online',
         },
       }));
       const agent = get().agents.find((item) => item.id === agentId);
@@ -864,7 +864,7 @@ export const useOwnerAgentChatStore = create<OwnerAgentChatState>((set, get) => 
       const aborted = controller.signal.aborted;
       const ownerPersisted = ownerMessageSent || Boolean(adoptedRunId);
       set((s) => ({
-        statusByAgent: { ...s.statusByAgent, [agentId]: aborted ? 'online' : 'failed' },
+        statusByAgent: { ...s.statusByAgent, [agentId]: 'online' },
         messagesByAgent: {
           ...s.messagesByAgent,
           [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
@@ -1037,7 +1037,7 @@ export async function ensureOwnerWsSubscription(): Promise<void> {
         const errorMessage = 'Agent execution failed. Please check this local agent setup.';
         if (!agentId || !runId) return;
         useOwnerAgentChatStore.setState((s) => ({
-          statusByAgent: { ...s.statusByAgent, [agentId]: 'failed' },
+          statusByAgent: { ...s.statusByAgent, [agentId]: 'online' },
           messagesByAgent: {
             ...s.messagesByAgent,
             [agentId]: (s.messagesByAgent[agentId] ?? []).map((message) =>
