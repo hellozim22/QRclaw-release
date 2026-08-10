@@ -17,7 +17,7 @@
     "test:integration": "vitest run --project integration"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.62.1",
     "@supabase/supabase-js": "^2.99.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
